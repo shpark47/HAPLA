@@ -218,3 +218,83 @@ body {
 .search-btn:hover {
     background: #0088cc;
 }
+
+.login-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #0099cc;
+}
+
+.login-subtitle {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 32px;
+}
+
+.login-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btn-kakao {
+    background-color: #FEE500;
+    color: #000000;
+}
+
+.btn-google {
+    background-color: #ffffff;
+    border: 1px solid #dadce0;
+    color: #000000;
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 20px;
+    }
+}
+
+/* Close button styles */
+.close-btn {
+    position: relative;
+    top: -10px;
+    left: 125px;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+}
+
+.close-btn::before,
+.close-btn::after {
+    content: '';
+    position: absolute;
+    width: 2px;
+    height: 24px;
+    background-color: #999;
+    top: 0;
+    left: 50%;
+}
+
+.close-btn::before {
+    transform: rotate(45deg);
+}
+
+.close-btn::after {
+    transform: rotate(-45deg);
+}
+
+.close-btn:hover::before,
+.close-btn:hover::after {
+    background-color: #333;
+}
