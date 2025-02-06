@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,24 +8,7 @@
     <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 </head>
 <body>
-<header class="header">
-    <div class="logo-section">
-        <span class="hapla-logo">HAPLA</span>
-    </div>
-    <div class="user-section">
-        <label id="login">로그인</label>
-        <img src="/img/시나모롤.jpg" alt="User Profile" class="user-profile">
-        <div class="dropdown">
-            <a href="#">내 정보</a>
-            <a href="#">커뮤니티</a>
-            <a href="#">여행지추천</a>
-            <a href="#">리뷰 작성</a>
-            <a href="#">문의하기</a>
-            <a href="#">로그아웃</a>
-        </div>
-    </div>
-</header>
-
+<div th:replace="~{common/topbar.html :: topbar}"></div>
 <main>
     <section class="main-search">
         <h1>어디로 가시나요?</h1>
