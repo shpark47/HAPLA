@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HAPLA Travel</title>
     <link href="/css/main.css" rel="stylesheet" type="text/css">
-    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"
+            integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 </head>
 <body>
 <div th:replace="~{common/header.html :: topbar}"></div>
@@ -19,6 +20,8 @@
             <button>숙박</button>
             <button>항공권</button>
         </div>
+
+        <!--    일반 검색창    -->
         <div class="search-bar">
             <div style="width: 25%; position: absolute; margin-top: 10px">
                 <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="30" height="30" viewBox="0 0 50 50">
@@ -28,8 +31,28 @@
             <input type="text" placeholder="여행지, 즐길거리, 호텔 등">
             <button>검색</button>
         </div>
-    </section>
 
+        <!-- 항공권 검색 창 -->
+        <!--        <form class="search-form">-->
+        <!--            <div class="input-group">-->
+        <!--                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">-->
+        <!--                    <path d="M22 2L2 22M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>-->
+        <!--                </svg>-->
+        <!--                <input type="text" placeholder="Origin">-->
+        <!--            </div>-->
+
+        <!--            <div class="input-group">-->
+        <!--                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">-->
+        <!--                    <path d="M22 2L2 22M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>-->
+        <!--                </svg>-->
+        <!--                <input type="text" placeholder="Destination">-->
+        <!--            </div>-->
+
+        <!--            <button type="button" class="date-picker">Feb 20 → Feb 27</button>-->
+        <!--            <button type="button" class="traveler-picker">1 Traveler</button>-->
+        <!--            <button type="submit" class="search-btn">Search</button>-->
+        <!--        </form>-->
+    </section>
     <section class="popular-destinations">
         <h2>인기 여행지</h2>
         <div class="destinations-grid">
