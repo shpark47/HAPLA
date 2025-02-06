@@ -9,4 +9,9 @@ public class TestController {
     public String main() {
         return "/main";
     }
+
+    @GetMapping("/join")
+    public String join() {
+        return "/join";
+    }
 }
