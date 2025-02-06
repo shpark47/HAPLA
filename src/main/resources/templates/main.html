@@ -8,7 +8,7 @@
     <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 </head>
 <body>
-<div th:replace="~{common/topbar.html :: topbar}"></div>
+<div th:replace="~{common/header.html :: topbar}"></div>
 <main>
     <section class="main-search">
         <h1>어디로 가시나요?</h1>
@@ -163,35 +163,7 @@
         </div>
     </section>
 </main>
-
-<footer class="footer">
-    <div class="footer-content">
-        <div class="footer-section">
-            <h3>HAPLA 소개</h3>
-            <ul>
-                <li><a href="#">회사 소개</a></li>
-                <li><a href="#">채용 정보</a></li>
-                <li><a href="#">보도자료</a></li>
-            </ul>
-        </div>
-        <div class="footer-section">
-            <h3>여행자 지원</h3>
-            <ul>
-                <li><a href="#">고객센터</a></li>
-                <li><a href="#">자주 묻는 질문</a></li>
-                <li><a href="#">여행자 보험</a></li>
-            </ul>
-        </div>
-        <div class="footer-section">
-            <h3>비즈니스 지원</h3>
-            <ul>
-                <li><a href="#">광고 문의</a></li>
-                <li><a href="#">제휴 문의</a></li>
-                <li><a href="#">호텔 등록</a></li>
-            </ul>
-        </div>
-    </div>
-</footer>
+<div th:replace="~{common/footer.html :: foot}"></div>
 
 <div class="modal hidden" role="dialog" id="modalChoice" align="center">
     <div class="modal-div">
