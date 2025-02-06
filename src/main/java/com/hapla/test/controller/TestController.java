@@ -14,4 +14,9 @@ public class TestController {
     public String join() {
         return "/join";
     }
+
+    @GetMapping("/recommend")
+    public String recommend() {
+        return "/recommend";
+    }
 }
