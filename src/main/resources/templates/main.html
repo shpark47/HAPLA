@@ -188,8 +188,9 @@
 </main>
 <div th:replace="~{common/footer.html :: foot}"></div>
 
-<div class="modal hidden" role="dialog" id="modalChoice" align="center">
+<div class="modal hidden" role="dialog" id="joinModal" align="center">
     <div class="modal-div">
+        <button class="close-btn" aria-label="닫기"></button>
         <div class="banner">HAPLA</div>
         <form class="modal-form">
             <label for="nickname" class="modal-label">닉네임:</label>
@@ -199,10 +200,59 @@
             <input type="email" id="email" name="email" class="modal-input" required>
 
             <button id="join" class="modal-button" type="submit">가입하기</button>
-            <button id="close" class="modal-button" type="button">닫기</button>
         </form>
     </div>
+</div>
 
+<div class="modal hidden" role="dialog" id="loginModal" align="center">
+    <div class="modal-div">
+        <button class="close-btn" aria-label="닫기"></button>
+        <h1 class="login-title">HAPLA</h1>
+        <p class="login-subtitle">예정부터 일정까지 여행이 더 쉬워집니다</p>
+
+        <div id="google-login-btn" class="login-btn"></div>
+        <div id="kakao-login-btn" class="login-btn"></div>
+        <button id="join-modal" class="login-btn" style="padding: 12px; background: #0099cc; color: white">회원가입</button>
+    </div>
+
+    <!-- Kakao SDK -->
+    <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
+
+    <!-- Google SDK -->
+    <script src="https://accounts.google.com/gsi/client"></script>
+
+    <script>
+        // Kakao 초기화
+        Kakao.init('YOUR_KAKAO_APP_KEY');
+
+        // Kakao 로그인 버튼
+        Kakao.Auth.createLoginButton({
+            container: '#kakao-login-btn',
+            success: function(authObj) {
+                console.log(authObj);
+                // 로그인 성공 시 처리
+            },
+            fail: function(err) {
+                console.error(err);
+                // 로그인 실패 시 처리
+            },
+        });
+
+        // Google 로그인 버튼
+        google.accounts.id.initialize({
+            client_id: 'YOUR_GOOGLE_CLIENT_ID',
+            callback: handleCredentialResponse
+        });
+        google.accounts.id.renderButton(
+            document.getElementById("google-login-btn"),
+            { theme: "outline", size: "large", width: "100%" }
+        );
+
+        function handleCredentialResponse(response) {
+            console.log("Encoded JWT ID token: " + response.credential);
+            // 로그인 성공 시 처리
+        }
+    </script>
 </div>
 
 <script>
@@ -231,15 +281,24 @@
     });
 
     const modalOpenButton = document.getElementById('login');
-    const modalCloseButton = document.getElementById('close');
-    const modal = document.getElementById('modalChoice');
+    const join = document.getElementById('join-modal');
+    const loginModal = document.getElementById('loginModal');
+    const joinModal = document.getElementById('joinModal');
 
     modalOpenButton.addEventListener('click', () => {
-        modal.classList.remove('hidden');
+        loginModal.classList.remove('hidden');
     });
 
-    modalCloseButton.addEventListener('click', () => {
-        modal.classList.add('hidden');
+    document.querySelectorAll('.close-btn').forEach((button) => {
+        button.addEventListener('click', () => {
+            loginModal.classList.add('hidden');
+            joinModal.classList.add('hidden');
+        });
+    });
+
+    join.addEventListener('click', () => {
+        loginModal.classList.add('hidden');
+        joinModal.classList.remove('hidden');
     });
 </script>
 </body>
