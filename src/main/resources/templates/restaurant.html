@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TripAdvisor 음식점</title>
+    <link href="/css/restaurant.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<div th:replace="~{common/header.html :: topbar}"></div>
+
+<section th:replace="~{common/search.html :: search}"></section>
+
+<section class="features">
+    <div class="feature-box">
+        <div class="feature-icons">
+            <div class="feature-icon">★</div>
+            <div class="feature-icon">♨</div>
+            <div class="feature-icon">☕</div>
+        </div>
+        <div>
+            <h3>최고의 음식점을 찾아보세요</h3>
+            <p>검색을 통해서 나의 입맛에 맞는 음식점을 찾아보세요</p>
+        </div>
+    </div>
+    <div class="feature-box">
+        <div class="feature-icons">
+            <img class="user-profile" src="/img/시나모롤.jpg" alt="프로필 이미지">
+        </div>
+        <div>
+            <h3>최신 리뷰 보기</h3>
+            <p>전 세계 여행자들이 남긴 수많은 리뷰를 확인해 보세요</p>
+        </div>
+    </div>
+    <div class="feature-box">
+        <div class="feature-icon">🍽</div>
+        <div>
+            <h3>테이블 예약하기</h3>
+            <p>원하는 음식점을 온라인으로 예약하세요</p>
+        </div>
+    </div>
+</section>
+
+<section class="restaurants">
+    <div class="section-header">
+        <h2>제주의 최고 인기 음식점</h2>
+        <a href="#">모두 보기</a>
+    </div>
+    <div class="restaurant-grid">
+        <div class="restaurant-card">
+            <img src="/img/시나모롤.jpg" alt="제주흑돈" class="restaurant-image">
+            <button class="favorite-btn">♡</button>
+            <div class="restaurant-content">
+                <div class="restaurant-rating">★★★★★ 244개 리뷰</div>
+                <h3>제주도 흑돈구이집</h3>
+                <div class="restaurant-category">한식, 바비큐</div>
+            </div>
+        </div>
+        <div class="restaurant-card">
+            <img src="/img/시나모롤.jpg" alt="해물요리" class="restaurant-image">
+            <button class="favorite-btn">♡</button>
+            <div class="restaurant-content">
+                <div class="restaurant-rating">★★★★☆ 188개 리뷰</div>
+                <h3>고등어조림</h3>
+                <div class="restaurant-category">해물요리, 한식</div>
+            </div>
+        </div>
+        <div class="restaurant-card">
+            <img src="/img/시나모롤.jpg" alt="카페" class="restaurant-image">
+            <button class="favorite-btn">♡</button>
+            <div class="restaurant-content">
+                <div class="restaurant-rating">★★★★★ 156개 리뷰</div>
+                <h3>바다뷰카페</h3>
+                <div class="restaurant-category">카페, 디저트</div>
+            </div>
+        </div>
+        <div class="restaurant-card">
+            <img src="/img/시나모롤.jpg" alt="한식당" class="restaurant-image">
+            <button class="favorite-btn">♡</button>
+            <div class="restaurant-content">
+                <div class="restaurant-rating">★★★★★ 122개 리뷰</div>
+                <h3>제주전통밥집</h3>
+                <div class="restaurant-category">한식, 해물요리</div>
+            </div>
+        </div>
+    </div>
+</section>
+<div th:replace="~{common/footer.html :: foot}"></div>
+</body>
+</html>
