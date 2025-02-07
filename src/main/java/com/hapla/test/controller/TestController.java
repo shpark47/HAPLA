@@ -29,4 +29,9 @@ public class TestController {
     public String restaurant() {
         return "/restaurant";
     }
+
+    @GetMapping("/accommodation")
+    public String accommodation() {
+        return "/accommodation";
+    }
 }
