@@ -237,42 +237,29 @@
     </script>
 </div>
 
-<script>
-    // User profile dropdown functionality
-    const userProfile = document.querySelector('.user-profile');
-    const dropdown = document.querySelector('.dropdown');
+<div class="modal hidden" role="dialog" id="editModal" align="center">
+    <div class="modal-div">
+        <button class="close-btn" aria-label="닫기" onclick="closeModal()"></button>
+        <div class="banner">HAPLA</div>
+        <form class="edit-form">
+            <div class="profile-image-container">
+                <img src="/img/시나모롤.jpg" alt="프로필 이미지" class="profile-image" id="profileImage">
+                <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+                <button type="button" class="image-upload-btn" onclick="document.getElementById('imageUpload').click()">
+                    프로필 사진 변경
+                </button>
+            </div>
 
-    userProfile.addEventListener('click', () => {
-        dropdown.classList.toggle('active');
-    });
+            <label for="nickname" class="modal-label">닉네임:</label>
+            <input type="text" id="nickname" name="nickname" class="modal-input" required>
 
-    // Close dropdown when clicking outside
-    document.addEventListener('click', (e) => {
-        if (!userProfile.contains(e.target) && !dropdown.contains(e.target)) {
-            dropdown.classList.remove('active');
-        }
-    });
+            <button id="save" class="modal-button" type="submit">변경사항 저장</button>
 
-    const modalOpenButton = document.getElementById('login');
-    const join = document.getElementById('join-modal');
-    const loginModal = document.getElementById('loginModal');
-    const joinModal = document.getElementById('joinModal');
+            <button type="button" class="delete-account-btn">회원 탈퇴하기</button>
+        </form>
+    </div>
+</div>
 
-    modalOpenButton.addEventListener('click', () => {
-        loginModal.classList.remove('hidden');
-    });
-
-    document.querySelectorAll('.close-btn').forEach((button) => {
-        button.addEventListener('click', () => {
-            loginModal.classList.add('hidden');
-            joinModal.classList.add('hidden');
-        });
-    });
-
-    join.addEventListener('click', () => {
-        loginModal.classList.add('hidden');
-        joinModal.classList.remove('hidden');
-    });
-</script>
+<script src="/js/main.js"></script>
 </body>
 </html>
