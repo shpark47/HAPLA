@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TripAdvisor</title>
+    <link href="/css/attraction.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<div th:replace="~{common/header.html :: topbar}"></div>
+
+<section th:replace="~{common/search.html :: search}"></section>
+
+<section class="features">
+    <div class="feature">
+        <div class="feature-icon">✓</div>
+        <h3>여행자 추천</h3>
+        <p>수많은 실제 리뷰를 통해 맞춤으로 놀거리를 만나보세요.</p>
+    </div>
+    <div class="feature">
+        <div class="feature-icon">⌚</div>
+        <h3>무료 취소</h3>
+        <p>대부분의 투어 및 액티비티는 24시간 전까지 취소할 수 있습니다.</p>
+    </div>
+    <div class="feature">
+        <div class="feature-icon">✉</div>
+        <h3>직접간 보장</h3>
+        <p>등록된 상품을 중개업체에서 더 저렴하게 주문 가능합니다.</p>
+    </div>
+</section>
+
+<section class="tours">
+    <div class="tours-header">
+        <h2>제주의 인기 체험</h2>
+    </div>
+    <div class="tour-grid">
+        <div class="tour-card">
+            <img src="/img/시나모롤.jpg" alt="제주 동부" class="tour-image">
+            <button class="favorite-btn">♡</button>
+            <div class="tour-content">
+                <h3>Jeju Island East 유네스코 원주투어</h3>
+                <div class="tour-rating">★★★★★ 446</div>
+                <div class="tour-price">성인 1인 예약 금액 ₩111,253</div>
+            </div>
+        </div>
+        <div class="tour-card">
+            <img src="/img/시나모롤.jpg" alt="제주도 여행" class="tour-image">
+            <button class="favorite-btn">♡</button>
+            <div class="tour-content">
+                <h3>제주도 동아 자유여행 프라이빗 투어</h3>
+                <div class="tour-rating">★★★★★ 96</div>
+                <div class="tour-price">그룹당 금액 ₩570,843부터</div>
+            </div>
+        </div>
+        <div class="tour-card">
+            <img src="/img/시나모롤.jpg" alt="남사부" class="tour-image">
+            <button class="favorite-btn">♡</button>
+            <div class="tour-content">
+                <h3>제주도 남사부 프라이빗 일일 투어</h3>
+                <div class="tour-rating">★★★★★ 82</div>
+                <div class="tour-price">성인 1인 예약 금액 ₩89,002</div>
+            </div>
+        </div>
+        <div class="tour-card">
+            <img src="/img/시나모롤.jpg" alt="동부 유네스코" class="tour-image">
+            <button class="favorite-btn">♡</button>
+            <div class="tour-content">
+                <h3>제주도 동부 유네스코 문화유산 전 가이드 투어</h3>
+                <div class="tour-rating">★★★★★ 42</div>
+                <div class="tour-price">성인 1인 예약 금액 ₩88,000</div>
+            </div>
+        </div>
+    </div>
+</section>
+<div th:replace="~{common/footer.html :: foot}"></div>
+</body>
+</html>

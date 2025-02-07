@@ -19,4 +19,14 @@ public class TestController {
     public String recommend() {
         return "/recommend";
     }
+
+    @GetMapping("/attraction")
+    public String attraction() {
+        return "/attraction";
+    }
+
+    @GetMapping("/restaurant")
+    public String restaurant() {
+        return "/restaurant";
+    }
 }
