@@ -34,4 +34,9 @@ public class TestController {
     public String accommodation() {
         return "/accommodation";
     }
+
+    @GetMapping("/schedule")
+    public String schedule() {
+        return "/schedule";
+    }
 }

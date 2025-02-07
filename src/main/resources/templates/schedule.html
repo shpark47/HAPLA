@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Map View</title>
+    <link href="/css/schedule.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<div class="sidebar">
+    <ul class="date-list">
+        <li class="date-item">
+            <span class="date">2월 6일</span>
+            <div class="controls">
+                <button class="control-btn">➕</button>
+                <button class="control-btn">📝</button>
+                <button class="control-btn panel-open-btn">📍</button>
+                <button class="control-btn">❌</button>
+            </div>
+        </li>
+        <li class="date-item">
+            <span class="date">2월 7일</span>
+            <div class="controls">
+                <button class="control-btn">➕</button>
+                <button class="control-btn">📝</button>
+                <button class="control-btn panel-open-btn">📍</button>
+                <button class="control-btn">❌</button>
+            </div>
+        </li>
+        <li class="date-item">
+            <span class="date">2월 8일</span>
+            <span class="empty-day">일정 없음</span>
+        </li>
+        <li class="date-item">
+            <span class="date">2월 9일</span>
+            <span class="empty-day">일정 없음</span>
+        </li>
+        <li class="date-item">
+            <span class="date">2월 10일</span>
+            <span class="empty-day">일정 없음</span>
+        </li>
+    </ul>
+</div>
+<div id="map"></div>
+
+<!-- 오른쪽 사이드 패널 -->
+<div id="side-panel">
+    <div class="side-panel-header">
+        추가 정보
+        <span class="close-btn">&times;</span>
+    </div>
+    <div class="side-panel-content">
+        여기에 추가 정보를 입력하세요.
+    </div>
+</div>
+
+<script src="/js/schedule.js"></script>
+
+<!-- Google Maps API -->
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAUKMdSgSqvtUy4wZvUxqA6I_c0Zk4InEU&callback=initMap">
+</script>
+</body>
+</html>
