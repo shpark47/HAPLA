@@ -175,6 +175,11 @@
         <button class="close-btn" aria-label="닫기"></button>
         <div class="banner">HAPLA</div>
         <form class="modal-form">
+            <img src="" alt="프로필 이미지" class="profile-image" id="loginImage">
+
+            <label for="nickname" class="modal-label">이름:</label>
+            <input type="text" id="loginName" name="name" class="modal-input" readonly>
+
             <label for="nickname" class="modal-label">닉네임:</label>
             <input type="text" id="nickname" name="nickname" class="modal-input" required>
 
@@ -192,49 +197,105 @@
         <h1 class="login-title">HAPLA</h1>
         <p class="login-subtitle">예정부터 일정까지 여행이 더 쉬워집니다</p>
 
-        <div id="google-login-btn" class="login-btn"></div>
-        <div id="kakao-login-btn" class="login-btn"></div>
+        <button id="google-login-btn" class="login-btn"></button>
+        <button id="kakao-login-btn" class="login-btn">카카오</button>
         <button id="join-modal" class="login-btn" style="padding: 12px; background: #0099cc; color: white">회원가입</button>
     </div>
 
     <!-- Kakao SDK -->
     <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
 
+    <script>
+        // ✅ 카카오 SDK 초기화
+        Kakao.init("04cff7eb62f268a2bb506c81bf1de17b");
+
+        // ✅ 카카오 로그인 버튼 클릭 시 실행
+        document.getElementById("kakao-login-btn").addEventListener("click", function () {
+            Kakao.Auth.login({
+                scope: "profile_nickname, profile_image",
+                success: function (authObj) {
+                    console.log("✅ 로그인 성공! 액세스 토큰:", authObj.access_token);
+
+                    // ✅ 액세스 토큰을 이용하여 사용자 정보 가져오기
+                    fetchUserInfo(authObj.access_token);
+                },
+                fail: function (err) {
+                    console.error("❌ 로그인 실패", err);
+                },
+            });
+        });
+
+        // ✅ 사용자 정보 가져와서 모달 업데이트
+        function fetchUserInfo(accessToken) {
+            Kakao.API.request({
+                url: "/v2/user/me",
+                success: function (response) {
+                    console.log("✅ 사용자 정보:", response);
+
+                    // 🔹 프로필 정보 모달에 적용
+                    updateModal(response);
+
+                    // 🔹 액세스 토큰 & 사용자 정보 저장
+                    localStorage.setItem("accessToken", accessToken);
+                    localStorage.setItem("userInfo", JSON.stringify(response));
+                },
+                fail: function (error) {
+                    console.error("❌ 사용자 정보 가져오기 실패", error);
+                },
+            });
+        }
+
+        // ✅ 모달창 업데이트 (프로필 이미지 & 닉네임)
+        function updateModal(userInfo) {
+            const modal = document.getElementById("joinModal");
+            const profileImage = document.getElementById("loginImage");
+            const nicknameInput = document.getElementById("loginName");
+
+            // 🔹 사용자 정보 적용
+            profileImage.src = userInfo.properties.profile_image || "";
+            nicknameInput.value = userInfo.properties.nickname || "사용자";
+
+            // 🔹 모달창 표시
+            document.getElementById('loginModal').classList.add('hidden');
+            modal.classList.remove("hidden");
+        }
+    </script>
+
     <!-- Google SDK -->
     <script src="https://accounts.google.com/gsi/client"></script>
 
-    <script>
-        // Kakao 초기화
-        Kakao.init('YOUR_KAKAO_APP_KEY');
+<!--    <script>-->
+<!--        // Kakao 초기화-->
+<!--        Kakao.init('YOUR_KAKAO_APP_KEY');-->
 
-        // Kakao 로그인 버튼
-        Kakao.Auth.createLoginButton({
-            container: '#kakao-login-btn',
-            success: function(authObj) {
-                console.log(authObj);
-                // 로그인 성공 시 처리
-            },
-            fail: function(err) {
-                console.error(err);
-                // 로그인 실패 시 처리
-            },
-        });
+<!--        // Kakao 로그인 버튼-->
+<!--        Kakao.Auth.createLoginButton({-->
+<!--            container: '#kakao-login-btn',-->
+<!--            success: function(authObj) {-->
+<!--                console.log(authObj);-->
+<!--                // 로그인 성공 시 처리-->
+<!--            },-->
+<!--            fail: function(err) {-->
+<!--                console.error(err);-->
+<!--                // 로그인 실패 시 처리-->
+<!--            },-->
+<!--        });-->
 
-        // Google 로그인 버튼
-        google.accounts.id.initialize({
-            client_id: 'YOUR_GOOGLE_CLIENT_ID',
-            callback: handleCredentialResponse
-        });
-        google.accounts.id.renderButton(
-            document.getElementById("google-login-btn"),
-            { theme: "outline", size: "large", width: "100%" }
-        );
+<!--        // Google 로그인 버튼-->
+<!--        google.accounts.id.initialize({-->
+<!--            client_id: 'YOUR_GOOGLE_CLIENT_ID',-->
+<!--            callback: handleCredentialResponse-->
+<!--        });-->
+<!--        google.accounts.id.renderButton(-->
+<!--            document.getElementById("google-login-btn"),-->
+<!--            { theme: "outline", size: "large", width: "100%" }-->
+<!--        );-->
 
-        function handleCredentialResponse(response) {
-            console.log("Encoded JWT ID token: " + response.credential);
-            // 로그인 성공 시 처리
-        }
-    </script>
+<!--        function handleCredentialResponse(response) {-->
+<!--            console.log("Encoded JWT ID token: " + response.credential);-->
+<!--            // 로그인 성공 시 처리-->
+<!--        }-->
+<!--    </script>-->
 </div>
 
 <div class="modal hidden" role="dialog" id="editModal" align="center">
