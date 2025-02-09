@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kakao Login Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+        }
+        #kakao-login-btn {
+            background-color: #FEE500;
+            border: none;
+            color: #000000;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        #kakao-login-btn:hover {
+            background-color: #E6D000;
+        }
+        #user-info {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: white;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Kakao Login Test</h1>
+        <button id="kakao-login-btn">Login with Kakao</button>
+        <div id="user-info"></div>
+    </div>
+
+    <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
+    <script>
+        // 카카오 로그인 버튼 클릭 시
+        document.getElementById('kakao-login-btn').addEventListener('click', () => {
+            Kakao.init('04cff7eb62f268a2bb506c81bf1de17b');  // Kakao SDK 초기화
+            Kakao.Auth.authorize({
+                redirectUri: 'http://localhost:8080/oauth/callback',  // 실제 리디렉션 URI
+                scope: 'profile_nickname, profile_image'
+            });
+        });
+
+        // 리디렉션 URI에서 'code' 추출 후 서버로 액세스 토큰 요청
+        const REST_API_KEY = '97c0797575322fc9517cf72da3c7fcc3Y';
+        const REDIRECT_URI = 'http://localhost:8080/oauth/callback';  // 실제 서버 주소로 변경해야 함
+        if (window.location.href.indexOf('code=') > -1) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('code');  // URL에서 'code' 파라미터를 추출
+            
+
+            const AUTHORIZE_CODE = code;
+			
+            console.log(code);
+            fetch('https://kauth.kakao.com/oauth/token', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
+                },
+                body: new URLSearchParams({
+                    grant_type: 'authorization_code',
+                    client_id: REST_API_KEY,
+                    redirect_uri: REDIRECT_URI,
+                    code: AUTHORIZE_CODE,  
+                }),
+            })
+            .then(response => response.json())  // JSON 형식으로 응답 받기
+            .then(data => {
+//                 console.log(data);  // 받은 토큰 정보 처리
+	            	Kakao.Auth.setAccessToken(accessToken);
+	                fetchUserData();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+        
+     // 카카오 API를 이용한 사용자 정보 가져오기
+        function fetchUserData() {
+            Kakao.API.request({
+                url: '/v2/user/me',
+                success: function(response) {
+                    console.log(response);
+                    const userInfo = document.getElementById('user-info');
+                    userInfo.style.display = 'block';
+                    userInfo.innerHTML = `
+                        <p><strong>사용자 이름:</strong> ${response.properties.profile_nickname}</p>
+                        <p><strong>이메일:</strong> ${response.kakao_account.profile_image}</p>
+                    `;
+                },
+                fail: function(error) {
+                    console.error('Failed to fetch user info:', error);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
