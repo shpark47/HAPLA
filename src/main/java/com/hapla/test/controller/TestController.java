@@ -10,11 +10,6 @@ public class TestController {
         return "/main";
     }
 
-    @GetMapping("/join")
-    public String join() {
-        return "/join";
-    }
-
     @GetMapping("/recommend")
     public String recommend() {
         return "/recommend";
@@ -38,5 +33,10 @@ public class TestController {
     @GetMapping("/schedule")
     public String schedule() {
         return "/schedule";
+    }
+
+    @GetMapping("/google")
+    public String google() {
+        return "/google";
     }
 }

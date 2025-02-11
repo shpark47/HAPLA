@@ -197,9 +197,8 @@
         <h1 class="login-title">HAPLA</h1>
         <p class="login-subtitle">예정부터 일정까지 여행이 더 쉬워집니다</p>
 
-        <button id="google-login-btn" class="login-btn"></button>
-        <button id="kakao-login-btn" class="login-btn">카카오</button>
-        <button id="join-modal" class="login-btn" style="padding: 12px; background: #0099cc; color: white">회원가입</button>
+        <button id="google-login-btn" class="login-btn" style="background: white"></button>
+        <button id="kakao-login-btn" class="login-btn"><img src="/img/kakao.png" alt=""></button>
     </div>
 
     <!-- Kakao SDK -->
@@ -264,22 +263,22 @@
     <!-- Google SDK -->
     <script src="https://accounts.google.com/gsi/client"></script>
 
-<!--    <script>-->
-<!--        // Google 로그인 버튼-->
-<!--        google.accounts.id.initialize({-->
-<!--            client_id: 'YOUR_GOOGLE_CLIENT_ID',-->
-<!--            callback: handleCredentialResponse-->
-<!--        });-->
-<!--        google.accounts.id.renderButton(-->
-<!--            document.getElementById("google-login-btn"),-->
-<!--            { theme: "outline", size: "large", width: "100%" }-->
-<!--        );-->
+    <script>
+        // Google 로그인 버튼
+        google.accounts.id.initialize({
+            client_id: 'YOUR_GOOGLE_CLIENT_ID',
+            callback: handleCredentialResponse
+        });
+        google.accounts.id.renderButton(
+            document.getElementById("google-login-btn"),
+            { theme: "outline", size: "large", width: "100%" }
+        );
 
-<!--        function handleCredentialResponse(response) {-->
-<!--            console.log("Encoded JWT ID token: " + response.credential);-->
-<!--            // 로그인 성공 시 처리-->
-<!--        }-->
-<!--    </script>-->
+        function handleCredentialResponse(response) {
+            console.log("Encoded JWT ID token: " + response.credential);
+            // 로그인 성공 시 처리
+        }
+    </script>
 </div>
 
 <div class="modal hidden" role="dialog" id="editModal" align="center">
