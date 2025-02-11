@@ -274,7 +274,7 @@ body {
 #kakao-login-btn {
     background-color: #FEE500;
     border: none;
-    padding: 12px;
+    /*padding: 12px;*/
     color: #000000;
     text-align: center;
     text-decoration: none;

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>여행 검색 플랫폼</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+            background: white;
+            border-bottom: 1px solid #ddd;
+        }
+        .header h1 {
+            color: #007bff;
+        }
+        .search-container {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        .search-container input {
+            width: 50%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .search-container button {
+            background: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .categories {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px;
+        }
+        .category-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            background: #ddd;
+            cursor: pointer;
+        }
+        .category-btn.active {
+            background: #007bff;
+            color: white;
+        }
+        .places-container {
+            max-width: 1000px;
+            margin: auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+        .place-card {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+            background: white;
+            text-align: center;
+            padding: 10px;
+        }
+        .place-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+        .place-card h3 {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+        .rating {
+            color: #ff9800;
+            font-weight: bold;
+        }
+        .review-count {
+            font-size: 14px;
+            color: #555;
+        }
+        .footer {
+            background: #f1f1f1;
+            padding: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>HAPLA</h1>
+    <button>로그인</button>
+</div>
+
+<div class="search-container">
+    <h2>어디로 가시나요?</h2>
+    <div class="categories">
+        <button class="category-btn active" data-category="lodging">숙박</button>
+        <button class="category-btn" data-category="restaurant">음식점</button>
+        <button class="category-btn" data-category="tourist_attraction">관광명소</button>
+        <button class="category-btn" data-category="airport">항공권</button>
+    </div>
+    <input type="text" id="city" placeholder="여행지, 즐길거리, 호텔 등">
+    <button onclick="searchPlaces()"><i class="fas fa-search"></i> 검색</button>
+</div>
+
+<div class="places-container" id="places-container"></div>
+
+<div class="footer">
+    <p>© 2024 HAPLA | 회사 소개 | 고객 지원 | 광고 문의</p>
+</div>
+
+<script>
+    let selectedCategory = "lodging";
+    let map;
+    let service;
+
+    document.querySelectorAll(".category-btn").forEach(btn => {
+        btn.addEventListener("click", function() {
+            document.querySelectorAll(".category-btn").forEach(b => b.classList.remove("active"));
+            this.classList.add("active");
+            selectedCategory = this.getAttribute("data-category");
+        });
+    });
+
+    async function searchPlaces() {
+        let city = document.getElementById('city').value;
+        if (!city) {
+            alert("도시명을 입력하세요.");
+            return;
+        }
+
+        let geoUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${city}&key=AIzaSyCEHjTtVqBclz07ADqbkGjqGIe94Cq-S60`;
+        let geoRes = await fetch(geoUrl);
+        let geoData = await geoRes.json();
+
+        if (geoData.status !== "OK") {
+            alert("도시를 찾을 수 없습니다.");
+            return;
+        }
+
+        let lat = geoData.results[0].geometry.location.lat;
+        let lng = geoData.results[0].geometry.location.lng;
+        let location = new google.maps.LatLng(lat, lng);
+
+        let request = {
+            location: location,
+            radius: 5000,
+            type: selectedCategory
+        };
+
+        if (!map) {
+            map = new google.maps.Map(document.createElement('div'), { center: location, zoom: 14 });
+        }
+
+        service = new google.maps.places.PlacesService(map);
+        service.nearbySearch(request, function (results, status) {
+            if (status === google.maps.places.PlacesServiceStatus.OK) {
+                displayPlaces(results);
+            } else {
+                alert("검색 결과가 없습니다.");
+            }
+        });
+    }
+
+    function displayPlaces(places) {
+        let container = document.getElementById("places-container");
+        container.innerHTML = "";
+
+        places.forEach(place => {
+            let name = place.name || "이름 없음";
+            let rating = place.rating ? `⭐ ${place.rating}` : "⭐ 없음";
+            let reviews = place.user_ratings_total ? `${place.user_ratings_total} 리뷰` : "리뷰 없음";
+            let photoUrl = place.photos ? place.photos[0].getUrl({maxWidth: 400, maxHeight: 300}) : "https://via.placeholder.com/150";
+
+            let div = document.createElement("div");
+            div.className = "place-card";
+            div.innerHTML = `
+                    <img src="${photoUrl}" alt="${name}">
+                    <h3>${name}</h3>
+                    <p class="rating">${rating}</p>
+                    <p class="review-count">${reviews}</p>
+                `;
+            container.appendChild(div);
+        });
+    }
+</script>
+
+<!-- Google Places API 로드 -->
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCEHjTtVqBclz07ADqbkGjqGIe94Cq-S60&libraries=places"></script>
+</body>
+</html>
