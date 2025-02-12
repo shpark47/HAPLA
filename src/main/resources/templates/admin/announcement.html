@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>공지사항 관리 - 여행 웹사이트 관리자 페이지</title>
+    <link href="/css/admin/announcement.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>여행 웹사이트 관리자 페이지</h1>
+        </div>
+    </header>
+    <nav>
+        <div class="container">
+            <ul>
+                <li><a href="#">🏠 MAIN</a></li>
+                <li><a href="#">👥 사용자 조회</a></li>
+                <li><a href="#">📊 통계 조회</a></li>
+                <li><a href="#">🏨 예약 현황</a></li>
+                <li><a href="#">💰 매출 분석</a></li>
+                <li><a href="#">📢 공지사항</a></li>
+                <li><a href="#">🚨 신고 관리</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2>📢 공지사항 관리</h2>
+                <button class="btn">+ 새 공지사항</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>번호</th>
+                        <th>제목</th>
+                        <th>작성일자</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>5</td>
+                        <td>고객 만족도 조사 참여 안내</td>
+                        <td>2023-05-25</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>코로나19 관련 여행 정책 변경</td>
+                        <td>2023-05-30</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>앱 업데이트 안내</td>
+                        <td>2023-06-05</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>새로운 파트너십 안내</td>
+                        <td>2023-06-10</td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>여름 휴가 시즌 특별 할인</td>
+                        <td>2023-06-15</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

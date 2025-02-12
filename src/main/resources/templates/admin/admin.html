@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>여행 웹사이트 관리자 페이지</title>
+    <link href="/css/admin/admin.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>여행 웹사이트 관리자 페이지</h1>
+        </div>
+    </header>
+
+    <nav>
+        <div class="container">
+            <ul>
+				<li><a href="#">🏠 MAIN</a></li>
+                <li><a href="#">👥 사용자 조회</a></li>
+                <li><a href="#">📊 통계 조회</a></li>
+                <li><a href="#">🏨 예약 현황</a></li>
+                <li><a href="#">💰 매출 분석</a></li>
+                <li><a href="#">📢 공지사항</a></li>
+                <li><a href="#">🚨 신고 관리</a></li>
+            </ul>
+        </div>
+    </nav> 
+
+    <div class="container">
+        <div class="card" id="users">
+            <h2>👥 사용자 조회</h2>
+            <table>
+                <tr>
+                    <th>닉네임</th>
+                    <th>이메일</th>
+                    <th>가입일</th>
+                    <th>최근 활동</th>
+                </tr>
+                <tr>
+                    <td>여행자1</td>
+                    <td>hong@example.com</td>
+                    <td>2023-01-15</td>
+                    <td>2023-06-20</td>
+                </tr>
+                <tr>
+                    <td>세계탐험가</td>
+                    <td>kim@example.com</td>
+                    <td>2023-02-20</td>
+                    <td>2023-06-18</td>
+                </tr>
+                <tr>
+                    <td>맛집탐방</td>
+                    <td>lee@example.com</td>
+                    <td>2023-03-10</td>
+                    <td>2023-06-21</td>
+                </tr>
+                <tr>
+                    <td>호텔리뷰어</td>
+                    <td>park@example.com</td>
+                    <td>2023-04-05</td>
+                    <td>2023-06-19</td>
+                </tr>
+                <tr>
+                    <td>포토그래퍼</td>
+                    <td>jung@example.com</td>
+                    <td>2023-05-01</td>
+                    <td>2023-06-22</td>
+                </tr>
+            </table>
+        </div>
+        
+        <div class="card">
+            <h2>사용자 활동 조회</h2>
+            <div class="activity-summary">
+                <div class="activity-item">
+                    <h3>총 사용자</h3>
+                    <p>5명</p>
+                </div>
+                <div class="activity-item">
+                    <h3>총 게시글</h3>
+                    <p>25개</p>
+                </div>
+                <div class="activity-item">
+                    <h3>총 리뷰</h3>
+                    <p>37개</p>
+                </div>
+                <div class="activity-item">
+                    <h3>이번 달 신규 가입</h3>
+                    <p>2명</p>
+                </div>
+            </div>
+			<table>
+			                <tr>
+			                    <th>닉네임</th>
+			                    <th>게시글</th>
+			                    <th>지역 리뷰</th>
+			                </tr>
+			                <tr>
+			                    <td>여행자1</td>
+			                    <td>
+			                        <ul>
+			                            <li>서울 여행 꿀팁</li>
+			                            <li>제주도 맛집 추천</li>
+			                        </ul>
+			                    </td>
+			                    <td>
+			                        <ul>
+			                            <li>서울 명소 리뷰 (★★★★☆)</li>
+			                            <li>제주도 해변 리뷰 (★★★★★)</li>
+			                        </ul>
+			                    </td>
+			                </tr>
+			                <tr>
+			                    <td>세계탐험가</td>
+			                    <td>
+			                        <ul>
+			                            <li>유럽 배낭여행 준비물</li>
+			                            <li>동남아 여행 경비 팁</li>
+			                        </ul>
+			                    </td>
+			                    <td>
+			                        <ul>
+			                            <li>파리 에펠탑 주변 리뷰 (★★★☆☆)</li>
+			                            <li>방콕 카오산로드 리뷰 (★★★★☆)</li>
+			                        </ul>
+			                    </td>
+			                </tr>
+			                <tr>
+			                    <td>맛집탐방</td>
+			                    <td>
+			                        <ul>
+			                            <li>부산 해운대 맛집 리스트</li>
+			                            <li>강원도 속초 먹방 여행</li>
+			                        </ul>
+			                    </td>
+			                    <td>
+			                        <ul>
+			                            <li>부산 광안리 해변 리뷰 (★★★★★)</li>
+			                            <li>속초 중앙시장 리뷰 (★★★☆☆)</li>
+			                        </ul>
+			                    </td>
+			                </tr>
+			            </table>
+						
+						<div class="card">
+						            <form class="search-form" onsubmit="searchUser(event)">
+						                <input type="text" id="userSearch" required>
+						                <button type="submit">검색</button>
+						            </form>
+						            <div id="searchResult" class="card">
+<!--						                <h3>검색 결과</h3>-->
+						                <table>
+						                    <tr>
+						                        <th>닉네임</th>
+						                        <th>게시글</th>
+						                        <th>지역</th>
+						                    </tr>
+						                    <tr id="resultRow">
+						                        <td id="resultNickname"></td>
+						                        <td id="resultPosts"></td>
+						                        <td id="resultReviews"></td>
+						                    </tr>
+						                </table>
+						            </div>
+						        </div>	
+        </div>
+    </div>
+</body>
+</html>

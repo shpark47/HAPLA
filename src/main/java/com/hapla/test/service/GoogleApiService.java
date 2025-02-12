@@ -1,11 +1,12 @@
 package com.hapla.test.service;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.http.ResponseEntity;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+
+import com.nimbusds.jose.shaded.gson.Gson;
+import com.nimbusds.jose.shaded.gson.JsonObject;
 
 @Service
 public class GoogleApiService {

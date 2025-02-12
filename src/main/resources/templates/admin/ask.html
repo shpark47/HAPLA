@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+	<html xmlns:th="http://www.thymeleaf.org" th:fragment="topbar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>문의하기</title>
+	<link href="/css/admin/ask.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+
+	<header class="header">
+	    <div class="logo-section">
+	        <span class="hapla-logo" onclick="location.href='/main'">HAPLA</span>
+	    </div>
+	    <div class="user-section">
+	        <label id="login">로그인</label>
+	        <img src="/img/시나모롤.jpg" alt="User Profile" class="user-profile">
+	        <div class="dropdown">
+	            <a href="#">내 정보</a>
+	            <a href="#">커뮤니티</a>
+	            <a href="#">여행지추천</a>
+	            <a href="#">여행 일정</a>
+	            <a href="#">리뷰 작성</a>
+	            <a href="#">문의하기</a>
+	            <a href="#">로그아웃</a>
+	        </div>
+	    </div>
+	</header>
+
+    <main class="main-container">
+        <section class="contact-section">
+            <h1 class="contact-title">문의하기</h1>
+            <div class="contact-email">
+                문의하실 사항은 <span class="email-highlight">aaaaa@naver.com</span> 으로 문의해 주세요
+            </div>
+        </section>
+
+        <div class="info-grid">
+            <div class="info-card">
+                <h2 class="info-title">상담 가능 시간</h2>
+                <div class="info-content">
+                    <p>평일: 오전 9시 - 오후 6시</p>
+                    <p>점심시간: 오후 12시 - 오후 1시</p>
+                    <p>주말 및 공휴일: 휴무</p>
+                </div>
+            </div>
+            <div class="info-card">
+                <h2 class="info-title">자주 묻는 질문</h2>
+                <div class="info-content">
+                    <p>- 예약 취소 문의</p>
+                    <p>- 여행 일정 변경 문의</p>
+                    <p>- 패키지 여행 상품 문의</p>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <div th:replace="~{common/footer.html :: foot}"></div>
+    
+</body>
+</html>
