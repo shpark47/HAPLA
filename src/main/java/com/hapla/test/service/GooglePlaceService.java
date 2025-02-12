@@ -1,0 +1,40 @@
+package com.hapla.test.service;
+
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.beans.factory.annotation.Value;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.util.Map;
+
+@Service
+public class GooglePlaceService {
+
+    @Value("${google.api.key}")
+    private String apiKey;
+
+    private final String GOOGLE_PLACES_API_URL = "https://maps.googleapis.com/maps/api/place/details/json";
+
+    public Map<String, Object> getPlaceDetails(String placeId) {
+        String url = String.format("%s?placeid=%s&key=%s", GOOGLE_PLACES_API_URL, placeId, apiKey);
+
+        // RestTemplate을 이용해 GET 요청을 보내고, JSON 형식의 응답을 받습니다.
+        RestTemplate restTemplate = new RestTemplate();
+        String response = restTemplate.getForObject(url, String.class);
+
+        // JSON 파싱 후 필요한 정보만 반환하는 로직
+        return parsePlaceDetails(response);
+    }
+
+    private Map<String, Object> parsePlaceDetails(String jsonResponse) {
+        try {
+            // Jackson ObjectMapper를 이용하여 JSON을 Map으로 변환
+            ObjectMapper objectMapper = new ObjectMapper();
+            return objectMapper.readValue(jsonResponse, Map.class);
+        } catch (Exception e) {
+            // 예외 처리 (필요에 따라 로깅 등 추가 가능)
+            e.printStackTrace();
+            return null;
+        }
+    }
+}

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -169,7 +169,7 @@
             // 사진 URL 생성: photos[0]의 photo_reference 사용
             let photoUrl = place.photos ?
                 `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${place.photos[0].photo_reference}&key=AIzaSyCEHjTtVqBclz07ADqbkGjqGIe94Cq-S60` :
-                "/img/default.jpg";  // 기본 이미지
+                "/img/시나모롤.jpg";  // 기본 이미지
 
             let div = document.createElement("div");
             div.className = "place-card";
