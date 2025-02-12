@@ -3,51 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>장소 상세 정보</title>
+    <title>장소 상세</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* 스타일은 이전과 동일합니다 */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
         }
-        .detail-container {
+        .header {
+            display: flex;
+            justify-content: space-between;
             padding: 20px;
+            background: white;
+            border-bottom: 1px solid #ddd;
         }
-        .place-image {
+        .header h1 {
+            color: #007bff;
+        }
+        .place-detail-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .place-detail-container img {
             width: 100%;
-            height: 300px;
+            height: 400px;
             object-fit: cover;
+            border-radius: 8px;
         }
-        .place-details {
+        .place-info {
             margin-top: 20px;
         }
-        .place-details h1 {
-            font-size: 2rem;
-            margin-bottom: 10px;
+        .place-info h2 {
+            font-size: 24px;
+            color: #007bff;
         }
-        .place-details p {
-            font-size: 1.2rem;
-            margin-bottom: 10px;
+        .place-info p {
+            font-size: 16px;
+            margin: 8px 0;
         }
-        .place-details .rating {
+        .rating {
             color: #ff9800;
             font-weight: bold;
+        }
+        .reviews {
+            font-size: 14px;
+            color: #555;
+        }
+        .place-info a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .back-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+        .back-button:hover {
+            background: #0056b3;
         }
     </style>
 </head>
 <body>
 
-<div class="detail-container">
-    <h1>장소 상세 정보</h1>
-<!--    <img th:src="@{${place.profile_photo_url}}" class="place-image" alt="장소 이미지">-->
-    <div class="place-details">
-        <h1 th:text="${place.name}">장소 이름</h1>
-        <p th:text="'평점: ' + ${place.rating}">평점: </p>
-        <p th:text="'주소: ' + ${place.address}">주소: </p>
-        <p th:text="'전화번호: ' + ${place.phone}">전화번호: </p>
-        <p th:text="'웹사이트: ' + ${place.website}">웹사이트: </p>
-        <p th:text="'설명: ' + ${place.description}">설명: </p>
+<div class="header">
+    <h1>HAPLA</h1>
+    <button>로그인</button>
+</div>
+
+<div class="place-detail-container">
+    <!-- 이미지 -->
+    <img th:src="'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=' + ${place.result.photos[0]['photo_reference']} + '&key=AIzaSyCEHjTtVqBclz07ADqbkGjqGIe94Cq-S60'" alt="장소 사진" width="400" height="300"/>
+
+    <div class="place-info">
+        <!-- 장소 이름 -->
+        <h2 th:text="${place.result.name}">장소 이름</h2>
+
+        <!-- 가격 -->
+<!--        <p th:text="'가격 수준: ' + ${place.result.price_level}">가격 수준: </p>-->
+
+        <!-- 평점 -->
+        <p class="rating" th:text="'평점: ' + ${place.result.rating}">평점</p>
+
+        <!-- 주소 -->
+        <p th:text="'주소: ' + ${place.result.formatted_address}">주소</p>
+
+        <!-- 전화번호 -->
+        <p th:text="'전화번호: ' + ${place.result.formatted_phone_number}">전화번호</p>
+
+        <!-- 리뷰 -->
+        <h3>리뷰:</h3>
+        <div th:each="review : ${place.result.reviews}">
+            <p><strong th:text="${review.author_name}">작성자 이름</strong> : <span th:text="${review.text}">리뷰 내용</span></p>
+        </div>
+
+        <!-- 뒤로 가기 버튼 -->
+        <a href="javascript:history.back()" class="back-button">뒤로 가기</a>
     </div>
 </div>
 
