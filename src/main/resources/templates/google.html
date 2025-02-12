@@ -72,6 +72,7 @@
             background: white;
             text-align: center;
             padding: 10px;
+            cursor: pointer;
         }
         .place-card img {
             width: 100%;
@@ -123,10 +124,11 @@
 </div>
 
 <script>
-    let selectedCategory = "lodging";
+    let selectedCategory = "lodging"; // 기본 카테고리
     let map;
     let service;
 
+    // 카테고리 버튼 클릭 시, 선택된 카테고리 변경
     document.querySelectorAll(".category-btn").forEach(btn => {
         btn.addEventListener("click", function() {
             document.querySelectorAll(".category-btn").forEach(b => b.classList.remove("active"));
@@ -135,6 +137,7 @@
         });
     });
 
+    // 장소 검색 함수 (서버로 요청을 보냄)
     async function searchPlaces() {
         let city = document.getElementById('city').value;
         if (!city) {
@@ -142,37 +145,16 @@
             return;
         }
 
-        let geoUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${city}&key=AIzaSyCEHjTtVqBclz07ADqbkGjqGIe94Cq-S60`;
-        let geoRes = await fetch(geoUrl);
-        let geoData = await geoRes.json();
+        // 서버로 도시 이름과 선택된 카테고리 보내기
+        let response = await fetch(`/search?city=${encodeURIComponent(city)}&category=${selectedCategory}`);
+        let data = await response.json();
 
-        if (geoData.status !== "OK") {
-            alert("도시를 찾을 수 없습니다.");
-            return;
+        // 서버 응답이 성공적이면 장소 표시
+        if (data.status === "OK") {
+            displayPlaces(data.results);
+        } else {
+            alert("검색 결과가 없습니다.");
         }
-
-        let lat = geoData.results[0].geometry.location.lat;
-        let lng = geoData.results[0].geometry.location.lng;
-        let location = new google.maps.LatLng(lat, lng);
-
-        let request = {
-            location: location,
-            radius: 5000,
-            type: selectedCategory
-        };
-
-        if (!map) {
-            map = new google.maps.Map(document.createElement('div'), { center: location, zoom: 14 });
-        }
-
-        service = new google.maps.places.PlacesService(map);
-        service.nearbySearch(request, function (results, status) {
-            if (status === google.maps.places.PlacesServiceStatus.OK) {
-                displayPlaces(results);
-            } else {
-                alert("검색 결과가 없습니다.");
-            }
-        });
     }
 
     function displayPlaces(places) {
@@ -180,25 +162,37 @@
         container.innerHTML = "";
 
         places.forEach(place => {
-            let name = place.name || "이름 없음";
+            let name = place.name || "이름 없음";  // 이름이 없는 경우 처리
             let rating = place.rating ? `⭐ ${place.rating}` : "⭐ 없음";
             let reviews = place.user_ratings_total ? `${place.user_ratings_total} 리뷰` : "리뷰 없음";
-            let photoUrl = place.photos ? place.photos[0].getUrl({maxWidth: 400, maxHeight: 300}) : "https://via.placeholder.com/150";
+
+            // 사진 URL 생성: photos[0]의 photo_reference 사용
+            let photoUrl = place.photos ?
+                `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${place.photos[0].photo_reference}&key=AIzaSyCEHjTtVqBclz07ADqbkGjqGIe94Cq-S60` :
+                "/img/default.jpg";  // 기본 이미지
 
             let div = document.createElement("div");
             div.className = "place-card";
             div.innerHTML = `
-                    <img src="${photoUrl}" alt="${name}">
-                    <h3>${name}</h3>
-                    <p class="rating">${rating}</p>
-                    <p class="review-count">${reviews}</p>
-                `;
+            <img src="${photoUrl}" alt="${name}">
+            <h3>${name}</h3>
+            <p class="rating">${rating}</p>
+            <p class="review-count">${reviews}</p>
+            <h5>${place.place_id}</h5>
+        `;
+
+            // 카드 클릭 시 상세 페이지로 이동
+            div.addEventListener("click", () => {
+                let encodedPlaceId = encodeURIComponent(place.place_id);
+                location.href = `/detail/${encodedPlaceId}`;
+            });
+
             container.appendChild(div);
         });
     }
+
+
 </script>
 
-<!-- Google Places API 로드 -->
-<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCEHjTtVqBclz07ADqbkGjqGIe94Cq-S60&libraries=places"></script>
 </body>
 </html>
