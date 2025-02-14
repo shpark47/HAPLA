@@ -16,7 +16,8 @@ public class GooglePlaceService {
     private final String GOOGLE_PLACES_API_URL = "https://maps.googleapis.com/maps/api/place/details/json";
 
     public Map<String, Object> getPlaceDetails(String placeId) {
-        String url = String.format("%s?placeid=%s&key=%s", GOOGLE_PLACES_API_URL, placeId, apiKey);
+        // 'fields' 파라미터에 필요한 데이터만 요청합니다.
+        String url = String.format("%s?placeid=%s&key=%s&language=ko&fields=photos,name,price_level,rating,formatted_address,formatted_phone_number,review", GOOGLE_PLACES_API_URL, placeId, apiKey);
 
         // RestTemplate을 이용해 GET 요청을 보내고, JSON 형식의 응답을 받습니다.
         RestTemplate restTemplate = new RestTemplate();

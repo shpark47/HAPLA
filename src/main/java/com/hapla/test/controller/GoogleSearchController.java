@@ -39,13 +39,4 @@ public class GoogleSearchController {
                     .body("{\"status\":\"ERROR\", \"message\":\"서버 오류\"}");
         }
     }
-
-
-
-    // 응답 본문을 파싱하여 적절한 형식으로 반환
-    private Object parsePlaces(String jsonResponse) {
-        // JSON 파싱 로직 (예: Jackson 사용)
-        // 예시로 받은 JSON 데이터를 적절히 파싱하여 결과를 반환
-        return jsonResponse; // 이 부분을 실제 파싱 로직으로 변경하세요.
-    }
 }
