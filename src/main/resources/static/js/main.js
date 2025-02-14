@@ -14,7 +14,6 @@ document.addEventListener('click', (e) => {
 });
 
 const modalOpenButton = document.getElementById('login');
-const join = document.getElementById('join-modal');
 const loginModal = document.getElementById('loginModal');
 const joinModal = document.getElementById('joinModal');
 
@@ -27,11 +26,6 @@ document.querySelectorAll('.close-btn').forEach((button) => {
         loginModal.classList.add('hidden');
         joinModal.classList.add('hidden');
     });
-});
-
-join.addEventListener('click', () => {
-    loginModal.classList.add('hidden');
-    joinModal.classList.remove('hidden');
 });
 
 const openModal = () => {
