@@ -11,7 +11,7 @@
         <div class="search-categories">
             <button class="active">전체</button>
             <button>여행지</button>
-            <button>관광명소</button>
+            <button>즐길거리</button>
             <button>숙박</button>
             <button>음식점</button>
             <button>항공권</button>
@@ -25,6 +25,30 @@
             <input type="text" placeholder="여행지, 즐길거리, 호텔 등">
             <button>검색</button>
         </div>
+        
+        
+    <!-- 항공권 검색창 (초기에 숨김) -->
+    <div class="flight-search-bar" style="display: none;">
+        <form class="search-form">
+            <div class="input-group">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 2L2 22M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>
+                </svg>
+                <input type="text" placeholder="출발지">
+            </div>
+
+            <div class="input-group">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 2L2 22M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>
+                </svg>
+                <input type="text" placeholder="도착지">
+            </div>
+
+            <button type="button" class="date-picker">출발일 → 도착일</button>
+            <button type="button" class="traveler-picker">1명</button>
+            <button type="submit" class="search-btn">검색</button>
+        </form>
+    </div>
     </section>
     <script src="/js/search.js"></script>
 </body>
