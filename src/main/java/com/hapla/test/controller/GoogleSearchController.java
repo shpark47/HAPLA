@@ -18,7 +18,7 @@ public class GoogleSearchController {
     private String googleApiKey;
 
     @GetMapping("/search")
-    public ResponseEntity<String> searchPlaces(@RequestParam String city, @RequestParam String category) {
+    public ResponseEntity<String> searchPlaces(@RequestParam("city") String city, @RequestParam("category") String category) {
         try {
             // 구글 Places API URL 설정 (language=ko 추가)
             String url = String.format("https://maps.googleapis.com/maps/api/place/textsearch/json?query=%s+%s&language=ko&key=%s",
