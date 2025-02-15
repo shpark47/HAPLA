@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HAPLA 커뮤니티</title>
+    <link href="/css/list.css" rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div th:replace="~{common/header.html :: topbar}"></div>
+<main>
+    <section class="banner">
+        <img src="/img/communityBanner.png" alt="커뮤니티 배너">
+        <div class="overlay">
+            <h1>여행의 설렘을 함께 나누는 공간 당신의 정보를 공유해보세요</h1>
+            <input type="text" placeholder="장소 또는 액티비티로 검색">
+        </div>
+    </section>
+    <section class="community">
+        <h2>커뮤니티</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th width="5%">번호</th>
+                    <th width="50%">제목</th>
+                    <th width="10%">작성자</th>
+                    <th width="10%">좋아요</th>
+                    <th width="10%">조회수</th>
+                    <th width="15%">등록일</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+            </tbody>
+        </table>
+        <div class="pagination">
+            <span class="active">1</span> <span>2</span> <span>3</span> <span>4</span> <span>5</span> <span>6</span> <span>7</span> <span>8</span> <span>9</span> <span>10</span>
+        </div>
+    </section>
+</main>    
+<div th:replace="~{common/footer.html :: foot}"></div>
+</body>
+</html>

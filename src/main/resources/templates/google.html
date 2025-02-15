@@ -125,8 +125,6 @@
 
 <script>
     let selectedCategory = "lodging"; // 기본 카테고리
-    let map;
-    let service;
 
     // 카테고리 버튼 클릭 시, 선택된 카테고리 변경
     document.querySelectorAll(".category-btn").forEach(btn => {
@@ -148,6 +146,7 @@
         // 서버로 도시 이름과 선택된 카테고리 보내기
         let response = await fetch(`/search?city=${encodeURIComponent(city)}&category=${selectedCategory}`);
         let data = await response.json();
+        console.log(data);
 
         // 서버 응답이 성공적이면 장소 표시
         if (data.status === "OK") {
