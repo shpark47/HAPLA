@@ -1,4 +1,4 @@
-package com.hapla.Community.controller;
+package com.hapla.comm.controller;
 
 import java.util.ArrayList;
 
@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.hapla.common.Pagination;
-import com.hapla.Community.model.service.CommService;
-import com.hapla.Community.model.vo.Comm;
-import com.hapla.Community.model.vo.PageInfo;
+import com.hapla.comm.model.service.CommService;
+import com.hapla.comm.model.vo.Comm;
+import com.hapla.comm.model.vo.PageInfo;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

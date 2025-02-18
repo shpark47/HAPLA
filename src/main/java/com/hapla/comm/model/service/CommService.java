@@ -1,13 +1,13 @@
-package com.hapla.Community.model.service;
+package com.hapla.comm.model.service;
 
 import java.util.ArrayList;
 
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.stereotype.Service;
 
-import com.hapla.Community.model.mapper.CommMapper;
-import com.hapla.Community.model.vo.Comm;
-import com.hapla.Community.model.vo.PageInfo;
+import com.hapla.comm.model.mapper.CommMapper;
+import com.hapla.comm.model.vo.Comm;
+import com.hapla.comm.model.vo.PageInfo;
 
 import lombok.RequiredArgsConstructor;
 

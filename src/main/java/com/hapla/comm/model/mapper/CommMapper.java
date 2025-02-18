@@ -1,12 +1,11 @@
-package com.hapla.Community.model.mapper;
+package com.hapla.comm.model.mapper;
 
 import java.util.ArrayList;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.session.RowBounds;
 
-import com.hapla.Community.model.vo.Comm;
-import com.hapla.Community.model.vo.PageInfo;
+import com.hapla.comm.model.vo.Comm;
 
 @Mapper
 public interface CommMapper {

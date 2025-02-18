@@ -1,4 +1,4 @@
-package com.hapla.Community.model.vo;
+package com.hapla.comm.model.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
