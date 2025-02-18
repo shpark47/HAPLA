@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <link href="/css/search.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/ko.js"></script>
 </head>
 <body>
     <section class="main-search">
@@ -26,30 +29,73 @@
             <button>검색</button>
         </div>
         
-        
-    <!-- 항공권 검색창 (초기에 숨김) -->
-    <div class="flight-search-bar" style="display: none;">
-        <form class="search-form">
-            <div class="input-group">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M22 2L2 22M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>
-                </svg>
-                <input type="text" placeholder="출발지">
-            </div>
+        <!-- 항공권 검색창 (초기에 숨김) -->
+        <div class="flight-search-bar" style="display: none;">
+            <form class="search-form">
+                <div class="input-group">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 2L2 22M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>
+                    </svg>
+                    <input type="text" placeholder="출발지">
+                </div>
 
-            <div class="input-group">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M22 2L2 22M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>
-                </svg>
-                <input type="text" placeholder="도착지">
-            </div>
+                <div class="input-group">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 2L2 22M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>
+                    </svg>
+                    <input type="text" placeholder="도착지">
+                </div>
+				
+				<div class="calendar-container">
+             		<input type="text" class="date-picker" placeholder="출발일 → 도착일">
+               	</div>
+                <button type="button" class="traveler-picker">여행자 1명</button>
+                <button type="button" class="search-btn">검색</button>
+                <div class="traveler-section">
+    
+	    <div class="traveler-selection" style="display: none;">
+	        <div class="traveler-category">
+	            <span class="category-name">성인</span>
+	            <span class="category-age">18~64세</span>
+	            <button class="decrement">-</button>
+	            <span class="count">2</span>
+	            <button class="increment">+</button>
+	        </div>
+	        <div class="traveler-category">
+	            <span class="category-name">노인</span>
+	            <span class="category-age">65세 이상</span>
+	            <button class="decrement">-</button>
+	            <span class="count">0</span>
+	            <button class="increment">+</button>
+	        </div>
+	        <div class="traveler-category">
+	            <span class="category-name">아동</span>
+	            <span class="category-age">3~17세</span>
+	            <button class="decrement">-</button>
+	            <span class="count">0</span>
+	            <button class="increment">+</button>
+	        </div>
+	        <div class="traveler-category">
+	            <span class="category-name">좌석에 앉는 유아</span>
+	            <span class="category-age">0~2세</span>
+	            <button class="decrement">-</button>
+	            <span class="count">0</span>
+	            <button class="increment">+</button>
+	        </div>
+	        <div class="policy-note">
+	            <p>유아 동반 여행의 정책 및 가격은 다를 수 있으므로 예약하기 전에 티켓 제공자에게 문의하여 확인해 주세요.</p>
+	        </div>
+	        <div class="buttons">
+	            <button class="reset">재설정</button>
+	            <button class="apply">적용</button>
+	        </div>
+	    </div>
+	</div>
 
-            <button type="button" class="date-picker">출발일 → 도착일</button>
-            <button type="button" class="traveler-picker">1명</button>
-            <button type="submit" class="search-btn">검색</button>
-        </form>
-    </div>
+            </form>
+        </div>
     </section>
+    
     <script src="/js/search.js"></script>
 </body>
 </html>
