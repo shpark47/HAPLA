@@ -1,6 +1,6 @@
 package com.hapla.common;
 
-import com.hapla.Community.model.vo.PageInfo;
+import com.hapla.comm.model.vo.PageInfo;
 
 public class Pagination {
 	public static PageInfo getPageInfo(int currentPage, int listCount, int boardLimit) {
