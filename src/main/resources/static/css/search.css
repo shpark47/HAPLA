@@ -220,6 +220,11 @@ h1{
     margin-bottom: 10px;
 }
 
+.traveler-category span {
+    min-width: 60px; /* 글자 크기 일정하게 유지 */
+    text-align: center;
+}
+
 .category-name {
     font-weight: bold;
 }
@@ -236,6 +241,9 @@ button.decrement, button.increment {
     background: #fff;
     font-size: 18px;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* 버튼 내부 글자 중앙 정렬 */
 }
 
 button.decrement:hover, button.increment:hover {
