@@ -62,3 +62,4 @@ document.querySelector('.delete-account-btn').addEventListener('click', function
         closeModal();
     }
 });
+

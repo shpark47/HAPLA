@@ -4,28 +4,97 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <link href="/css/search.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/ko.js"></script>
 </head>
 <body>
-    <section class="main-search">
-        <h1>어디로 가시나요?</h1>
-        <div class="search-categories">
-            <button class="active">전체</button>
-            <button>여행지</button>
-            <button>관광명소</button>
-            <button>숙박</button>
-            <button>음식점</button>
-            <button>항공권</button>
+<section class="main-search">
+    <h1>어디로 가시나요?</h1>
+    <div class="search-categories">
+        <button class="active">전체</button>
+        <button>여행지</button>
+        <button>즐길거리</button>
+        <button>숙박</button>
+        <button>음식점</button>
+        <button>항공권</button>
+    </div>
+    <div class="search-bar">
+        <div style="width: 25%; position: absolute; margin-top: 10px">
+            <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="30" height="30" viewBox="0 0 50 50">
+                <path d="M 21 3 C 11.601563 3 4 10.601563 4 20 C 4 29.398438 11.601563 37 21 37 C 24.355469 37 27.460938 36.015625 30.09375 34.34375 L 42.375 46.625 L 46.625 42.375 L 34.5 30.28125 C 36.679688 27.421875 38 23.878906 38 20 C 38 10.601563 30.398438 3 21 3 Z M 21 7 C 28.199219 7 34 12.800781 34 20 C 34 27.199219 28.199219 33 21 33 C 13.800781 33 8 27.199219 8 20 C 8 12.800781 13.800781 7 21 7 Z"></path>
+            </svg>
         </div>
-        <div class="search-bar">
-            <div style="width: 25%; position: absolute; margin-top: 10px">
-                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="30" height="30" viewBox="0 0 50 50">
-                    <path d="M 21 3 C 11.601563 3 4 10.601563 4 20 C 4 29.398438 11.601563 37 21 37 C 24.355469 37 27.460938 36.015625 30.09375 34.34375 L 42.375 46.625 L 46.625 42.375 L 34.5 30.28125 C 36.679688 27.421875 38 23.878906 38 20 C 38 10.601563 30.398438 3 21 3 Z M 21 7 C 28.199219 7 34 12.800781 34 20 C 34 27.199219 28.199219 33 21 33 C 13.800781 33 8 27.199219 8 20 C 8 12.800781 13.800781 7 21 7 Z"></path>
+        <input type="text" placeholder="여행지, 즐길거리, 호텔 등">
+        <button>검색</button>
+    </div>
+
+    <!-- 항공권 검색창 (초기에 숨김) -->
+    <div class="flight-search-bar hidden">
+        <form class="search-form">
+            <div class="input-group">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 2L2 22M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>
                 </svg>
+                <input type="text" placeholder="출발지">
             </div>
-            <input type="text" placeholder="여행지, 즐길거리, 호텔 등">
-            <button>검색</button>
-        </div>
-    </section>
-    <script src="/js/search.js"></script>
+
+            <div class="input-group">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 2L2 22M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>
+                </svg>
+                <input type="text" placeholder="도착지">
+            </div>
+
+            <div class="calendar-container">
+                <input type="text" class="date-picker" placeholder="출발일 → 도착일">
+            </div>
+            <button type="button" class="traveler-picker">여행자 1명</button>
+            <button type="button" class="search-btn">검색</button>
+            <div class="traveler-section">
+
+                <div class="traveler-selection hidden">
+                    <div class="traveler-category">
+                        <span class="category-name">성인</span>
+                        <span class="category-age">18~64세</span>
+                        <button class="decrement">-</button>
+                        <span class="count">2</span>
+                        <button class="increment">+</button>
+                    </div>
+                    <div class="traveler-category">
+                        <span class="category-name">노인</span>
+                        <span class="category-age">65세 이상</span>
+                        <button class="decrement">-</button>
+                        <span class="count">0</span>
+                        <button class="increment">+</button>
+                    </div>
+                    <div class="traveler-category">
+                        <span class="category-name">아동</span>
+                        <span class="category-age">3~17세</span>
+                        <button class="decrement">-</button>
+                        <span class="count">0</span>
+                        <button class="increment">+</button>
+                    </div>
+                    <div class="traveler-category">
+                        <span class="category-name">좌석에 앉는 유아</span>
+                        <span class="category-age">0~2세</span>
+                        <button class="decrement">-</button>
+                        <span class="count">0</span>
+                        <button class="increment">+</button>
+                    </div>
+                    <div class="policy-note">
+                        <p>유아 동반 여행의 정책 및 가격은 다를 수 있으므로 예약하기 전에 티켓 제공자에게 문의하여 확인해 주세요.</p>
+                    </div>
+                    <div class="buttons">
+                        <button class="reset">재설정</button>
+                        <button class="apply">적용</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
+<script src="/js/search.js"></script>
 </body>
 </html>
