@@ -6,15 +6,6 @@ body {
     text-align: center;
 }
 
-/* ✅ 헤더 스타일 */
-header {
-    display: flex;
-    justify-content: space-between;
-    padding: 15px;
-    background-color: #fff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
 /* ✅ 배너 스타일 */
 .banner {
     position: relative;
@@ -75,7 +66,7 @@ ul {
 }
 
 /* ✅ footer 내부의 ul은 block 유지 */
-footer ul {
+main ul {
     display: block !important;
 }
 
@@ -146,11 +137,4 @@ ul.pagination {
     cursor: not-allowed;
     border: 1px solid #ddd;
     background-color: #f8f9fa;
-}
-
-/* ✅ footer 스타일 */
-footer {
-    background-color: #f8f9fa;
-    padding: 20px;
-    margin-top: 20px;
 }
