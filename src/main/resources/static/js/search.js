@@ -1,224 +1,177 @@
-const categoryButtons = document.querySelectorAll('.search-categories button');
-const inputText = document.querySelector('input[type=text]');
-const searchBar = document.querySelector('.search-bar'); // 기본 검색창
-const flightSearchBar = document.querySelector('.flight-search-bar'); // 항공권 검색창
-
-// Placeholder 매핑 객체
-const placeholderMap = {
-    '여행지': '여행지',
-    '관광명소': '관광명소, 액티비티 또는 여행지',
-    '숙박': '호텔 이름 또는 여행지',
-    '음식점': '음식점 또는 여행지'
-};
-
-categoryButtons.forEach(button => {
-    button.addEventListener('click', () => {
-        // 모든 버튼의 'active' 제거 후 현재 버튼에 추가
-        categoryButtons.forEach(btn => btn.classList.remove('active'));
-        button.classList.add('active');
-
-        // 버튼에 해당하는 placeholder 적용
-        inputText.placeholder = placeholderMap[button.innerText] || '여행지, 즐길거리, 호텔 등';
-
-        // 검색창 표시 설정
-        const isFlightSearch = button.innerText === '항공권';
-        searchBar.style.display = isFlightSearch ? 'none' : '';
-        flightSearchBar.style.display = isFlightSearch ? 'block' : 'none';
-    });
-});
-
 document.addEventListener('DOMContentLoaded', function() {
-    let startDate = null;
-    let endDate = null;
-    let calendar1, calendar2;
-    const datePickerButton = document.querySelector('.date-picker');
-    const calendarWrapper = document.getElementById('calendarWrapper');
-    
-	// 캘린더 초기화 함수
-	function initializeCalendars() {
-	    const calendarEl1 = document.getElementById('calendar1');
-	    const calendarEl2 = document.getElementById('calendar2');
-	    
-	    const sharedOptions = {
-	        initialView: 'dayGridMonth',
-	        contentHeight: 'auto',
-	        headerToolbar: false,
-	        locale: 'ko',
-	        selectable: true,
-	        select: handleDateSelect,
-	        unselect: handleDateUnselect,
-	        aspectRatio: 1.8,
-	        showNonCurrentDates: false, // 해당 월의 날짜만 표시
-	        fixedWeekCount: false, // 실제 주 수만큼만 표시
-	        dayCellDidMount: function(arg) {
-	            // 현재 월이 아닌 날짜 셀 숨기기
-	            if (!arg.isPast && arg.date.getMonth() !== arg.view.currentStart.getMonth()) {
-	                arg.el.style.visibility = 'hidden';
-	            }
-	        }
-	    };
+    const categoryButtons = document.querySelectorAll('.search-categories button');
+    const inputText = document.querySelector('input[type=text]');
+    const searchBar = document.querySelector('.search-bar');
+    const flightSearchBar = document.querySelector('.flight-search-bar');
+    const datePickerInput = document.querySelector('.date-picker');
+    const calendar = document.querySelector('.calendar-container');
 
-	    // 첫 번째 달력: 현재 달
-	    const now = new Date();
-	    const currentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-	    calendar1 = new FullCalendar.Calendar(calendarEl1, {
-	        ...sharedOptions,
-	        initialDate: currentMonth,
-	        validRange: {
-	            start: currentMonth,
-	            end: new Date(now.getFullYear(), now.getMonth() + 1, 1)
-	        }
-	    });
+    const placeholderMap = {
+        '여행지': '여행지',
+        '관광명소': '관광명소, 액티비티 또는 여행지',
+        '숙박': '호텔 이름 또는 여행지',
+        '음식점': '음식점 또는 여행지'
+    };
 
-	    // 두 번째 달력: 다음 달
-	    const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-	    const nextMonthEnd = new Date(now.getFullYear(), now.getMonth() + 2, 1);
-	    calendar2 = new FullCalendar.Calendar(calendarEl2, {
-	        ...sharedOptions,
-	        initialDate: nextMonth,
-	        validRange: {
-	            start: nextMonth,
-	            end: nextMonthEnd
-	        }
-	    });
-
-	    calendar1.render();
-	    calendar2.render();
-	    updateMonthDisplay();
-	}
-
-    // 캘린더 렌더링 함수
-    function renderCalendars() {
-        calendar1.render();
-        calendar2.render();
-    }
-
-    // 날짜 선택 핸들러
-    function handleDateSelect(info) {
-        if (!startDate || (startDate && endDate)) {
-            // 새로운 선택 시작
-            startDate = info.start;
-            endDate = null;
-            clearSelection();
-            highlightDate(info.start);
-        } else {
-            // 범위 선택 완료
-            endDate = info.end;
-            if (endDate < startDate) {
-                // 시작일이 종료일보다 늦은 경우 swap
-                [startDate, endDate] = [endDate, startDate];
-            }
-            highlightDateRange(startDate, endDate);
-        }
-        updateSelectedDatesDisplay();
-    }
-
-    // 선택 취소 핸들러
-    function handleDateUnselect() {
-        if (!endDate) {
-            startDate = null;
-            clearSelection();
-            updateSelectedDatesDisplay();
-        }
-    }
-
-    // 날짜 하이라이트 함수
-    function highlightDate(date) {
-        const dateStr = date.toISOString().split('T')[0];
-        document.querySelectorAll('.fc-day').forEach(el => {
-            if (el.getAttribute('data-date') === dateStr) {
-                el.classList.add('fc-day-selected');
-            }
+    categoryButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            categoryButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            inputText.placeholder = placeholderMap[button.innerText] || '여행지, 즐길거리, 호텔 등';
+            const isFlightSearch = button.innerText === '항공권';
+            searchBar.style.display = isFlightSearch ? 'none' : '';
+            flightSearchBar.style.display = isFlightSearch ? 'block' : 'none';
         });
-    }
+    });
 
-    // 날짜 범위 하이라이트 함수
-    function highlightDateRange(start, end) {
-        clearSelection();
-        let current = new Date(start);
-        while (current < end) {
-            highlightDate(current);
-            current.setDate(current.getDate() + 1);
+    let fpInitialized = false;
+
+    const fp = flatpickr(datePickerInput, {
+        mode: "range",
+        dateFormat: "Y-m-d",
+        minDate: "today",
+        defaultDate: [new Date(), new Date(new Date().setDate(new Date().getDate() + 7))],
+        monthSelectorType: "static",
+        showMonths: 2,
+        locale: "ko",
+        position: "below",
+        closeOnSelect: false, // 날짜 선택 시 자동으로 닫히지 않도록 설정
+        onOpen: function(selectedDates, dateStr, instance) {
+            if (!fpInitialized) {
+                // 캘린더 타이틀 추가
+                if (!document.querySelector(".calendar-title")) {
+                    const titleDiv = document.createElement("div");
+                    titleDiv.classList.add("calendar-title");
+                    titleDiv.style.cssText = `
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        text-align: center;
+                        font-size: 24px;
+                        font-weight: bold;
+                        padding: 20px 0;
+                        background: white;
+                        border-bottom: 1px solid #eee;
+                        z-index: 1;
+                    `;
+                    updateTitle(selectedDates, titleDiv);
+                    instance.calendarContainer.insertBefore(titleDiv, instance.calendarContainer.firstChild);
+                }
+
+                // 적용 버튼 추가
+                if (!document.querySelector(".flatpickr-apply-button")) {
+                    const applyButton = document.createElement("button");
+                    applyButton.classList.add("flatpickr-apply-button");
+                    applyButton.textContent = "적용";
+                    applyButton.style.cssText = `
+                        position: absolute;
+                        bottom: 20px;
+                        right: 20px;
+                        background-color: black;
+                        color: white;
+                        border: none;
+                        padding: 12px 32px;
+                        font-size: 16px;
+                        border-radius: 20px;
+                        cursor: pointer;
+                        z-index: 2;
+                    `;
+
+                    applyButton.addEventListener("click", function() {
+                        const selectedDates = instance.selectedDates;
+                        if (selectedDates.length === 2) {
+                            const startDate = selectedDates[0].toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' });
+                            const endDate = selectedDates[1].toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' });
+                            datePickerInput.value = `${startDate} → ${endDate}`;
+                            instance.close(); // 적용 버튼 클릭 시에만 캘린더 닫기
+                        }
+                    });
+
+                    instance.calendarContainer.appendChild(applyButton);
+                }
+
+                // 캘린더 스타일 조정
+                instance.calendarContainer.style.cssText += `
+                    padding-top: 70px;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                `;
+
+                fpInitialized = true;
+            }
+        },
+        onChange: function(selectedDates, dateStr, instance) {
+            const titleDiv = instance.calendarContainer.querySelector(".calendar-title");
+            if (titleDiv) {
+                updateTitle(selectedDates, titleDiv);
+            }
         }
-    }
+    });
 
-    // 선택 초기화 함수
-    function clearSelection() {
-        document.querySelectorAll('.fc-day-selected').forEach(el => {
-            el.classList.remove('fc-day-selected');
-        });
-    }
-
-    // 선택된 날짜 표시 업데이트
-    function updateSelectedDatesDisplay() {
-        const dateDisplay = document.getElementById('selectedDates');
-        if (startDate) {
-            const startStr = startDate.toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' });
-            const endStr = endDate ? 
-                endDate.toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' }) :
-                '';
-            dateDisplay.textContent = endStr ? `${startStr} - ${endStr}` : startStr;
+    function updateTitle(selectedDates, titleDiv) {
+        if (selectedDates.length === 2) {
+            const startDate = selectedDates[0].toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' });
+            const endDate = selectedDates[1].toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' });
+            titleDiv.textContent = `${startDate} 출발 → ${endDate} 도착`;
         } else {
-            dateDisplay.textContent = '';
+            titleDiv.textContent = "출발일과 도착일을 선택하세요";
         }
     }
 
-    // 월 표시 업데이트
-    function updateMonthDisplay() {
-        const monthDisplay = document.getElementById('currentMonth');
-        const month1 = calendar1.getDate().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long' });
-        const month2 = calendar2.getDate().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long' });
-        monthDisplay.textContent = `${month1} - ${month2}`;
-    }
-
-    // 이전/다음 월 버튼 핸들러
-    document.getElementById('prevMonth').addEventListener('click', () => {
-        calendar1.prev();
-        calendar2.prev();
-        updateMonthDisplay();
-    });
-
-    document.getElementById('nextMonth').addEventListener('click', () => {
-        calendar1.next();
-        calendar2.next();
-        updateMonthDisplay();
-    });
-
-    // 적용 버튼 핸들러
-    document.getElementById('applyButton').addEventListener('click', () => {
-        if (startDate && endDate) {
-            console.log('Selected date range:', {
-                start: startDate.toISOString(),
-                end: endDate.toISOString()
-            });
-            // 여기에 날짜 선택 완료 후의 로직을 추가하세요
-            datePickerButton.textContent = `${startDate.toLocaleDateString('ko-KR')} → ${endDate.toLocaleDateString('ko-KR')}`;
+    const style = document.createElement('style');
+    style.textContent = `
+        .flatpickr-calendar {
+            width: 900px;
+            background: white;
         }
-        calendarWrapper.style.display = 'none';
-    });
-
-    // 캘린더 초기화
-    initializeCalendars();
+        .flatpickr-day.selected {
+            background: black !important;
+            border-color: black !important;
+        }
+        .flatpickr-day.inRange {
+            background: #f0f0f0 !important;
+            border-color: #f0f0f0 !important;
+        }
+        .flatpickr-day {
+            border-radius: 50% !important;
+            margin: 2px;
+        }
+        .flatpickr-day.selected.startRange,
+        .flatpickr-day.selected.endRange {
+            background: black !important;
+        }
+        .flatpickr-months {
+            padding-top: 20px;
+        }
+    `;
+    document.head.appendChild(style);
 
     // 날짜 선택 버튼 클릭 이벤트
-    datePickerButton.addEventListener('click', (event) => {
-        const buttonRect = datePickerButton.getBoundingClientRect();
-        calendarWrapper.style.top = `${buttonRect.bottom + window.scrollY}px`;
-        calendarWrapper.style.left = `${buttonRect.left + window.scrollX}px`;
-        calendarWrapper.style.display = 'block';
-        renderCalendars(); // 캘린더 렌더링
+    datePickerInput.addEventListener('click', (event) => {
+        if (!fp.isOpen) {
+            fp.open();
+        }
         event.stopPropagation();
     });
 
-    // 문서 클릭 시 캘린더 닫기
+    // 문서 클릭 시 캘린더 닫기 (캘린더 영역 외 클릭 시에만)
     document.addEventListener('click', (event) => {
-        if (!calendarWrapper.contains(event.target) && event.target !== datePickerButton) {
-            calendarWrapper.style.display = 'none';
+        const calendar = document.querySelector('.flatpickr-calendar');
+        if (calendar && !calendar.contains(event.target) && event.target !== datePickerInput) {
+            // 캘린더 외부 클릭 시 닫지 않음 (적용 버튼으로만 닫기 가능)
+            event.stopPropagation();
         }
     });
-
-    // 캘린더 내부 클릭 시 이벤트 전파 중지
-    calendarWrapper.addEventListener('click', (event) => {
-        event.stopPropagation();
-    });
+	
+	document.querySelector('.traveler-picker').addEventListener('click', function(e){
+		const selection = document.querySelector('.traveler-selection');
+		console.log(this)
+		if(e.target==this) {
+			selection.style.display='block';
+		} else {
+			selection.style.display='none';
+		}
+	});
+	
 });

@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <link href="/css/search.css" rel="stylesheet" type="text/css">
-    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales/ko.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/ko.js"></script>
 </head>
 <body>
     <section class="main-search">
@@ -45,32 +45,56 @@
                     </svg>
                     <input type="text" placeholder="도착지">
                 </div>
+				
+				<div class="calendar-container">
+             		<input type="text" class="date-picker" placeholder="출발일 → 도착일">
+               	</div>
+                <button type="button" class="traveler-picker">여행자 1명</button>
+                <button type="button" class="search-btn">검색</button>
+                <div class="traveler-section">
+    
+	    <div class="traveler-selection" style="display: none;">
+	        <div class="traveler-category">
+	            <span class="category-name">성인</span>
+	            <span class="category-age">18~64세</span>
+	            <button class="decrement">-</button>
+	            <span class="count">2</span>
+	            <button class="increment">+</button>
+	        </div>
+	        <div class="traveler-category">
+	            <span class="category-name">노인</span>
+	            <span class="category-age">65세 이상</span>
+	            <button class="decrement">-</button>
+	            <span class="count">0</span>
+	            <button class="increment">+</button>
+	        </div>
+	        <div class="traveler-category">
+	            <span class="category-name">아동</span>
+	            <span class="category-age">3~17세</span>
+	            <button class="decrement">-</button>
+	            <span class="count">0</span>
+	            <button class="increment">+</button>
+	        </div>
+	        <div class="traveler-category">
+	            <span class="category-name">좌석에 앉는 유아</span>
+	            <span class="category-age">0~2세</span>
+	            <button class="decrement">-</button>
+	            <span class="count">0</span>
+	            <button class="increment">+</button>
+	        </div>
+	        <div class="policy-note">
+	            <p>유아 동반 여행의 정책 및 가격은 다를 수 있으므로 예약하기 전에 티켓 제공자에게 문의하여 확인해 주세요.</p>
+	        </div>
+	        <div class="buttons">
+	            <button class="reset">재설정</button>
+	            <button class="apply">적용</button>
+	        </div>
+	    </div>
+	</div>
 
-                <button type="button" class="date-picker">출발일 → 도착일</button>
-                <button type="button" class="traveler-picker">1명</button>
-                <button type="submit" class="search-btn">검색</button>
             </form>
         </div>
     </section>
-    
-	    <!-- 캘린더를 표시할 컨테이너 (초기에 숨김) -->
-	<div id="calendarWrapper" class="calendar-wrapper" style="display: none;">
-        <div class="calendar-container">
-            <div class="calendar-header">
-                <button id="prevMonth" class="nav-button">&lt;</button>
-                <span id="currentMonth"></span>
-                <button id="nextMonth" class="nav-button">&gt;</button>
-            </div>
-            <div class="calendars">
-                <div id="calendar1"></div>
-                <div id="calendar2"></div>
-            </div>
-            <div class="calendar-footer">
-                <span id="selectedDates"></span>
-                <button id="applyButton">적용</button>
-            </div>
-        </div>
-    </div>
     
     <script src="/js/search.js"></script>
 </body>
