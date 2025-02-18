@@ -19,8 +19,13 @@ document.addEventListener('DOMContentLoaded', function() {
             button.classList.add('active');
             inputText.placeholder = placeholderMap[button.innerText] || '여행지, 즐길거리, 호텔 등';
             const isFlightSearch = button.innerText === '항공권';
-            searchBar.style.display = isFlightSearch ? 'none' : '';
-            flightSearchBar.style.display = isFlightSearch ? 'block' : 'none';
+            if (isFlightSearch){
+                searchBar.classList.add('hidden');
+                flightSearchBar.classList.remove('hidden');
+            }else{
+                searchBar.classList.remove('hidden');
+                flightSearchBar.classList.add('hidden');
+            }
         });
     });
 
@@ -168,9 +173,9 @@ document.addEventListener('DOMContentLoaded', function() {
 		const selection = document.querySelector('.traveler-selection');
 		console.log(this)
 		if(e.target==this) {
-			selection.style.display='block';
+			selection.classList.remove('hidden');
 		} else {
-			selection.style.display='none';
+            selection.classList.add('hidden');
 		}
 	});
 	

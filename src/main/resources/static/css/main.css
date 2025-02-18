@@ -291,7 +291,6 @@ body {
 
 /* 🏝️ 모달 기본 스타일 */
 .modal {
-    display: none;
     position: fixed;
     z-index: 1000;
     left: 0;
