@@ -13,18 +13,16 @@ document.addEventListener('DOMContentLoaded', function() {
         '음식점': '음식점 또는 여행지'
     };
 
-    for (let button of categoryButtons) {
-        button.addEventListener('click', () => {
-            for (let btn of categoryButtons) {
-                btn.classList.remove('active');
-            }
-            button.classList.add('active');
-            inputText.placeholder = placeholderMap[button.innerText] || '여행지, 즐길거리, 호텔 등';
-            const isFlightSearch = button.innerText === '항공권';
-            searchBar.style.display = isFlightSearch ? 'none' : '';
-            flightSearchBar.style.display = isFlightSearch ? 'block' : 'none';
-        });
-    }
+	categoryButtons.forEach(button => {
+	    button.addEventListener('click', () => {
+	        categoryButtons.forEach(btn => btn.classList.remove('active'));
+	        button.classList.add('active');
+	        inputText.placeholder = placeholderMap[button.innerText] || '여행지, 즐길거리, 호텔 등';
+	        const isFlightSearch = button.innerText === '항공권';
+	        searchBar.style.display = isFlightSearch ? 'none' : 'block';
+	        flightSearchBar.style.display = isFlightSearch ? 'block' : 'none';
+	    });
+	});
 
     let fpInitialized = false;
 
@@ -255,6 +253,16 @@ document.addEventListener('DOMContentLoaded', function() {
         let totalTravelers = getTotalTravelers();
         traveler.textContent = `여행자 ${totalTravelers}명`;
     }
+
+	document.querySelector('.traveler-picker').addEventListener('click', function(e){
+		const selection = document.querySelector('.traveler-selection');
+		console.log(this)
+		if(e.target==this) {
+			selection.classList.remove('hidden');
+		} else {
+            selection.classList.add('hidden');
+		}
+	});
 	
 	// 최대 인원 초과 시 경고 메시지 표시
 	   function updateWarningMessage() {
