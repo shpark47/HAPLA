@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/Community")
+@RequestMapping("/comm")
 public class CommController {
     private final CommService commService;
     
@@ -39,6 +39,6 @@ public class CommController {
 		// getRequestURI() : /board/list
 		// getRequestURL() : http://localhost:8080/board/list 
 		
-		return "Community/list";
+		return "comm/list";
 	}
 }
