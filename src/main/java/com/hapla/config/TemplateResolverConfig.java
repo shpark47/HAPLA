@@ -19,7 +19,7 @@ public class TemplateResolverConfig {
 		commResolver.setCheckExistence(true);
 		return commResolver;
 	}
-	
+
 	@Bean
 	public ClassLoaderTemplateResolver reviewResolver() {
 		ClassLoaderTemplateResolver reviewResolver = new ClassLoaderTemplateResolver();
