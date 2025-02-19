@@ -152,8 +152,6 @@
         <button class="close-btn" aria-label="닫기"></button>
         <div class="banner">HAPLA</div>
         <form class="modal-form">
-            <input type="hidden" id="loginType" name="type">
-            <input type="hidden" id="tokenId" name="tokenId">
             <img src="" alt="프로필 이미지" class="profile-image" id="loginImage">
 
             <label for="nickname" class="modal-label">이름:</label>
@@ -227,7 +225,7 @@
                     tokenId = response.id;
 
                     // 🔹 프로필 정보 모달에 적용
-                    updateModal(loginImage, loginName, loginType);
+                    updateModal(loginImage, loginName, loginType, tokenId);
 
                     // 🔹 액세스 토큰 & 사용자 정보 저장
                     localStorage.setItem("accessToken", accessToken);
@@ -245,13 +243,13 @@
             const profileImage = document.getElementById("loginImage");
             const nicknameInput = document.getElementById("loginName");
             const type = document.getElementById("loginType");
-            const tokenId = document.getElementById("tokenId");
+            const id= document.getElementById('tokenId');
 
             // 🔹 사용자 정보 적용
             profileImage.src = loginImage;
             nicknameInput.value = loginName || "사용자";
             type.value = loginType;
-            tokenId.value = tokenId;
+            id.value = tokenId;
 
             // 🔹 모달창 표시
             document.getElementById('loginModal').classList.add('hidden');
@@ -275,21 +273,22 @@
 
         // 사용자 프로필 정보 가져오기
         function fetchUserProfile(token) {
-            fetch('http://localhost:8080/google-login/verify-token?token=' + token, {
-                method: 'GET',
+            fetch('http://localhost:8080/google-login/verify-token', {
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
-                }
+                },
+                body: JSON.stringify({ token: token })  // JWT 토큰을 서버로 전송
             })
                 .then(response => response.json())
                 .then(data => {
-                    checkUser(data.sub, "G");
+                    checkUser(data.userId, "G");
 
                     loginImage = data.picture;
                     loginName = data.name;
                     loginType = "G";
-                    tokenId = data.sub;
-                    updateModal(loginImage, loginName, loginType);
+                    tokenId = data.userId;
+                    updateModal(loginImage, loginName, loginType, tokenId);
                 })
                 .catch(error => {
                     console.error('Error fetching user profile:', error);

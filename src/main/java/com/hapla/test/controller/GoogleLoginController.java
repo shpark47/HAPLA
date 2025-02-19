@@ -1,21 +1,43 @@
 package com.hapla.test.controller;
 
-import org.springframework.http.ResponseEntity;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.http.ResponseEntity;
+
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.Map;
 
 @RestController
+@RequestMapping("/google-login")
 public class GoogleLoginController {
 
-    @GetMapping("/google-login/verify-token")
-    public String verifyGoogleToken(@RequestParam("token") String token) {
-        String url = "https://oauth2.googleapis.com/tokeninfo?id_token=" + token;
+    @PostMapping("/verify-token")
+    public ResponseEntity<?> verifyGoogleToken(@RequestBody Map<String, String> requestBody) {
+        String token = requestBody.get("token");
+        try {
+            // 구글의 공개 키를 사용해 JWT 검증
+            String url = "https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=" + token;
+            URL obj = new URL(url);
+            InputStreamReader reader = new InputStreamReader(obj.openStream());
+            JsonObject jsonObject = JsonParser.parseReader(reader).getAsJsonObject();
 
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
-        System.out.println(response.getBody());
+            String userId = jsonObject.get("sub").getAsString();
+            String email = jsonObject.get("email").getAsString();
+            String name = jsonObject.get("name").getAsString();
+            String pictureUrl = jsonObject.get("picture").getAsString();
 
-        // Google의 토큰 정보가 포함된 JSON 응답을 파싱 후 반환
-        return response.getBody();
+            // 반환할 사용자 정보
+            JsonObject response = new JsonObject();
+            response.addProperty("userId", userId);
+            response.addProperty("email", email);
+            response.addProperty("name", name);
+            response.addProperty("picture", pictureUrl);
+
+            return ResponseEntity.ok(response.toString());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Failed to verify token");
+        }
     }
 }
