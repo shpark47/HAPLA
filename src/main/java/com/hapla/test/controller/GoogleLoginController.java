@@ -34,6 +34,7 @@ public class GoogleLoginController {
             response.addProperty("email", email);
             response.addProperty("name", name);
             response.addProperty("picture", pictureUrl);
+            System.out.println(response);
 
             return ResponseEntity.ok(response.toString());
         } catch (Exception e) {
