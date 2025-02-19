@@ -326,5 +326,35 @@
 </div>
 
 <script src="/js/main.js"></script>
+
+<div id="scheduleModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeScheduleModal()">&times;</span>
+        <h2>여행 일정</h2>
+        <input type="date" id="calendarInput">
+    </div>
+</div>
+
+<script>
+	// 모달 열기 함수
+	function openScheduleModal() {
+	    document.getElementById("scheduleModal").style.display = "block";
+	}
+	
+	// 모달 닫기 함수
+	function closeScheduleModal() {
+	    document.getElementById("scheduleModal").style.display = "none";
+	}
+	
+	// 모달 외부 클릭 시 닫기
+	window.addEventListener("click", function(event) {
+	    const modal = document.getElementById("scheduleModal");
+	    if (event.target === modal) {
+	        closeScheduleModal();
+	    }
+	});
+</script>
+
+
 </body>
 </html>
