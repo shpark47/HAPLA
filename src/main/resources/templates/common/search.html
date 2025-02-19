@@ -32,19 +32,27 @@
         <!-- 항공권 검색창 (초기에 숨김) -->
         <div class="flight-search-bar" style="display: none;">
             <form class="search-form">
-                <div class="input-group">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 2L2 22M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>
-                    </svg>
-                    <input type="text" placeholder="출발지" name="departureName">
-                </div>
+                <!-- 출발지 입력 필드 아래에 드롭다운 추가 -->
+				<div class="input-group">
+				    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+				        <path d="M22 2L2 22M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>
+				    </svg>
+				    <input type="text" placeholder="출발지" name="departureName">
+				    <!-- 드롭다운 리스트 -->
+				    <div class="iata-dropdown"></div> <!-- 자동완성 결과 -->
+				</div>
 
-                <div class="input-group">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 2L2 22M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>
-                    </svg>
-                    <input type="text" placeholder="도착지" name="arrivalName">
-                </div>
+                <!-- 도착지 입력 필드 아래에 드롭다운 추가 -->
+				<div class="input-group">
+				    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+				        <path d="M22 2L2 22M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>
+				    </svg>
+				    <input type="text" placeholder="도착지" name="arrivalName">
+				    <!-- 드롭다운 리스트 -->
+				    <div class="iata-dropdown" style="display: none; position: absolute; background-color: white; border: 1px solid #ccc; width: 100%; max-height: 200px; overflow-y: auto;">
+
+				    </div>
+				</div>
 				
 				<div class="calendar-container">
              		<input type="text" class="date-picker" placeholder="출발일 → 도착일">
@@ -58,7 +66,7 @@
 	            <span class="category-name">성인</span>
 	            <span class="category-age">18~64세</span>
 	            <button type="button" class="decrement">-</button>
-	            <span class="count">2</span>
+	            <span class="count">1</span>
 	            <button type="button" class="increment">+</button>
 	        </div>
 	        <div class="traveler-category">
@@ -76,7 +84,7 @@
 	            <button type="button" class="increment">+</button>
 	        </div>
 	        <div class="traveler-category">
-	            <span class="category-name">좌석에 앉는 유아</span>
+	            <span class="category-name">유아</span>
 	            <span class="category-age">0~2세</span>
 	            <button type="button" class="decrement">-</button>
 	            <span class="count">0</span>
