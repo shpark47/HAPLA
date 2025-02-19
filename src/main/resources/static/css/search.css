@@ -73,18 +73,18 @@ h1{
 }
 
 .flight-search-bar{
-	margin-left: 5rem;
+   margin-left: 5rem;
 }
 
 .traveler-selection {
-	margin-left: 21.5rem;
+   margin-left: 21.5rem;
 }
 
 
 /* Flatpickr 커스터마이징 */
 .flatpickr-calendar{
-	left: 38rem !important;
-	top: 25.6rem !important;
+   left: 38rem !important;
+   top: 25.6rem !important;
 }
 
 .flatpickr-calendar {
@@ -186,7 +186,7 @@ h1{
     background: #f8f9fa;
     padding: 10px;
     border-bottom: 1px solid #ddd;
-}	
+}   
 
 .traveler-section {
     position: relative;
@@ -216,8 +216,14 @@ h1{
 .traveler-category {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    margin-bottom: 10px;
+    justify-content: space-between; /* 요소 간 간격을 조정 */
+    width: 100%;
+    padding: 10px 0;
+}
+
+.traveler-category span {
+    min-width: 60px; /* 글자 크기 일정하게 유지 */
+    text-align: center;
 }
 
 .category-name {
@@ -229,24 +235,53 @@ h1{
     color: #777;
 }
 
-button.decrement, button.increment {
-    width: 30px;
-    height: 30px;
-    border: 1px solid #ccc;
-    background: #fff;
+.traveler-category .category-name {
+    flex: 2;
+    text-align: left;
+    font-weight: bold;
+}
+
+.traveler-category .category-age {
+    flex: 3;
+    text-align: left;
+    color: gray;
+    font-size: 14px;
+}
+
+
+.traveler-category .decrement, 
+.traveler-category .increment {
+    width: 32px;
+    height: 32px;
     font-size: 18px;
+    font-weight: bold;
+    border: 1px solid #ccc;
+    background-color: white;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.traveler-category .decrement {
+    margin-right: 8px;
+}
+
+.traveler-category .increment {
+    margin-left: 8px;
 }
 
 button.decrement:hover, button.increment:hover {
     background: #f0f0f0;
 }
 
-span.count {
-    width: 30px;
+.traveler-category .count {
+    flex: 1;
     text-align: center;
-    font-size: 18px;
+    font-size: 16px;
 }
+
 
 .policy-note {
     margin-top: 20px;
@@ -272,4 +307,23 @@ button.reset, button.apply {
 
 button.reset:hover, button.apply:hover {
     background: #333;
+}
+
+.iata-dropdown {
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ccc;
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.iata-result-item {
+    padding: 8px;
+    cursor: pointer;
+}
+
+.iata-result-item:hover {
+    background-color: #f0f0f0;
 }

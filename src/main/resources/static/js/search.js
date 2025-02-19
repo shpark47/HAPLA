@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchBar = document.querySelector('.search-bar');
     const flightSearchBar = document.querySelector('.flight-search-bar');
     const datePickerInput = document.querySelector('.date-picker');
-    const calendar = document.querySelector('.calendar-container');
 
     const placeholderMap = {
         '여행지': '여행지',
@@ -19,13 +18,8 @@ document.addEventListener('DOMContentLoaded', function() {
             button.classList.add('active');
             inputText.placeholder = placeholderMap[button.innerText] || '여행지, 즐길거리, 호텔 등';
             const isFlightSearch = button.innerText === '항공권';
-            if (isFlightSearch){
-                searchBar.classList.add('hidden');
-                flightSearchBar.classList.remove('hidden');
-            }else{
-                searchBar.classList.remove('hidden');
-                flightSearchBar.classList.add('hidden');
-            }
+            searchBar.style.display = isFlightSearch ? 'none' : 'block';
+            flightSearchBar.style.display = isFlightSearch ? 'block' : 'none';
         });
     });
 
@@ -40,10 +34,9 @@ document.addEventListener('DOMContentLoaded', function() {
         showMonths: 2,
         locale: "ko",
         position: "below",
-        closeOnSelect: false, // 날짜 선택 시 자동으로 닫히지 않도록 설정
+        closeOnSelect: false,
         onOpen: function(selectedDates, dateStr, instance) {
             if (!fpInitialized) {
-                // 캘린더 타이틀 추가
                 if (!document.querySelector(".calendar-title")) {
                     const titleDiv = document.createElement("div");
                     titleDiv.classList.add("calendar-title");
@@ -64,7 +57,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     instance.calendarContainer.insertBefore(titleDiv, instance.calendarContainer.firstChild);
                 }
 
-                // 적용 버튼 추가
                 if (!document.querySelector(".flatpickr-apply-button")) {
                     const applyButton = document.createElement("button");
                     applyButton.classList.add("flatpickr-apply-button");
@@ -89,14 +81,13 @@ document.addEventListener('DOMContentLoaded', function() {
                             const startDate = selectedDates[0].toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' });
                             const endDate = selectedDates[1].toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' });
                             datePickerInput.value = `${startDate} → ${endDate}`;
-                            instance.close(); // 적용 버튼 클릭 시에만 캘린더 닫기
+                            instance.close();
                         }
                     });
 
                     instance.calendarContainer.appendChild(applyButton);
                 }
 
-                // 캘린더 스타일 조정
                 instance.calendarContainer.style.cssText += `
                     padding-top: 70px;
                     border-radius: 8px;
@@ -149,10 +140,47 @@ document.addEventListener('DOMContentLoaded', function() {
         .flatpickr-months {
             padding-top: 20px;
         }
+        .iata-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-top: 4px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+        .search-result-item {
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background-color 0.2s;
+        }
+        .search-result-item:hover,
+        .search-result-item.active {
+            background-color: #f8f8f8;
+        }
+        .search-result-content {
+            flex: 1;
+        }
+        .search-result-title {
+            font-weight: 500;
+            font-size: 14px;
+        }
+        .search-result-subtitle {
+            color: #666;
+            font-size: 12px;
+            margin-top: 2px;
+        }
     `;
     document.head.appendChild(style);
 
-    // 날짜 선택 버튼 클릭 이벤트
     datePickerInput.addEventListener('click', (event) => {
         if (!fp.isOpen) {
             fp.open();
@@ -160,23 +188,157 @@ document.addEventListener('DOMContentLoaded', function() {
         event.stopPropagation();
     });
 
-    // 문서 클릭 시 캘린더 닫기 (캘린더 영역 외 클릭 시에만)
     document.addEventListener('click', (event) => {
         const calendar = document.querySelector('.flatpickr-calendar');
         if (calendar && !calendar.contains(event.target) && event.target !== datePickerInput) {
-            // 캘린더 외부 클릭 시 닫지 않음 (적용 버튼으로만 닫기 가능)
             event.stopPropagation();
         }
     });
-	
-	document.querySelector('.traveler-picker').addEventListener('click', function(e){
-		const selection = document.querySelector('.traveler-selection');
-		console.log(this)
-		if(e.target==this) {
-			selection.classList.remove('hidden');
-		} else {
-            selection.classList.add('hidden');
-		}
-	});
+
+    const selection = document.querySelector('.traveler-selection');
+    const traveler = document.querySelector('.traveler-picker');
+    const resetBtn = document.querySelector('.reset');
+    const applyButton = document.querySelector('.apply');
+    const incrementButtons = document.querySelectorAll('.increment');
+    const decrementButtons = document.querySelectorAll('.decrement');
+    const countElements = document.querySelectorAll('.count');
+    const maxTravelers = 9;
+
+    const warningMessage = document.createElement('p');
+    warningMessage.textContent = "최대 9명까지만 선택할 수 있습니다.";
+    warningMessage.style.cssText = `
+        color: red;
+        font-size: 14px;
+        margin-top: 8px;
+        display: none;
+    `;
+    selection.appendChild(warningMessage);
+
+    traveler.addEventListener('click', function(e) {
+		console.log(selection);
+        e.stopPropagation();
+        selection.style.display = 'block';
+    });
+
+    applyButton.addEventListener('click', function() {
+        updateTravelerCount();
+        selection.style.display = 'none';
+    });
+
+    document.addEventListener('click', function(e) {
+        if (!selection.contains(e.target) && e.target !== traveler) {
+            selection.style.display = 'none';
+        }
+    });
+
+    selection.addEventListener('click', function(e) {
+        e.stopPropagation();
+    });
+
+    incrementButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            let totalTravelers = getTotalTravelers();
+            if (totalTravelers < maxTravelers) {
+                let countElement = button.previousElementSibling;
+                countElement.textContent = parseInt(countElement.textContent) + 1;
+            }
+            updateWarningMessage();
+        });
+    });
+
+    decrementButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            let countElement = button.nextElementSibling;
+            let currentCount = parseInt(countElement.textContent);
+            if (currentCount > 0) {
+                countElement.textContent = currentCount - 1;
+            }
+            updateWarningMessage();
+        });
+    });
+
+    resetBtn.addEventListener('click', function() {
+        countElements.forEach(countElement => {
+            countElement.textContent = '0';
+        });
+        updateTravelerCount();
+    });
+
+    function getTotalTravelers() {
+        return Array.from(countElements).reduce((total, el) => total + parseInt(el.textContent), 0);
+    }
+
+    function updateTravelerCount() {
+        let totalTravelers = getTotalTravelers();
+        traveler.textContent = `여행자 ${totalTravelers}명`;
+    }
+
+    function updateWarningMessage() {
+        let totalTravelers = getTotalTravelers();
+        warningMessage.style.display = totalTravelers >= maxTravelers ? 'block' : 'none';
+    }
+	function searchAirports(query, dropdownId) {
+	    const dropdown = document.getElementById(dropdownId);
+	    if (!dropdown) {
+	        console.error(`Dropdown element not found: ${dropdownId}`);
+	        return; // 드롭다운 요소가 없으면 함수 종료
+	    }
+
+	    fetch(`/flight/search?query=${query}`)
+	        .then(response => {
+	            if (!response.ok) {
+	                throw new Error('Failed to fetch data: ' + response.statusText);
+	            }
+	            return response.json();
+	        })
+	        .then(data => {
+	            if (Array.isArray(data)) {
+	                dropdown.innerHTML = ''; // 기존 항목 초기화
+	                data.forEach(item => {
+	                    const div = document.createElement('div');
+	                    div.textContent = item;
+	                    dropdown.appendChild(div);
+	                });
+	                dropdown.style.display = data.length > 0 ? 'block' : 'none';
+	            } else {
+	                console.error('Expected an array, but got:', data);
+	                dropdown.style.display = 'none'; // 배열이 아닐 경우 드롭다운 숨기기
+	            }
+	        })
+	        .catch(error => {
+	            console.error('Error:', error);
+	            // API 호출 실패 시 사용자에게 알림 처리
+	            dropdown.style.display = 'none'; // 오류가 발생하면 드롭다운 숨기기
+	        });
+	}
+
+
+			
+	   document.getElementsByName('departureName')[0].addEventListener('input', function() {
+	       const query = this.value;
+	       if (query.length >= 1) {
+	           searchAirports(query, 'departure-dropdown');
+	       } else {
+	           document.getElementById('departure-dropdown').style.display = 'none';
+	       }
+	   });
+
+	   document.getElementsByName('arrivalName')[0].addEventListener('input', function() {
+	       const query = this.value;
+	       if (query.length >= 1) {
+	           searchAirports(query, 'arrival-dropdown');
+	       } else {
+	           document.getElementById('arrival-dropdown').style.display = 'none';
+	       }
+	   });
+
+	   // 드롭다운 항목 클릭 시 입력란에 해당 값 입력
+	   document.addEventListener('click', function(event) {
+	       if (event.target.closest('.iata-dropdown')) {
+	           const input = event.target.closest('.iata-dropdown').previousElementSibling;
+	           input.value = event.target.textContent;
+	           event.target.closest('.iata-dropdown').style.display = 'none';
+	       }
+	   });
 	
 });

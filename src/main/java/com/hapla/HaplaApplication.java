@@ -16,6 +16,7 @@ public class HaplaApplication {
 		System.setProperty("google_client_secret", dotenv.get("google_client_secret"));
 
 		SpringApplication.run(HaplaApplication.class, args);
+		
 	}
 
 }
