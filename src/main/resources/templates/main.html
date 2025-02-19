@@ -153,6 +153,7 @@
         <div class="banner">HAPLA</div>
         <form class="modal-form">
             <input type="hidden" id="loginType" name="type">
+            <input type="hidden" id="tokenId" name="tokenId">
             <img src="" alt="프로필 이미지" class="profile-image" id="loginImage">
 
             <label for="nickname" class="modal-label">이름:</label>
@@ -189,6 +190,7 @@
         let loginImage = '';
         let loginName = '';
         let loginType = '';
+        let tokenId = '';
 
         // ✅ 카카오 SDK 초기화
         Kakao.init("04cff7eb62f268a2bb506c81bf1de17b");
@@ -222,6 +224,7 @@
                     loginImage = response.properties.profile_image;
                     loginName = response.properties.nickname;
                     loginType = "K";
+                    tokenId = response.id;
 
                     // 🔹 프로필 정보 모달에 적용
                     updateModal(loginImage, loginName, loginType);
@@ -237,16 +240,18 @@
         }
 
         // ✅ 모달창 업데이트 (프로필 이미지 & 닉네임)
-        function updateModal(loginImage, loginName, loginType) {
+        function updateModal(loginImage, loginName, loginType, tokenId) {
             const modal = document.getElementById("joinModal");
             const profileImage = document.getElementById("loginImage");
             const nicknameInput = document.getElementById("loginName");
             const type = document.getElementById("loginType");
+            const tokenId = document.getElementById("tokenId");
 
             // 🔹 사용자 정보 적용
             profileImage.src = loginImage;
             nicknameInput.value = loginName || "사용자";
             type.value = loginType;
+            tokenId.value = tokenId;
 
             // 🔹 모달창 표시
             document.getElementById('loginModal').classList.add('hidden');
@@ -270,20 +275,20 @@
 
         // 사용자 프로필 정보 가져오기
         function fetchUserProfile(token) {
-            fetch('http://localhost:8080/google-login/verify-token', {
-                method: 'POST',
+            fetch('http://localhost:8080/google-login/verify-token?token=' + token, {
+                method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ token: token })  // JWT 토큰을 서버로 전송
+                }
             })
                 .then(response => response.json())
                 .then(data => {
-                    checkUser(data.userId, "G");
+                    checkUser(data.sub, "G");
 
                     loginImage = data.picture;
                     loginName = data.name;
                     loginType = "G";
+                    tokenId = data.sub;
                     updateModal(loginImage, loginName, loginType);
                 })
                 .catch(error => {
