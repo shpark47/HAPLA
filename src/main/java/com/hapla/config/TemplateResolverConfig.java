@@ -19,4 +19,16 @@ public class TemplateResolverConfig {
 		commResolver.setCheckExistence(true);
 		return commResolver;
 	}
+	
+	@Bean
+	public ClassLoaderTemplateResolver reviewResolver() {
+		ClassLoaderTemplateResolver reviewResolver = new ClassLoaderTemplateResolver();
+		reviewResolver.setPrefix("templates/views/Community/");
+		reviewResolver.setSuffix(".html");
+		reviewResolver.setTemplateMode(TemplateMode.HTML);
+		reviewResolver.setCharacterEncoding("UTF-8");
+		reviewResolver.setCacheable(false);
+		reviewResolver.setCheckExistence(true);
+		return reviewResolver;
+	}
 }
