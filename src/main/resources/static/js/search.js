@@ -215,6 +215,7 @@ document.addEventListener('DOMContentLoaded', function() {
     selection.appendChild(warningMessage);
 
     traveler.addEventListener('click', function(e) {
+		console.log(selection);
         e.stopPropagation();
         selection.style.display = 'block';
     });

@@ -39,8 +39,7 @@
 				    </svg>
 				    <input type="text" placeholder="출발지" name="departureName">
 				    <!-- 드롭다운 리스트 -->
-				    <div id="departure-dropdown" class="iata-dropdown" style="display:none;"></div>
-
+				    <div class="iata-dropdown"></div> <!-- 자동완성 결과 -->
 				</div>
 
                 <!-- 도착지 입력 필드 아래에 드롭다운 추가 -->
@@ -50,7 +49,9 @@
 				    </svg>
 				    <input type="text" placeholder="도착지" name="arrivalName">
 				    <!-- 드롭다운 리스트 -->
-				    <div id="arrival-dropdown" class="iata-dropdown" style="display:none;"></div>
+				    <div class="iata-dropdown" style="display: none; position: absolute; background-color: white; border: 1px solid #ccc; width: 100%; max-height: 200px; overflow-y: auto;">
+
+				    </div>
 				</div>
 				
 				<div class="calendar-container">
@@ -58,44 +59,47 @@
                	</div>
                 <button type="button" class="traveler-picker">여행자 1명</button>
                 <button type="button" class="search-btn">검색</button>
+                <div class="traveler-section">
     
-			    <div class="traveler-selection" style="display: none;">
-			        <div class="traveler-category">
-			            <span class="category-name">성인</span>
-			            <span class="category-age">18~64세</span>
-			            <button type="button" class="decrement">-</button>
-			            <span class="count">1</span>
-			            <button type="button" class="increment">+</button>
-			        </div>
-			        <div class="traveler-category">
-			            <span class="category-name">노인</span>
-			            <span class="category-age">65세 이상</span>
-			            <button type="button" class="decrement">-</button>
-			            <span class="count">0</span>
-			            <button type="button" class="increment">+</button>
-			        </div>
-			        <div class="traveler-category">
-			            <span class="category-name">아동</span>
-			            <span class="category-age">3~17세</span>
-			            <button type="button" class="decrement">-</button>
-			            <span class="count">0</span>
-			            <button type="button" class="increment">+</button>
-			        </div>
-			        <div class="traveler-category">
-			            <span class="category-name">유아</span>
-			            <span class="category-age">0~2세</span>
-			            <button type="button" class="decrement">-</button>
-			            <span class="count">0</span>
-			            <button type="button" class="increment">+</button>
-			        </div>
-			        <div class="policy-note">
-			            <p>유아 동반 여행의 정책 및 가격은 다를 수 있으므로 예약하기 전에 티켓 제공자에게 문의하여 확인해 주세요.</p>
-			        </div>
-			        <div class="buttons">
-			            <button type="button" class="reset">재설정</button>
-			            <button type="button" class="apply">적용</button>
-			        </div>
-			    </div>
+	    <div class="traveler-selection" style="display: none;">
+	        <div class="traveler-category">
+	            <span class="category-name">성인</span>
+	            <span class="category-age">18~64세</span>
+	            <button type="button" class="decrement">-</button>
+	            <span class="count">1</span>
+	            <button type="button" class="increment">+</button>
+	        </div>
+	        <div class="traveler-category">
+	            <span class="category-name">노인</span>
+	            <span class="category-age">65세 이상</span>
+	            <button type="button" class="decrement">-</button>
+	            <span class="count">0</span>
+	            <button type="button" class="increment">+</button>
+	        </div>
+	        <div class="traveler-category">
+	            <span class="category-name">아동</span>
+	            <span class="category-age">3~17세</span>
+	            <button type="button" class="decrement">-</button>
+	            <span class="count">0</span>
+	            <button type="button" class="increment">+</button>
+	        </div>
+	        <div class="traveler-category">
+	            <span class="category-name">유아</span>
+	            <span class="category-age">0~2세</span>
+	            <button type="button" class="decrement">-</button>
+	            <span class="count">0</span>
+	            <button type="button" class="increment">+</button>
+	        </div>
+	        <div class="policy-note">
+	            <p>유아 동반 여행의 정책 및 가격은 다를 수 있으므로 예약하기 전에 티켓 제공자에게 문의하여 확인해 주세요.</p>
+	        </div>
+	        <div class="buttons">
+	            <button type="button" class="reset">재설정</button>
+	            <button type="button" class="apply">적용</button>
+	        </div>
+	    </div>
+	</div>
+
             </form>
         </div>
     </section>
