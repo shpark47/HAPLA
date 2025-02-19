@@ -10,11 +10,13 @@ import java.sql.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Users {
-    private int userNo;
+    private int memNo;
     private String name;
     private String nickname;
     private String email;
     private Date createDate;
     private String profile;
     private String isAdmin;
+    private String type;
+    private String tokenId;
 }
