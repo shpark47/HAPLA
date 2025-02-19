@@ -9,6 +9,7 @@ public class HaplaApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(HaplaApplication.class, args);
+		
 	}
 
 }

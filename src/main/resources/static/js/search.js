@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchBar = document.querySelector('.search-bar');
     const flightSearchBar = document.querySelector('.flight-search-bar');
     const datePickerInput = document.querySelector('.date-picker');
-    
 
     const placeholderMap = {
         '여행지': '여행지',
@@ -13,16 +12,16 @@ document.addEventListener('DOMContentLoaded', function() {
         '음식점': '음식점 또는 여행지'
     };
 
-	categoryButtons.forEach(button => {
-	    button.addEventListener('click', () => {
-	        categoryButtons.forEach(btn => btn.classList.remove('active'));
-	        button.classList.add('active');
-	        inputText.placeholder = placeholderMap[button.innerText] || '여행지, 즐길거리, 호텔 등';
-	        const isFlightSearch = button.innerText === '항공권';
-	        searchBar.style.display = isFlightSearch ? 'none' : 'block';
-	        flightSearchBar.style.display = isFlightSearch ? 'block' : 'none';
-	    });
-	});
+    categoryButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            categoryButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            inputText.placeholder = placeholderMap[button.innerText] || '여행지, 즐길거리, 호텔 등';
+            const isFlightSearch = button.innerText === '항공권';
+            searchBar.style.display = isFlightSearch ? 'none' : 'block';
+            flightSearchBar.style.display = isFlightSearch ? 'block' : 'none';
+        });
+    });
 
     let fpInitialized = false;
 
@@ -35,10 +34,9 @@ document.addEventListener('DOMContentLoaded', function() {
         showMonths: 2,
         locale: "ko",
         position: "below",
-        closeOnSelect: false, // 날짜 선택 시 자동으로 닫히지 않도록 설정
+        closeOnSelect: false,
         onOpen: function(selectedDates, dateStr, instance) {
             if (!fpInitialized) {
-                // 캘린더 타이틀 추가
                 if (!document.querySelector(".calendar-title")) {
                     const titleDiv = document.createElement("div");
                     titleDiv.classList.add("calendar-title");
@@ -59,7 +57,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     instance.calendarContainer.insertBefore(titleDiv, instance.calendarContainer.firstChild);
                 }
 
-                // 적용 버튼 추가
                 if (!document.querySelector(".flatpickr-apply-button")) {
                     const applyButton = document.createElement("button");
                     applyButton.classList.add("flatpickr-apply-button");
@@ -84,14 +81,13 @@ document.addEventListener('DOMContentLoaded', function() {
                             const startDate = selectedDates[0].toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' });
                             const endDate = selectedDates[1].toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' });
                             datePickerInput.value = `${startDate} → ${endDate}`;
-                            instance.close(); // 적용 버튼 클릭 시에만 캘린더 닫기
+                            instance.close();
                         }
                     });
 
                     instance.calendarContainer.appendChild(applyButton);
                 }
 
-                // 캘린더 스타일 조정
                 instance.calendarContainer.style.cssText += `
                     padding-top: 70px;
                     border-radius: 8px;
@@ -144,10 +140,47 @@ document.addEventListener('DOMContentLoaded', function() {
         .flatpickr-months {
             padding-top: 20px;
         }
+        .iata-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-top: 4px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+        .search-result-item {
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background-color 0.2s;
+        }
+        .search-result-item:hover,
+        .search-result-item.active {
+            background-color: #f8f8f8;
+        }
+        .search-result-content {
+            flex: 1;
+        }
+        .search-result-title {
+            font-weight: 500;
+            font-size: 14px;
+        }
+        .search-result-subtitle {
+            color: #666;
+            font-size: 12px;
+            margin-top: 2px;
+        }
     `;
     document.head.appendChild(style);
 
-    // 날짜 선택 버튼 클릭 이벤트
     datePickerInput.addEventListener('click', (event) => {
         if (!fp.isOpen) {
             fp.open();
@@ -155,11 +188,9 @@ document.addEventListener('DOMContentLoaded', function() {
         event.stopPropagation();
     });
 
-    // 문서 클릭 시 캘린더 닫기 (캘린더 영역 외 클릭 시에만)
     document.addEventListener('click', (event) => {
         const calendar = document.querySelector('.flatpickr-calendar');
         if (calendar && !calendar.contains(event.target) && event.target !== datePickerInput) {
-            // 캘린더 외부 클릭 시 닫지 않음 (적용 버튼으로만 닫기 가능)
             event.stopPropagation();
         }
     });
@@ -171,182 +202,142 @@ document.addEventListener('DOMContentLoaded', function() {
     const incrementButtons = document.querySelectorAll('.increment');
     const decrementButtons = document.querySelectorAll('.decrement');
     const countElements = document.querySelectorAll('.count');
-    const maxTravelers = 9; // 최대 여행자 수
-	
-	// 경고 메시지 추가
-	    const warningMessage = document.createElement('p');
-	    warningMessage.textContent = "최대 9명까지만 선택할 수 있습니다.";
-	    warningMessage.style.cssText = `
-	        color: red;
-	        font-size: 14px;
-	        margin-top: 8px;
-	        display: none;
-	    `;
-	    selection.appendChild(warningMessage);
+    const maxTravelers = 9;
 
-    // 여행자 선택창 열기
+    const warningMessage = document.createElement('p');
+    warningMessage.textContent = "최대 9명까지만 선택할 수 있습니다.";
+    warningMessage.style.cssText = `
+        color: red;
+        font-size: 14px;
+        margin-top: 8px;
+        display: none;
+    `;
+    selection.appendChild(warningMessage);
+
     traveler.addEventListener('click', function(e) {
         e.stopPropagation();
         selection.style.display = 'block';
     });
 
-    // 여행자 선택창 닫기
     applyButton.addEventListener('click', function() {
-        updateTravelerCount(); // 총 인원 업데이트
+        updateTravelerCount();
         selection.style.display = 'none';
     });
 
-    // 여행자 선택창 외부 클릭 시 닫기
     document.addEventListener('click', function(e) {
         if (!selection.contains(e.target) && e.target !== traveler) {
             selection.style.display = 'none';
         }
     });
 
-    // 내부 클릭 시 닫히지 않게 방지
     selection.addEventListener('click', function(e) {
         e.stopPropagation();
     });
 
-	// 여행자 수 증가 & 감소 버튼 이벤트
-	 for (let button of incrementButtons) {
-	     button.addEventListener('click', function() {
-	         let totalTravelers = getTotalTravelers();
-	         if (totalTravelers < maxTravelers) {
-	             let countElement = button.previousElementSibling;
-	             countElement.textContent = parseInt(countElement.textContent) + 1;
-	         }
-	         updateWarningMessage();
-	     });
-	 }
+    incrementButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            let totalTravelers = getTotalTravelers();
+            if (totalTravelers < maxTravelers) {
+                let countElement = button.previousElementSibling;
+                countElement.textContent = parseInt(countElement.textContent) + 1;
+            }
+            updateWarningMessage();
+        });
+    });
 
-	 for (let button of decrementButtons) {
-	     button.addEventListener('click', function() {
-	         let countElement = button.nextElementSibling;
-	         let currentCount = parseInt(countElement.textContent);
-	         if (currentCount > 0) {
-	             countElement.textContent = currentCount - 1;
-	         }
-	         updateWarningMessage();
-	     });
-	 }
+    decrementButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            let countElement = button.nextElementSibling;
+            let currentCount = parseInt(countElement.textContent);
+            if (currentCount > 0) {
+                countElement.textContent = currentCount - 1;
+            }
+            updateWarningMessage();
+        });
+    });
 
-    // 재설정 버튼 클릭 시 모든 여행자 수 초기화
     resetBtn.addEventListener('click', function() {
-        for (let countElement of countElements) {
+        countElements.forEach(countElement => {
             countElement.textContent = '0';
-        }
+        });
         updateTravelerCount();
     });
 
-    // 총 인원 계산
     function getTotalTravelers() {
-        let total = 0;
-        for (let countEl of countElements) {
-            total += parseInt(countEl.textContent);
-        }
-        return total;
+        return Array.from(countElements).reduce((total, el) => total + parseInt(el.textContent), 0);
     }
 
-    // 적용 버튼 클릭 시 여행자 수 업데이트
     function updateTravelerCount() {
         let totalTravelers = getTotalTravelers();
         traveler.textContent = `여행자 ${totalTravelers}명`;
     }
 
-	document.querySelector('.traveler-picker').addEventListener('click', function(e){
-		const selection = document.querySelector('.traveler-selection');
-		console.log(this)
-		if(e.target==this) {
-			selection.classList.remove('hidden');
-		} else {
-            selection.classList.add('hidden');
-		}
-	});
-	
-	// 최대 인원 초과 시 경고 메시지 표시
-	   function updateWarningMessage() {
-	       let totalTravelers = getTotalTravelers();
-	       if (totalTravelers >= maxTravelers) {
-	           warningMessage.style.display = 'block';
+    function updateWarningMessage() {
+        let totalTravelers = getTotalTravelers();
+        warningMessage.style.display = totalTravelers >= maxTravelers ? 'block' : 'none';
+    }
+	function searchAirports(query, dropdownId) {
+	    const dropdown = document.getElementById(dropdownId);
+	    if (!dropdown) {
+	        console.error(`Dropdown element not found: ${dropdownId}`);
+	        return; // 드롭다운 요소가 없으면 함수 종료
+	    }
+
+	    fetch(`/flight/search?query=${query}`)
+	        .then(response => {
+	            if (!response.ok) {
+	                throw new Error('Failed to fetch data: ' + response.statusText);
+	            }
+	            return response.json();
+	        })
+	        .then(data => {
+	            if (Array.isArray(data)) {
+	                dropdown.innerHTML = ''; // 기존 항목 초기화
+	                data.forEach(item => {
+	                    const div = document.createElement('div');
+	                    div.textContent = item;
+	                    dropdown.appendChild(div);
+	                });
+	                dropdown.style.display = data.length > 0 ? 'block' : 'none';
+	            } else {
+	                console.error('Expected an array, but got:', data);
+	                dropdown.style.display = 'none'; // 배열이 아닐 경우 드롭다운 숨기기
+	            }
+	        })
+	        .catch(error => {
+	            console.error('Error:', error);
+	            // API 호출 실패 시 사용자에게 알림 처리
+	            dropdown.style.display = 'none'; // 오류가 발생하면 드롭다운 숨기기
+	        });
+	}
+
+
+			
+	   document.getElementsByName('departureName')[0].addEventListener('input', function() {
+	       const query = this.value;
+	       if (query.length >= 1) {
+	           searchAirports(query, 'departure-dropdown');
 	       } else {
-	           warningMessage.style.display = 'none';
+	           document.getElementById('departure-dropdown').style.display = 'none';
 	       }
-	   }
-		document.getElementsByName('departureName')[0].addEventListener('input', (e) =>{
-			const departureValue = e.target.value;
-			iataSearch(departureValue);
-		});
-		
-		document.getElementsByName('arrivalName')[0].addEventListener('input', (e) => {
-			const arrivalValue = e.target.value;
-			iataSearch(arrivalValue);
-		});
-	   
-		// AJAX 검색 함수
-		    const iataSearch = (value, dropdown, input) => {
-		        $.ajax({
-		            url: 'flight/iataSearch',
-		            data: { value: value },
-		            success: data => {
-		                dropdown.innerHTML = '';
-		                
-		                if (data.length > 0) {
-		                    data.forEach(result => {
-		                        const item = createResultItem(result);
-		                        item.addEventListener('click', () => {
-		                            input.value = result.nameKo || result.nameEn;
-		                            input.dataset.iata = result.iata;
-		                            dropdown.style.display = 'none';
-		                        });
-		                        dropdown.appendChild(item);
-		                    });
-		                    dropdown.style.display = 'block';
-		                } else {
-		                    dropdown.style.display = 'none';
-		                }
-		            },
-		            error: error => {
-		                console.error('검색 중 오류 발생:', error);
-		                dropdown.style.display = 'none';
-		            }
-		        });
-		    };
+	   });
 
-		// 검색 결과 아이템 생성 함수 수정
-		const createResultItem = (result) => {
-		    const item = document.createElement('div');
-		    item.className = 'search-result-item';
-		    item.style.cssText = `
-		        padding: 12px;
-		        display: flex;
-		        align-items: center;
-		        gap: 12px;
-		        cursor: pointer;
-		        border-bottom: 1px solid #f0f0f0;
-		    `;
-		    
-		    const icon = result.type === 'city' 
-		        ? '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg>'
-		        : '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L2 22M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>';
+	   document.getElementsByName('arrivalName')[0].addEventListener('input', function() {
+	       const query = this.value;
+	       if (query.length >= 1) {
+	           searchAirports(query, 'arrival-dropdown');
+	       } else {
+	           document.getElementById('arrival-dropdown').style.display = 'none';
+	       }
+	   });
 
-		    const content = document.createElement('div');
-		    content.style.cssText = `flex: 1;`;
-		    
-		    const mainText = document.createElement('div');
-		    mainText.style.cssText = `font-weight: 500; font-size: 14px;`;
-		    mainText.textContent = `${result.nameKo || result.nameEn}, ${result.country}`;
-		    
-		    const subText = document.createElement('div');
-		    subText.style.cssText = `color: #666; font-size: 12px;`;
-		    subText.textContent = result.type === 'city' ? `모든 공항 (${result.iata})` : `${result.nameEn} (${result.iata})`;
-		    
-		    content.appendChild(mainText);
-		    content.appendChild(subText);
-		    
-		    item.innerHTML = icon;
-		    item.appendChild(content);
-		    
-		    return item;
-		};
+	   // 드롭다운 항목 클릭 시 입력란에 해당 값 입력
+	   document.addEventListener('click', function(event) {
+	       if (event.target.closest('.iata-dropdown')) {
+	           const input = event.target.closest('.iata-dropdown').previousElementSibling;
+	           input.value = event.target.textContent;
+	           event.target.closest('.iata-dropdown').style.display = 'none';
+	       }
+	   });
+	
 });

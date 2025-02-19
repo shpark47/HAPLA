@@ -7,7 +7,10 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Flight {
-	private String name;
-	private String iataCode;
+public class Airport {
+    private String iataCode;
+    private String localName;
+    private String latitude;
+    private String longitude;
+    private String cityCode;
 }

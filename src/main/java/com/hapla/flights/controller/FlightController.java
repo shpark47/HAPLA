@@ -1,44 +1,66 @@
 package com.hapla.flights.controller;
 
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.HttpStatus;
-import java.util.*;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
-@RestController
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.hapla.flights.model.vo.Airport;
+import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvValidationException;
+
 @RequestMapping("/flight")
 public class FlightController {
+	
+	private List<Airport> airports = loadCSV();
 
-    private static final String GEONAMES_USERNAME = "seonghyeon"; // GeoNames 사용자명 입력
+	public List<Airport> loadCSV() {
+		List<Airport> airports = new ArrayList<>();
+		CSVReader csvReader = null;
+		try {
+			csvReader = new CSVReader(new FileReader("static/csv/airports.csv"));
+			String[] values;
+			while((values = csvReader.readNext()) != null) {
+				Airport airport = new Airport();
+				airport.setIataCode(values[0]);
+				airport.setLocalName(values[1]);
+				airport.setLatitude(values[2]);
+				airport.setLongitude(values[3]);
+				airport.setCityCode(values[4]);
+				
+				airports.add(airport);
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (CsvValidationException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		try {
+			csvReader.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return airports;
+	}
+	
+	@GetMapping("/search")
+	@ResponseBody
+	public List<String> searchAirports(@RequestParam("query") String query) {
+	    return airports.stream()  // List<Airport>에서 stream() 호출
+	            .filter(airport -> airport.getLocalName().toLowerCase().contains(query.toLowerCase())) // 이름 필터링
+	            .limit(5) // 최대 5개 결과 반환
+	            .map(Airport::getLocalName) // 공항 이름만 추출
+	            .collect(Collectors.toList()); // 결과를 List<String>으로 수집
+	}
 
-    @GetMapping("/iataSearch")
-    public ResponseEntity<List<Map<String, String>>> iataSearch(@RequestParam("value") String value) {
-        if (value == null || value.trim().isEmpty()) {
-            return ResponseEntity.ok(Collections.emptyList()); // 입력값이 없으면 빈 리스트 반환
-        }
-
-        String url = "http://api.geonames.org/searchJSON?q=" + value + "&featureClass=A&featureClass=P&maxRows=10&username=" + GEONAMES_USERNAME;
-        
-        RestTemplate restTemplate = new RestTemplate();
-        try {
-            Map<String, Object> response = restTemplate.getForObject(url, Map.class);
-            List<Map<String, Object>> geonames = (List<Map<String, Object>>) response.get("geonames");
-
-            List<Map<String, String>> results = new ArrayList<>();
-            for (Map<String, Object> item : geonames) {
-                Map<String, String> airportData = new HashMap<>();
-                airportData.put("iata", (String) item.getOrDefault("iata", "")); // IATA 코드
-                airportData.put("nameEn", (String) item.get("name")); // 공항 영문명
-                airportData.put("nameKo", (String) item.getOrDefault("asciiName", "")); // 한글명 (없을 경우 영문명 대체)
-                airportData.put("country", (String) item.get("countryName")); // 국가명
-                results.add(airportData);
-            }
-
-            return ResponseEntity.ok(results);
-
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
-        }
-    }
 }
