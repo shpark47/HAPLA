@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HAPLA 커뮤니티</title>
+    <link href="/css/list.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<div th:replace="~{common/header.html :: topbar}"></div>
+<main>
+    <section class="banner">
+        <img src="/img/communityBanner.png" alt="커뮤니티 배너">
+        <div class="overlay">
+            <h1>여행의 설렘을 함께 나누는 공간 당신의 정보를 공유해보세요</h1>
+            <input type="text" placeholder="장소 또는 액티비티로 검색">
+        </div>
+    </section>
+    <section class="community">
+        <h2>커뮤니티</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th width="5%">번호</th>
+                    <th width="50%">제목</th>
+                    <th width="10%">작성자</th>
+                    <th width="10%">좋아요</th>
+                    <th width="10%">조회수</th>
+                    <th width="15%">등록일</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+            </tbody>
+        </table>
+	</section>
+	<div class="pagination-container">
+	    <ul class="pagination">
+	        <li class="page-item" th:classappend="${pi.currentPage == 1} ? 'disabled'">
+	            <a class="page-link" th:href="@{${loc}(page=${pi.currentPage-1})}" aria-label="Previous">
+	                <span aria-hidden="true">&laquo;</span>
+	            </a>
+	        </li>
+	
+	        <li class="page-item"
+	            th:each="p : ${#numbers.sequence(pi.startPage, pi.endPage)}"
+	            th:classappend="${p == pi.currentPage} ? 'active'">
+	            <a class="page-link" th:href="@{${loc}(page=${p})}">[[${p}]]</a>
+	        </li>
+	
+	        <li class="page-item" th:classappend="${pi.currentPage == pi.endPage} ? 'disabled'">
+	            <a class="page-link" th:href="@{${loc}(page=${pi.currentPage+1})}" aria-label="Next">
+	                <span aria-hidden="true">&raquo;</span>
+	            </a>
+	        </li>
+	    </ul>
+	</div>
+	<button class="btn btn-outline-success" type="button" onclick="location.href='/'">새 글 작성</button>
+    
+</main>    
+<div th:replace="~{common/footer.html :: foot}"></div>
+</body>
+</html>

@@ -12,29 +12,6 @@
 <div th:replace="~{common/header.html :: topbar}"></div>
 <main>
     <section th:replace="~{common/search.html :: search}"></section>
-
-    <!-- 항공권 검색 창 -->
-    <!--        <form class="search-form">-->
-    <!--            <div class="input-group">-->
-    <!--                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">-->
-    <!--                    <path d="M22 2L2 22M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>-->
-    <!--                </svg>-->
-    <!--                <input type="text" placeholder="Origin">-->
-    <!--            </div>-->
-
-    <!--            <div class="input-group">-->
-    <!--                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">-->
-    <!--                    <path d="M22 2L2 22M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>-->
-    <!--                </svg>-->
-    <!--                <input type="text" placeholder="Destination">-->
-    <!--            </div>-->
-
-    <!--            <button type="button" class="date-picker">Feb 20 → Feb 27</button>-->
-    <!--            <button type="button" class="traveler-picker">1 Traveler</button>-->
-    <!--            <button type="submit" class="search-btn">Search</button>-->
-    <!--        </form>-->
-
-
     <section class="popular-destinations">
         <h2>인기 여행지</h2>
         <div class="destinations-grid">
@@ -175,6 +152,8 @@
         <button class="close-btn" aria-label="닫기"></button>
         <div class="banner">HAPLA</div>
         <form class="modal-form">
+            <input type="hidden" id="loginType" name="type">
+            <input type="hidden" id="tokenId" name="tokenId">
             <img src="" alt="프로필 이미지" class="profile-image" id="loginImage">
 
             <label for="nickname" class="modal-label">이름:</label>
@@ -204,7 +183,15 @@
     <!-- Kakao SDK -->
     <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
 
+    <!-- Google SDK -->
+    <script src="https://accounts.google.com/gsi/client"></script>
+
     <script>
+        let loginImage = '';
+        let loginName = '';
+        let loginType = '';
+        let tokenId = '';
+
         // ✅ 카카오 SDK 초기화
         Kakao.init("04cff7eb62f268a2bb506c81bf1de17b");
 
@@ -230,9 +217,17 @@
                 url: "/v2/user/me",
                 success: function (response) {
                     console.log("✅ 사용자 정보:", response);
+                    console.log(response.id)
+
+                    checkUser(response.id, "K");
+
+                    loginImage = response.properties.profile_image;
+                    loginName = response.properties.nickname;
+                    loginType = "K";
+                    tokenId = response.id;
 
                     // 🔹 프로필 정보 모달에 적용
-                    updateModal(response);
+                    updateModal(loginImage, loginName, loginType, tokenId);
 
                     // 🔹 액세스 토큰 & 사용자 정보 저장
                     localStorage.setItem("accessToken", accessToken);
@@ -245,38 +240,65 @@
         }
 
         // ✅ 모달창 업데이트 (프로필 이미지 & 닉네임)
-        function updateModal(userInfo) {
+        function updateModal(loginImage, loginName, loginType, tokenId) {
             const modal = document.getElementById("joinModal");
             const profileImage = document.getElementById("loginImage");
             const nicknameInput = document.getElementById("loginName");
+            const type = document.getElementById("loginType");
+            const id= document.getElementById('tokenId');
 
             // 🔹 사용자 정보 적용
-            profileImage.src = userInfo.properties.profile_image || "";
-            nicknameInput.value = userInfo.properties.nickname || "사용자";
+            profileImage.src = loginImage;
+            nicknameInput.value = loginName || "사용자";
+            type.value = loginType;
+            id.value = tokenId;
 
             // 🔹 모달창 표시
             document.getElementById('loginModal').classList.add('hidden');
             modal.classList.remove("hidden");
         }
-    </script>
 
-    <!-- Google SDK -->
-    <script src="https://accounts.google.com/gsi/client"></script>
-
-    <script>
         // Google 로그인 버튼
         google.accounts.id.initialize({
-            client_id: 'YOUR_GOOGLE_CLIENT_ID',
+            client_id: '157461561471-a5mi8bhvlq4rt4ci11j6ep6h8ftd6tmq.apps.googleusercontent.com',
             callback: handleCredentialResponse
         });
         google.accounts.id.renderButton(
             document.getElementById("google-login-btn"),
-            { theme: "outline", size: "large", width: "100%" }
+            {theme: "outline", size: "large", width: "100%"}
         );
 
         function handleCredentialResponse(response) {
             console.log("Encoded JWT ID token: " + response.credential);
-            // 로그인 성공 시 처리
+            fetchUserProfile(response.credential);
+        }
+
+        // 사용자 프로필 정보 가져오기
+        function fetchUserProfile(token) {
+            fetch('http://localhost:8080/google-login/verify-token', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ token: token })  // JWT 토큰을 서버로 전송
+            })
+                .then(response => response.json())
+                .then(data => {
+                    checkUser(data.userId, "G");
+
+                    loginImage = data.picture;
+                    loginName = data.name;
+                    loginType = "G";
+                    tokenId = data.userId;
+                    updateModal(loginImage, loginName, loginType, tokenId);
+                })
+                .catch(error => {
+                    console.error('Error fetching user profile:', error);
+                });
+        }
+
+        const checkUser = (id, type) => {
+
         }
     </script>
 </div>

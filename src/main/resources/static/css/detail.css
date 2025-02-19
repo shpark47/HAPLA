@@ -1,0 +1,85 @@
+body {
+	font-family: Arial, sans-serif;
+	margin: 0;
+	padding: 0;
+	text-align: center;
+}
+
+header {
+	display: flex;
+	justify-content: space-between;
+	padding: 15px;
+	background-color: #fff;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.banner {
+	position: relative;
+	color: white;
+	padding: 50px 20px;
+}
+
+.banner img {
+	width: 100%;
+	height: auto;
+}
+
+.banner .overlay {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	color: white;
+	text-align: center;
+}
+
+.banner input {
+	padding: 10px;
+	width: 50%;
+	margin-top: 10px;
+}
+
+.community {
+	margin: 20px auto;
+	width: 80%;
+	background: #fff;
+	padding: 20px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	text-align: left;
+}
+
+.community table {
+	width: 100%;
+	border-collapse: collapse;
+	margin-bottom: 20px;
+}
+
+.community th, .community td {
+	border: 1px solid #ddd;
+	padding: 10px;
+}
+
+.likes {
+	text-align: right;
+}
+
+.comments {
+	border-top: 2px solid #007bff;
+	padding-top: 10px;
+}
+
+.comment-box {
+	width: 100%;
+	padding: 10px;
+	margin-top: 10px;
+	border: 1px solid #ddd;
+}
+
+.comment-button {
+	background: #007bff;
+	color: white;
+	border: none;
+	padding: 10px;
+	margin-top: 10px;
+	cursor: pointer;
+}
