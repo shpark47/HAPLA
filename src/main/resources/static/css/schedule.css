@@ -31,10 +31,15 @@ body {
 }
 
 .title{
-	margin-left:1%;
-	padding: 1%;
+	margin-left:3%;
+	padding: 3%;
 	vertical-align: super;
 	font-weight: bold;
+    border-radius: 15px; /* ✅ 모서리를 둥글게 */
+    border: 1px solid #e0e0e0; /* ✅ 테두리 추가 */
+    background: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); /* ✅ 부드러운 그림자 */
+    /* max-width: 100%; ✅ 최대 너비 제한 */
 }
 
 .edit{
@@ -63,7 +68,7 @@ body {
 .date-item {
     flex-direction: column;
     gap: 5px;
-    padding: 15px;
+    padding: 6%;
     border-radius: 15px; /* ✅ 모서리를 둥글게 */
     border: 1px solid #e0e0e0; /* ✅ 테두리 추가 */
     background: white;
@@ -71,9 +76,17 @@ body {
     max-width: 100%; /* ✅ 최대 너비 제한 */
 }
 
-.date {
-    font-size: 14px;
-    color: #333;
+#date{
+	font-size: 15px;
+	vertical-align: super;
+	color: #8D8D8D;
+	
+}
+
+#location{
+	vertical-align: super;
+	font-size: 16px;
+	color: #8D8D8D;
 }
 
 .controls {
@@ -94,15 +107,9 @@ body {
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    
 }
 
-#date{
-	vertical-align: super;
-}
-
-#location{
-	vertical-align: super;
-}
 
 .control-btn:hover {
     background: #f5f5f5;
