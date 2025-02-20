@@ -10,7 +10,7 @@ import java.sql.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Users {
-    private int memNo;
+    private int userNo;
     private String name;
     private String nickname;
     private String email;
