@@ -358,7 +358,7 @@ body {
 }
 
 /* 🌍 모달 스타일 */
-.modal-trip {
+.modal {
     display: none;
     position: fixed;
     z-index: 1000;
