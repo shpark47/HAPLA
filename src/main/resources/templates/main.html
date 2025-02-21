@@ -215,5 +215,85 @@
 </div>
 
 <script src="/js/main.js"></script>
+
+<!-- 🌍 도시 검색 모달 -->
+<div id="citySearchModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeCitySearchModal()">&times;</span>
+        <h2>도시를 검색하세요</h2>
+        <input type="text" id="searchInput" placeholder="도시 이름을 입력하세요..." oninput="filterCities()">
+        <ul id="cityList"></ul>
+    </div>
+</div>
+
+<script>
+//🌍 모달 열기
+function openCitySearchModal() {
+    document.getElementById("citySearchModal").style.display = "block";
+}
+
+// ❌ 모달 닫기
+function closeCitySearchModal() {
+    document.getElementById("citySearchModal").style.display = "none";
+}
+
+// 🖱️ 모달 외부 클릭 시 닫기
+window.addEventListener("click", function(event) {
+    const modal = document.getElementById("citySearchModal");
+    if (event.target === modal) {
+        closeCitySearchModal();
+    }
+});
+
+// 🌍 REST Countries API에서 수도(도시) 검색
+let cities = [];
+
+async function fetchCities() {
+    try {
+        const response = await fetch("https://restcountries.com/v3.1/all");
+        const data = await response.json();
+        cities = data.map(country => ({
+            name: country.capital ? country.capital[0] : "",
+            country: country.translations.kor?.common || country.name.common
+        })).filter(city => city.name); // 수도가 없는 경우 제거
+    } catch (error) {
+        console.error("도시 데이터를 불러오는 중 오류 발생:", error);
+    }
+}
+
+fetchCities(); // API에서 데이터 가져오기
+
+// 🔍 도시 검색 기능
+function filterCities() {
+    const searchTerm = document.getElementById("searchInput").value.toLowerCase();
+    const filteredCities = cities.filter(city =>
+        city.name.toLowerCase().includes(searchTerm) ||
+        city.country.toLowerCase().includes(searchTerm)
+    );
+
+    displayCities(filteredCities);
+}
+
+// 🌆 검색된 도시 목록 표시
+function displayCities(cityArray) {
+    const cityList = document.getElementById("cityList");
+    cityList.innerHTML = "";
+
+    cityArray.forEach(city => {
+        const li = document.createElement("li");
+        li.textContent = `${city.name}, ${city.country}`;
+        li.onclick = function () {
+            selectCity(city);
+        };
+        cityList.appendChild(li);
+    });
+}
+
+// ✅ 도시 선택 후 일정 페이지로 이동
+function selectCity(city) {
+    localStorage.setItem("selectedCity", JSON.stringify(city));
+    window.location.href = "/scheduleCalendar.html";
+}
+</script>
 </body>
 </html>

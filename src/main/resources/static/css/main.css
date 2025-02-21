@@ -356,3 +356,61 @@ body {
 #countryList li:hover {
     background-color: #f0f0f0;
 }
+
+/* 🌍 모달 스타일 */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* 모달 창 */
+.modal-content {
+    background: white;
+    margin: 10% auto;
+    padding: 20px;
+    width: 350px;
+    border-radius: 10px;
+    position: relative;
+    text-align: center;
+}
+
+/* 닫기 버튼 */
+.close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* 검색 입력창 */
+#searchInput {
+    width: 80%;
+    padding: 10px;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+/* 도시 목록 스타일 */
+#cityList {
+    list-style-type: none;
+    padding: 0;
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+#cityList li {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    cursor: pointer;
+}
+
+#cityList li:hover {
+    background-color: #f0f0f0;
+}
