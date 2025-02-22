@@ -215,7 +215,6 @@ document.addEventListener('DOMContentLoaded', function() {
     selection.appendChild(warningMessage);
 
     traveler.addEventListener('click', function(e) {
-		console.log(selection);
         e.stopPropagation();
         selection.style.display = 'block';
     });
@@ -277,68 +276,70 @@ document.addEventListener('DOMContentLoaded', function() {
         let totalTravelers = getTotalTravelers();
         warningMessage.style.display = totalTravelers >= maxTravelers ? 'block' : 'none';
     }
-	function searchAirports(query, dropdownId) {
-	    const dropdown = document.getElementById(dropdownId);
-	    if (!dropdown) {
-	        console.error(`Dropdown element not found: ${dropdownId}`);
-	        return; // 드롭다운 요소가 없으면 함수 종료
-	    }
 
-	    fetch(`/flight/search?query=${query}`)
-	        .then(response => {
-	            if (!response.ok) {
-	                throw new Error('Failed to fetch data: ' + response.statusText);
-	            }
-	            return response.json();
-	        })
-	        .then(data => {
-	            if (Array.isArray(data)) {
-	                dropdown.innerHTML = ''; // 기존 항목 초기화
-	                data.forEach(item => {
-	                    const div = document.createElement('div');
-	                    div.textContent = item;
-	                    dropdown.appendChild(div);
-	                });
-	                dropdown.style.display = data.length > 0 ? 'block' : 'none';
-	            } else {
-	                console.error('Expected an array, but got:', data);
-	                dropdown.style.display = 'none'; // 배열이 아닐 경우 드롭다운 숨기기
-	            }
-	        })
-	        .catch(error => {
-	            console.error('Error:', error);
-	            // API 호출 실패 시 사용자에게 알림 처리
-	            dropdown.style.display = 'none'; // 오류가 발생하면 드롭다운 숨기기
-	        });
-	}
+    function searchAirports(query, dropdownId) {
+        $.ajax({
+            url: '/flight/search',
+            data: { query: query },
+            dataType: 'json',
+            success: data => {
+                const dropdown = document.getElementById(dropdownId);
+                dropdown.innerHTML = ''; // 기존 목록 초기화
+                if (data.length > 0) {
+                    data.forEach(airport => {
+                        const li = document.createElement('li');
+                        li.textContent = `${airport.airportsKoName} (${airport.iataCode})`; // 표시할 값
+                        li.dataset.airportsKoName = airport.airportsKoName + '('+ airport.iataCode + ')'; // 클릭 시 사용
+                        li.addEventListener('click', function() {
+                            const input = document.getElementsByName(dropdownId.includes('departure') ? 'departureName' : 'arrivalName')[0];
+                            input.value = airport.airportsKoName + '(' + airport.iataCode + ')'; // 공항 이름 + IATA 코드 입력
+                            dropdown.style.display = 'none';
+                        });
+                        dropdown.appendChild(li);
+                    });
+                    dropdown.style.display = 'block';
+                } else {
+                    dropdown.style.display = 'none';
+                }
+            },
+            error: () => console.log("공항 검색 실패")
+        });
+    }
 
+    document.getElementsByName('departureName')[0].addEventListener('input', function() {
+        const query = this.value;
+        if (query.length >= 1) {
+            searchAirports(query, 'departure-dropdown');
+        } else {
+            document.getElementById('departure-dropdown').style.display = 'none';
+        }
+    });
 
-			
-	   document.getElementsByName('departureName')[0].addEventListener('input', function() {
-	       const query = this.value;
-	       if (query.length >= 1) {
-	           searchAirports(query, 'departure-dropdown');
-	       } else {
-	           document.getElementById('departure-dropdown').style.display = 'none';
-	       }
-	   });
+    document.getElementsByName('arrivalName')[0].addEventListener('input', function() {
+        const query = this.value;
+        if (query.length >= 1) {
+            searchAirports(query, 'arrival-dropdown');
+        } else {
+            document.getElementById('arrival-dropdown').style.display = 'none';
+        }
+    });
 
-	   document.getElementsByName('arrivalName')[0].addEventListener('input', function() {
-	       const query = this.value;
-	       if (query.length >= 1) {
-	           searchAirports(query, 'arrival-dropdown');
-	       } else {
-	           document.getElementById('arrival-dropdown').style.display = 'none';
-	       }
-	   });
+    // 드롭다운 외부 클릭 시 숨김 처리
+    document.addEventListener('click', function(event) {
+        if (!event.target.closest('.dropdown-list') && !event.target.matches('input')) {
+            document.getElementById('departure-dropdown').style.display = 'none';
+            document.getElementById('arrival-dropdown').style.display = 'none';
+        }
+    });
 
-	   // 드롭다운 항목 클릭 시 입력란에 해당 값 입력
-	   document.addEventListener('click', function(event) {
-	       if (event.target.closest('.iata-dropdown')) {
-	           const input = event.target.closest('.iata-dropdown').previousElementSibling;
-	           input.value = event.target.textContent;
-	           event.target.closest('.iata-dropdown').style.display = 'none';
-	       }
-	   });
-	
+    document.querySelector('.search-btn').addEventListener('click', () => {
+		const datePickerInput = document.querySelector('.date-picker');
+		const form = document.querySelector('.search-form');
+		const dates =  datePickerInput.value;
+		form.action='/flight/flightSearch';
+		form.submit();
+				
+				
+
+    });
 });
