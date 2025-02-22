@@ -270,6 +270,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateTravelerCount() {
         let totalTravelers = getTotalTravelers();
         traveler.textContent = `여행자 ${totalTravelers}명`;
+		document.querySelector('input[name="travelers"]').value = totalTravelers;
     }
 
     function updateWarningMessage() {
@@ -292,6 +293,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         li.dataset.airportsKoName = airport.airportsKoName + '('+ airport.iataCode + ')'; // 클릭 시 사용
                         li.addEventListener('click', function() {
                             const input = document.getElementsByName(dropdownId.includes('departure') ? 'departureName' : 'arrivalName')[0];
+							input.innerText=airport.airportsKoName + '(' + airport.iataCode + ')';
                             input.value = airport.airportsKoName + '(' + airport.iataCode + ')'; // 공항 이름 + IATA 코드 입력
                             dropdown.style.display = 'none';
                         });
@@ -333,9 +335,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     document.querySelector('.search-btn').addEventListener('click', () => {
-		const datePickerInput = document.querySelector('.date-picker');
 		const form = document.querySelector('.search-form');
-		const dates =  datePickerInput.value;
 		form.action='/flight/flightSearch';
 		form.submit();
 				
