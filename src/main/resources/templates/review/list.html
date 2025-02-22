@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HAPLA 커뮤니티</title>
+    <link href="/css/reviewList.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<div th:replace="~{common/header.html :: topbar}"></div>
+<main class="content">
+    <div class="hero">
+        <h3>리뷰 목록</h3>
+    	<input type="text" class="search-bar" placeholder="장소 또는 액티비티로 검색">
+    </div>
+
+    <div class="container">
+        <h2>전체 <strong>(80)</strong></h2>
+        <div class="reviews">
+            <div class="review-card">
+                <img src="/img/watch.jpg" alt="시계">
+                <div class="review-info">
+                    <h3>이탈리아에서 산 시계 자랑</h3>
+                    <div class="author">시계 매니아 • 2025/02/07</div>
+                    <div class="rating">★★★★★ 5</div>
+                    <div class="likes">♥ 3</div>
+                </div>
+            </div>
+            <div class="review-card">
+                <img src="/img/towel.jpg" alt="수건">
+                <div class="review-info">
+                    <h3>호텔 후기 (feat. 수건냄새)</h3>
+                    <div class="author">수건 도록 • 2025/02/05</div>
+                    <div class="rating">★★★★☆ 4</div>
+                </div>
+            </div>
+            <div class="review-card">
+                <img src="/img/travel.jpg" alt="여행자">
+                <div class="review-info">
+                    <h3>여러분 유럽 꼭 가보세요~</h3>
+                    <div class="author">배낭여행중아 • 2025/02/01</div>
+                    <div class="rating">★★★★★ 5</div>
+                </div>
+            </div>
+            <div class="review-card">
+                <img src="/img/shirt.jpg" alt="셔츠">
+                <div class="review-info">
+                    <h3>미국 형아들이랑 실짱한 후기</h3>
+                    <div class="author">핼린이 • 2025/01/29</div>
+                    <div class="rating">★★★★★ 5</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="pagination">
+            <span class="active">1</span>
+            <span>2</span>
+            <span>3</span>
+            <span>4</span>
+            <span>5</span>
+            <span>6</span>
+            <span>7</span>
+            <span>8</span>
+            <span>9</span>
+            <span>10</span>
+        </div>
+    </div>
+</main>   
+<div th:replace="~{common/footer.html :: foot}"></div>
+</body>
+</html>

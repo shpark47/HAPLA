@@ -14,7 +14,7 @@ public class Comm {
     private int categoryNo;
     private int userNo;
     private String title;
-    private String content;
+    private String commContent;
     private int views;
     private Date createDate;
     private Date updateDate;

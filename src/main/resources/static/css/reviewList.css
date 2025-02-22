@@ -1,0 +1,123 @@
+/* styles.css */
+body {
+	font-family: Arial, sans-serif;
+	margin: 0;
+	padding: 0;
+	background-color: #f5f5f5;
+}
+
+.hero {
+  position: relative; /* 가상요소 기준을 위해 추가 */
+  height: 1010px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #6ea8ba;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('/img/review.jpg') center/cover no-repeat;
+  filter: blur(8px); /* 원하는 블러 정도 조절 */
+  z-index: -1; /* 배경으로 보내기 위해 */
+}
+
+.hero h3 {
+  position: absolute;
+  top: 100px;
+  left: 30px;
+}
+
+.search-bar {
+	margin-top: 20px;
+	width: 60%;
+	padding: 12px;
+	border: none;
+	border-radius: 8px;
+	font-size: 16px;
+	margin-top: -650px;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.container {
+	width: 80%;
+	margin: auto;
+	background: white;
+	padding: 20px;
+	border-radius: 10px;
+	height: 400px;
+	margin-top: -700px;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.reviews {
+	display: flex;
+	justify-content: space-between;
+	flex-wrap: wrap;
+}
+
+.review-card {
+	width: 22%;
+	background: #fff;
+	border-radius: 8px;
+	overflow: hidden;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+	margin-bottom: 20px;
+}
+
+.review-card img {
+	width: 100%;
+	height: 200px;
+	object-fit: cover;
+}
+
+.review-info {
+	padding: 15px;
+}
+
+.review-info h3 {
+	font-size: 16px;
+	margin: 10px 0;
+}
+
+.review-info .author {
+	color: gray;
+	font-size: 14px;
+}
+
+.rating {
+	color: orange;
+	font-size: 14px;
+	margin-top: 5px;
+}
+
+.likes {
+	color: red;
+	font-size: 14px;
+	margin-top: 5px;
+}
+.pagination {
+	text-align: center;
+	margin-top: 20px;
+}
+
+.pagination span {
+	display: inline-block;
+	padding: 8px 12px;
+	margin: 0 4px;
+	border-radius: 4px;
+	cursor: pointer;
+}
+
+.pagination .active {
+	background: #6ea8ba;
+	color: white;
+}

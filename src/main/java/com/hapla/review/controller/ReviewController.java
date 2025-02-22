@@ -11,5 +11,10 @@ public class ReviewController {
 	public String toMain() {
 		return "review/main";
 	}
+	
+	@GetMapping("list")
+	public String toList() {
+		return "review/list";
+	}
 
 }
