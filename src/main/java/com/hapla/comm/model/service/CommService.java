@@ -25,4 +25,8 @@ public class CommService {
 		RowBounds rowBounds = new RowBounds(offset, pi.getBoardLimit());
 		return mapper.selectCommList(i, rowBounds);
 	}
+
+	public int insertComm(Comm c) {
+		return mapper.insertComm(c);
+	}
 }

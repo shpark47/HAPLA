@@ -11,6 +11,15 @@
 			 JOIN users ON comm.user_no = users.user_no
 		WHERE comm.status = 'Y'
 	</select>
+	
+	<insert id="insertComm">
+		<selectKey order="BEFORE" resultType="_int" keyProperty="commNo">
+         select seq_comm.nextval from dual
+      </selectKey>
+      insert into comm
+      values(#{commNo}, #{categoryNo}, #{name}, #{title}, #{commContent},
+            default, sysdate, sysdate, default, default)
+	</insert>
 </mapper>
 
 
