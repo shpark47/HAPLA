@@ -1,7 +1,5 @@
 package com.hapla.common;
 
-import com.hapla.comm.model.vo.PageInfo;
-
 public class Pagination {
 	public static PageInfo getPageInfo(int currentPage, int listCount, int boardLimit) {
 		int pageLimit = 10;

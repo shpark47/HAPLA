@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.hapla.comm.model.mapper.CommMapper;
 import com.hapla.comm.model.vo.Comm;
-import com.hapla.comm.model.vo.PageInfo;
+import com.hapla.common.PageInfo;
 
 import lombok.RequiredArgsConstructor;
 
