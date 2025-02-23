@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.hapla.comm.model.service.CommService;
 import com.hapla.comm.model.vo.Comm;
-import com.hapla.comm.model.vo.PageInfo;
+import com.hapla.common.PageInfo;
 import com.hapla.common.Pagination;
 import com.hapla.users.model.vo.Users;
 
