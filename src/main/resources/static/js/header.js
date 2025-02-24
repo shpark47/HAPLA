@@ -4,7 +4,7 @@ const joinModal = document.getElementById('joinModal');
 
 // User profile dropdown functionality
 const userProfile = document.querySelector('.user-profile');
-const dropdown = document.querySelector('.dropdown');
+const dropdown = document.querySelector('.header-dropdown');
 
 userProfile.addEventListener('click', () => {
     dropdown.classList.toggle('active');
