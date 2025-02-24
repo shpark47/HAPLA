@@ -1,40 +1,24 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" th:fragment="search">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>항공권 검색 결과</title>
-    <style>
-        body { font-family: Arial, sans-serif; }
-        .flight-container { width: 80%; margin: 20px auto; }
-        .flight-offer { border: 1px solid #ddd; padding: 15px; margin-bottom: 10px; }
-    </style>
+    <link href="/css/search.css" rel="stylesheet" type="text/css">
+    <link href="/css/main.css" rel="stylesheet" type="text/css">
+	<link rel="stylesheet"
+		href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+	<script src="https	://npmcdn.com/flatpickr/dist/l10n/ko.js"></script>
 </head>
 <body>
-    <h1>항공권 검색 결과</h1>
-
-    <div class="flight-container">
-        <div th:if="${error}">
-            <p style="color: red;" th:text="${error}"></p>
-        </div>
-
-        <div th:if="${flightOffers != null and flightOffers.size() > 0}">
-            <div th:each="offer, iterStat : ${flightOffers}" class="flight-offer">
-                <!-- iterStat.index를 사용해 번호를 생성 -->
-                <h3 th:text="'항공권 제안 #' + ${iterStat.count}"></h3>
-                <p><strong>가격:</strong> <span th:text="${offer.price}"></span></p>
-                <p><strong>항공사:</strong> <span th:text="${offer.airline}"></span></p>
-                <p><strong>항공편 번호:</strong> <span th:text="${offer.flightNumber}"></span></p>
-                <p><strong>출발:</strong> <span th:text="${offer.departureTime}"></span> 
-                    <span th:text="${offer.departureAirport}"></span>에서 출발</p>
-                <p><strong>도착:</strong> <span th:text="${offer.arrivalTime}"></span> 
-                    <span th:text="${offer.arrivalAirport}"></span>에 도착</p>
-            </div>
-        </div>
-
-        <div th:if="${flightOffers == null or flightOffers.size() == 0}">
-            <p>검색된 항공권이 없습니다.</p>
-        </div>
-    </div>
+	<div th:replace="~{common/header.html :: topbar}"></div>
+	<main>
+	    
+	    
+	
+	   
+	    </main>
+		<div th:replace="~{common/footer.html :: foot}"></div>
+    <script src="/js/search.js"></script>
 </body>
 </html>
