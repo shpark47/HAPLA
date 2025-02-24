@@ -161,13 +161,13 @@
         container.innerHTML = "";
 
         places.forEach(place => {
+            console.log(place.photos[0].photo_reference);
             let name = place.name || "이름 없음";  // 이름이 없는 경우 처리
             let rating = place.rating ? `⭐ ${place.rating}` : "⭐ 없음";
             let reviews = place.user_ratings_total ? `${place.user_ratings_total} 리뷰` : "리뷰 없음";
 
             // 사진 URL 생성: photos[0]의 photo_reference 사용
-            let photoUrl = place.photos ?
-                `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${place.photos[0].photo_reference}&key=AIzaSyCEHjTtVqBclz07ADqbkGjqGIe94Cq-S60` :
+            let photoUrl = place.photos ? place.photos[0].photo_reference :
                 "/img/시나모롤.jpg";  // 기본 이미지
 
             let div = document.createElement("div");

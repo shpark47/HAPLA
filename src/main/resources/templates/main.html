@@ -197,7 +197,7 @@
         <div class="banner">HAPLA</div>
         <form class="edit-form">
             <div class="profile-image-container">
-                <img src="/img/시나모롤.jpg" alt="프로필 이미지" class="profile-image" id="profileImage">
+                <img th:src="@{${session.loginUser != null ? session.loginUser.profile : ''}}" alt="프로필 이미지" class="profile-image" id="profileImage">
                 <input type="file" id="imageUpload" accept="image/*" style="display: none;">
                 <button type="button" class="image-upload-btn" onclick="document.getElementById('imageUpload').click()">
                     프로필 사진 변경
@@ -205,7 +205,7 @@
             </div>
 
             <label for="nickname" class="modal-label">닉네임:</label>
-            <input type="text" id="nickname" name="nickname" class="modal-input" required>
+            <input type="text" id="nickname" name="nickname" class="modal-input" th:value="${session.loginUser != null ? session.loginUser.nickname : ''}" required>
 
             <button id="save" class="modal-button" type="submit">변경사항 저장</button>
 
