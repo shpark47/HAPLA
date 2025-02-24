@@ -1,4 +1,4 @@
-package com.hapla.test.controller;
+package com.hapla.common.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,10 +33,5 @@ public class TestController {
     @GetMapping("/schedule")
     public String schedule() {
         return "/schedule";
-    }
-
-    @GetMapping("/google")
-    public String google() {
-        return "/google";
     }
 }

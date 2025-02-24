@@ -1,4 +1,4 @@
-package com.hapla.test.controller;
+package com.hapla.common.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
