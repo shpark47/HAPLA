@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="kh.springboot.users.model.mapper.UsersMapper">
+<mapper namespace="com.hapla.users.model.mapper.UsersMapper">
+    <select id="checkUser">
+        select count(*) from users where token_id = #{tokenId}
+    </select>
 
+    <select id="login">
+        select * from users where token_id = #{tokenId} and type = #{type}
+    </select>
+
+    <insert id="join">
+        insert into users values(seq_users.nextval, #{name}, #{nickname}, #{email}, default, #{profile}, #{type}, default, #{tokenId})
+    </insert>
 </mapper>

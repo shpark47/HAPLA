@@ -17,4 +17,6 @@ public class Users {
     private Date createDate;
     private String profile;
     private String isAdmin;
+    private String type;
+    private String tokenId;
 }

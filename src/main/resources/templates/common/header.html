@@ -12,13 +12,13 @@
     </div>
     <div class="user-section">
         <label id="login">로그인</label>
-        <img src="/img/시나모롤.jpg" alt="User Profile" class="user-profile">
+        <img src="/img/시나모롤.jpg" alt="User Profile" class="user-profile" id="user-profile-image">
         <div class="dropdown">
             <a onclick="openModal()">내 정보</a>
-            <a href="#">커뮤니티</a>
+            <a href="/comm/list">커뮤니티</a>
             <a href="#">여행지추천</a>
-            <a href="#">여행 일정</a>
-            <a href="#">리뷰 작성</a>
+            <a onclick="openCitySearchModal()">여행 일정</a>
+            <a href="/review/main">리뷰 작성</a>
             <a href="#">문의하기</a>
             <a href="#">로그아웃</a>
         </div>
