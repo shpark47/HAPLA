@@ -198,10 +198,41 @@
     }
 
     
-    // ✅ 도시 선택 후 일정 페이지로 이동
+ // ✅ 도시 선택 시 실행되는 함수 (도시 정보 저장 & 페이지 이동)
     function selectCity(city) {
-        localStorage.setItem("selectedCity", JSON.stringify(city));
+        const cityData = {
+            name: city.name, // 도시명
+            country: city.country, // 국가명
+            lat: city.lat, // 위도
+            lng: city.lng // 경도
+        };
+
+        // ✅ 선택한 도시 정보를 localStorage에 저장 (일정 페이지에서 사용)
+        localStorage.setItem("selectedCity", JSON.stringify(cityData));
+
+        // ✅ 일정 페이지로 이동
         window.location.href = "/schedule/scheduleCalendar";
     }
+
+    // ✅ API에서 도시 리스트 가져올 때 위도(lat), 경도(lng) 정보 포함
+    async function fetchCities() {
+        try {
+            const response = await fetch("https://restcountries.com/v3.1/all");
+            const data = await response.json();
+
+            cities = data.map(country => ({
+                name: country.capital ? country.capital[0] : "", // 수도
+                country: country.translations.kor?.common || country.name.common, // 국가명 (한국어)
+                lat: country.latlng ? country.latlng[0] : null, // 위도
+                lng: country.latlng ? country.latlng[1] : null // 경도
+            })).filter(city => city.name && city.lat !== null && city.lng !== null); // 데이터 없는 항목 필터링
+        } catch (error) {
+            console.error("도시 데이터를 불러오는 중 오류 발생:", error);
+        }
+    }
+
+    // ✅ 실행: API에서 도시 정보 가져오기
+    fetchCities();
+
 </script>
 </html>

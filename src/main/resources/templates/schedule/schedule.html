@@ -48,18 +48,42 @@
         <div id="map"></div>
     </div>
 
+    <script>
+    
+    // ✅ 일정 페이지가 로드될 때 실행되는 함수
+    document.addEventListener("DOMContentLoaded", function () {
+        const tripData = localStorage.getItem("tripData");
+
+        if (tripData) {
+            const data = JSON.parse(tripData);
+
+            // ✅ 선택한 도시 정보 적용
+            if (data.city) {
+                document.getElementById("tripTitle").textContent = `${data.city.name}, ${data.city.country}`;
+            }
+
+            // ✅ 선택한 날짜 정보 적용
+            document.getElementById("tripDates").textContent = `📅 ${data.startDate} ~ ${data.endDate}`;
+
+            // ✅ 지도 위치 변경
+            initMap(data.city.lat, data.city.lng);
+        }
+    });
+    
+    
+
+    // ✅ Google 지도 초기화 함수
+    function initMap(lat = 48.8566, lng = 2.3522) {
+        new google.maps.Map(document.getElementById('map'), {
+            center: { lat: lat, lng: lng },
+            zoom: 5
+        });
+    }
+    </script>
+    
     <!-- Google Maps API -->
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAUKMdSgSqvtUy4wZvUxqA6I_c0Zk4InEU&callback=initMap"></script>
     
-    <script>
-        // Google Map 초기화
-        function initMap() {
-            var map = new google.maps.Map(document.getElementById('map'), {
-                center: { lat: 48.8566, lng: 2.3522 }, // 파리 중심
-                zoom: 5
-            });
-        }
-    </script>
 
 </body>
 </html>

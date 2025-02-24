@@ -27,7 +27,7 @@ body {
 }
 /* 🌍 왼쪽 사이드바 */
 .sidebar {
-    width: 25%;
+    width: 20%;
     background: white;
     padding: 15px;
     border-right: 1px solid #ddd;
