@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>여행 일정 선택</title>
+    <link rel="stylesheet" href="/css/scheduleCalendar.css" type="text/css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+</head>
+<body>
+
+    <!-- 🌍 Google Maps 배경 -->
+    <div id="map"></div>
+
+    <!-- 📅 왕복 날짜 선택 모달 -->
+    <div id="calendarModal" class="modal">
+        <span class="close" onclick="closeCalendarModal()">&times;</span>
+        <h2>여행 일정을 선택하세요</h2>
+        
+        <div class="calendar-container">
+            <!-- 🛫 출발 날짜 -->
+            <div class="calendar-box">
+                <label for="startDate">출발 날짜</label>
+                <input type="text" id="startDate" placeholder="출발 날짜 선택">
+            </div>
+            
+            <!-- 🛬 도착 날짜 -->
+            <div class="calendar-box">
+                <label for="endDate">도착 날짜</label>
+                <input type="text" id="endDate" placeholder="도착 날짜 선택">
+            </div>
+        </div>
+
+        <button onclick="saveDates()">저장</button>
+    </div>
+
+    <script src="/js/schedule.js"></script>
+
+    <!-- Google Maps API -->
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAUKMdSgSqvtUy4wZvUxqA6I_c0Zk4InEU&callback=initMap">
+    </script>
+
+	<script>
+		// 🌍 Google Maps 초기화
+		function initMap() {
+		    const map = new google.maps.Map(document.getElementById("map"), {
+		        center: { lat: 37.7749, lng: -122.4194 }, // 기본 위치 (샌프란시스코)
+		        zoom: 10
+		    });
+		}
+
+		// 📅 캘린더 모달 자동 열기
+		document.addEventListener("DOMContentLoaded", function () {
+		    openCalendarModal();
+		    initDatePickers();
+		});
+
+		function openCalendarModal() {
+		    document.getElementById("calendarModal").style.display = "block";
+		}
+
+		function closeCalendarModal() {
+		    document.getElementById("calendarModal").style.display = "none";
+		} 
+
+		// ✅ 날짜 선택 라이브러리 (Flatpickr) 적용
+		function initDatePickers() {
+		    flatpickr("#startDate", {
+		        dateFormat: "Y-m-d",
+		        minDate: "today",
+		        static: true,	// 캘린더 항상 열려 있도록 설정
+		       	locale: "ko",	// 한국어 설정
+		        onClose: function(selectedDates) {
+		            if (selectedDates.length > 0) {
+		                flatpickr("#endDate", {
+		                    dateFormat: "Y-m-d",
+		                    minDate: selectedDates[0].fp_incr(1), // 출발일 다음 날부터 선택 가능
+		                    static: true,
+		                    locale: "ko"
+		                });
+		            }
+		        }
+		    });
+
+		    flatpickr("#endDate", {
+		        dateFormat: "Y-m-d",
+		        minDate: "today",
+		        static: true,
+		        locale: "ko"
+		    });
+		}
+
+		// ✅ 날짜 저장
+		function saveDates() {
+		    const startDate = document.getElementById("startDate").value;
+		    const endDate = document.getElementById("endDate").value;
+
+		    if (startDate && endDate) {
+		        alert(`선택된 일정: ${startDate} ~ ${endDate}`);
+		        /* closeCalendarModal(); */
+		        window.location.href = "/schedule/schedule";
+		    } else {
+		        alert("출발 날짜와 도착 날짜를 선택하세요!");
+		    }
+		}
+	</script>
+
+	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+	<script src="https://npmcdn.com/flatpickr@4.6.13/dist/l10n/ko.js"></script>
+	
+</body>
+</html>

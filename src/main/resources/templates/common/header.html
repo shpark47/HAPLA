@@ -93,12 +93,21 @@
 </body>
 <script src="/js/header.js"></script>
 
-<!-- 🌍 도시 검색 모달 -->
+<!-- 도시 검색 모달 -->
 <div id="citySearchModal" class="modal-trip">
     <div class="modal-content">
-        <span class="close" onclick="closeCitySearchModal()">&times;</span>
-        <h2>도시를 검색하세요</h2>
-        <input type="text" id="searchInput" placeholder="도시 이름을 입력하세요..." oninput="filterCities()">
+       
+        <!-- <span class="close" onclick="closeCitySearchModal()">&times;</span> -->
+
+        <!-- 검색 입력창 -->
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="도시 이름을 입력하세요..." oninput="filterCities()">
+            <span class="search-icon">
+            	<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
+            </span>
+        </div>
+
+        <!-- 검색 결과 리스트 -->
         <ul id="cityList"></ul>
     </div>
 </div>
@@ -107,6 +116,7 @@
     //🌍 모달 열기
     function openCitySearchModal() {
         document.getElementById("citySearchModal").style.display = "block";
+        filterCities();
     }
 
     // ❌ 모달 닫기
@@ -114,6 +124,14 @@
         document.getElementById("citySearchModal").style.display = "none";
     }
 
+	 // 🖱️ 모달 외부 클릭 시 닫기
+	    window.addEventListener("click", function(event) {
+	        const modal = document.getElementById("citySearchModal");
+	        if (event.target === modal) {
+	            closeCitySearchModal();
+	        }
+	    });
+	 
     // 🌍 REST Countries API에서 수도(도시) 검색
     let cities = [];
 
@@ -123,6 +141,7 @@
             const data = await response.json();
             cities = data.map(country => ({
                 name: country.capital ? country.capital[0] : "",
+                // name: country.capital ? country.capital[0] : country.capital,
                 country: country.translations.kor?.common || country.name.common
             })).filter(city => city.name); // 수도가 없는 경우 제거
         } catch (error) {
@@ -132,7 +151,7 @@
 
     fetchCities(); // API에서 데이터 가져오기
 
-    // 🔍 도시 검색 기능
+ // 🔍 도시 검색 기능
     function filterCities() {
         const searchTerm = document.getElementById("searchInput").value.toLowerCase();
         const filteredCities = cities.filter(city =>
@@ -150,7 +169,27 @@
 
         cityArray.forEach(city => {
             const li = document.createElement("li");
-            li.textContent = `${city.name}, ${city.country}`;
+
+            // 📍 아이콘 추가
+            const icon = document.createElement("span");
+            icon.classList.add("city-icon");
+            icon.textContent = "📍";
+
+            // 🌍 도시 이름
+            const cityName = document.createElement("span");
+            cityName.textContent = city.name;
+            cityName.style.fontWeight = "bold";
+            cityName.style.marginRight = "10px";
+
+            // 🌎 국가 이름
+            const countryName = document.createElement("span");
+            countryName.classList.add("country-name");
+            countryName.textContent = city.country;
+
+            li.appendChild(icon);
+            li.appendChild(cityName);
+            li.appendChild(countryName);
+
             li.onclick = function () {
                 selectCity(city);
             };
@@ -158,10 +197,11 @@
         });
     }
 
+    
     // ✅ 도시 선택 후 일정 페이지로 이동
     function selectCity(city) {
         localStorage.setItem("selectedCity", JSON.stringify(city));
-        window.location.href = "/scheduleCalendar.html";
+        window.location.href = "/schedule/scheduleCalendar";
     }
 </script>
 </html>
