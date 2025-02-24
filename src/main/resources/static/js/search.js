@@ -75,15 +75,15 @@ document.addEventListener('DOMContentLoaded', function() {
                         z-index: 2;
                     `;
 
-                    applyButton.addEventListener("click", function() {
-                        const selectedDates = instance.selectedDates;
-                        if (selectedDates.length === 2) {
-                            const startDate = selectedDates[0].toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' });
-                            const endDate = selectedDates[1].toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' });
-                            datePickerInput.value = `${startDate} → ${endDate}`;
-                            instance.close();
-                        }
-                    });
+					applyButton.addEventListener("click", function() {
+					    const selectedDates = instance.selectedDates;
+					    if (selectedDates.length === 2) {
+					        const startDate = selectedDates[0].toISOString().split('T')[0]; // 2025-03-11
+					        const endDate = selectedDates[1].toISOString().split('T')[0];   // 2025-03-13
+					        datePickerInput.value = `${startDate} ~ ${endDate}`;
+					        instance.close();
+					    }
+					});
 
                     instance.calendarContainer.appendChild(applyButton);
                 }
