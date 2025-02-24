@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     const categoryButtons = document.querySelectorAll('.search-categories button');
-    const inputText = document.querySelector('input[type=text]');
+    const inputText = document.querySelector('#search-input-text');
     const searchBar = document.querySelector('.search-bar');
     const flightSearchBar = document.querySelector('.flight-search-bar');
     const datePickerInput = document.querySelector('.date-picker');
