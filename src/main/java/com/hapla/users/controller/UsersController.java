@@ -8,10 +8,8 @@ import lombok.RequiredArgsConstructor;
 import net.minidev.json.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.support.SessionStatus;
 
 @Controller
 @RequiredArgsConstructor
@@ -45,5 +43,11 @@ public class UsersController {
             return json.toString();
         }
         throw new Exception("회원가입에 실패하였습니다.");
+    }
+
+    @GetMapping("/users/logout")
+    public String logout(SessionStatus session) {
+        session.setComplete();
+        return "redirect:/main";
     }
 }
