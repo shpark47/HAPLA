@@ -13,11 +13,11 @@
 	<section class="main-search">
 		<h1>어디로 가시나요?</h1>
 		<div class="search-categories">
-			<button class="active">전체</button>
-			<button data-category="tourist_attraction">여행지</button>
-			<button data-category="point_of_interest">관광명소</button>
-			<button data-category="lodging">숙박</button>
-			<button data-category="restaurant">음식점</button>
+			<button class="active" data-category="여행지+관광명소+숙박+음식점">전체</button>
+			<button data-category="여행지">여행지</button>
+			<button data-category="관광명소">관광명소</button>
+			<button data-category="숙박">숙박</button>
+			<button data-category="음식점">음식점</button>
 			<button>항공권</button>
 		</div>
 		<div class="search-bar">
@@ -29,7 +29,7 @@
                 </svg>
 			</div>
 			<input type="text" id="search-input-text" placeholder="여행지, 즐길거리, 호텔 등">
-			<button>검색</button>
+			<button onclick="searchPlaces()">검색</button>
 		</div>
 
 		<!-- 항공권 검색창 (초기에 숨김) -->
