@@ -119,6 +119,7 @@ const checkUser = (id, type) => {
                 updateModal(loginImage, loginName, loginType, tokenId);
             }else{
                 document.getElementById('loginModal').classList.add('hidden');
+                location.reload();
             }
         })
 }
