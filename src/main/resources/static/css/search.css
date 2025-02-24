@@ -337,6 +337,7 @@ button.reset:hover, button.apply:hover {
 }
 
 .input-group {
+    display: flex;
     position: relative;
     min-width: 250px;
 }
@@ -350,9 +351,10 @@ button.reset:hover, button.apply:hover {
 }
 
 .input-group svg {
-    /*position: absolute;*/
+    position: absolute;
     left: 1rem;
-    top: 50%;
+    margin-top: 10%;
+    margin-right: 5%;
     transform: translateY(-50%);
 }
 

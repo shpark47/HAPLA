@@ -62,6 +62,7 @@
 
 .header-dropdown a:hover {
     background: #f5f5f5;
+    cursor: pointer;
 }
 
 .header-modal {
