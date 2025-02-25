@@ -31,7 +31,9 @@
         <div class="header-banner">HAPLA</div>
         <form class="edit-form">
             <div class="profile-image-container">
-                <input type="hidden" name="profile" id="profileImg">
+                <input type="hidden" name="userNo" id="userNo" th:value="${session.loginUser != null ? session.loginUser.userNo : ''}">
+                <input type="hidden" name="oriNickname" id="oriNickname" th:value="${session.loginUser != null ? session.loginUser.nickname : ''}">
+                <input type="hidden" name="profile" id="profileImg" th:value="${session.loginUser != null ? session.loginUser.profile : ''}">
                 <img th:src="@{${session.loginUser != null ? session.loginUser.profile : '/img/시나모롤.jpg'}}"
                      alt="프로필 이미지" class="profile-image" id="profileImage">
                 <input type="file" id="imageUpload" accept="image/*" style="display: none;">
@@ -62,13 +64,13 @@
             <img src="" alt="프로필 이미지" class="profile-image" id="loginImage">
 
             <label for="nickname" class="header-modal-label">이름:</label>
-            <input type="text" id="loginName" name="name" class="modal-input" readonly>
+            <input type="text" id="loginName" name="name" class="header-modal-input" readonly>
 
             <label for="nickname" class="header-modal-label">닉네임:</label>
-            <input type="text" id="nickname" name="nickname" class="modal-input" required>
+            <input type="text" id="nickname" name="nickname" class="header-modal-input" required>
 
             <label for="email" class="header-modal-label">이메일:</label>
-            <input type="email" id="email" name="email" class="modal-input" required>
+            <input type="email" id="email" name="email" class="header-modal-input" required>
 
             <button id="joinBtn" class="header-modal-button" type="button">가입하기</button>
         </form>
@@ -100,13 +102,13 @@
 <div id="citySearchModal" class="modal-trip">
     <div class="modal-content">
 
-        <!-- <span class="close" onclick="closeCitySearchModal()">&times;</span> -->
+        <span class="close" onclick="closeCitySearchModal()">&times;</span>
 
         <!-- 검색 입력창 -->
         <div class="search-container">
             <input type="text" id="searchInput" placeholder="도시 이름을 입력하세요..." oninput="filterCities()">
             <span class="search-icon">
-            	<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
+               <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
             </span>
         </div>
 
@@ -128,9 +130,11 @@
     }
 
     // 🖱️ 모달 외부 클릭 시 닫기
-    window.addEventListener("click", function(event) {
+    document.addEventListener("click", function(event) {
         const modal = document.getElementById("citySearchModal");
-        if (event.target === modal) {
+        if (event.target.innerText != '여행 일정' && modal.style.display == 'block' && !modal.contains(event.target)) {
+           console.log(modal.style.display);
+         console.log(modal.contains(event.target));
             closeCitySearchModal();
         }
     });

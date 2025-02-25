@@ -29,7 +29,7 @@ const openModal = () => {
     document.getElementById('editModal').classList.remove('hidden');
 }
 
-const closeModal = () =>{
+const closeModal = () => {
     document.getElementById('editModal').classList.add('hidden');
 }
 
@@ -37,7 +37,7 @@ modalOpenButton.addEventListener('click', () => {
     loginModal.classList.remove('hidden');
 });
 
-document.getElementById('imageUpload').addEventListener('change', function(e) {
+document.getElementById('imageUpload').addEventListener('change', function (e) {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -74,40 +74,63 @@ document.getElementById('imageUpload').addEventListener('change', function(e) {
         });
 });
 
-document.querySelector('#save').addEventListener('click', ()=>{
-    let check = false;
-    const nickname = document.querySelector('#nickname').value;
-    const formData = new FormData();
-    formData.append('nickname', nickname);
-    fetch('/checkNickname',{
-        method: 'POST',
-        body: formData
-    }).then(response => {return response.json()})
-        .then(data => {
-            if (data.result == false){
-                check = false;
-                alert('중복된 닉네임입니다.');
-            }else{
-                check = true;
-                alert('사용 가능한 닉네임입니다.')
-            }
+document.querySelector('#save').addEventListener('click', () => {
+    const userNo = document.getElementById('userNo').value;
+    const nickname = document.getElementById('nickname').value;
+    const profile = document.getElementById('profileImg').value;
+    const oriNickname = document.getElementById('oriNickname').value;
+
+    const userData = {
+        userNo: parseInt(userNo), // int로 변환
+        nickname: nickname,
+        profile: profile
+    };
+
+    if (oriNickname == nickname){
+        update(userData);
+    }else{
+        const formData = new FormData();
+        formData.append('nickname', nickname);
+        fetch('/checkNickname', {
+            method: 'POST',
+            body: formData
+        }).then(response => {
+            return response.json()
         })
-        .catch(error => console.log(error))
-
-    if (check){
-        fetch('/updateUser', {
-
-        }).then(response => {return response.json()})
             .then(data => {
-
+                if (data.result == 'fail') {
+                    alert('중복된 닉네임입니다.');
+                }else{
+                    update(userData);
+                }
             })
             .catch(error => console.log(error))
-    }else{
-        alert('중복된 닉네임입니다.');
     }
 })
 
-document.querySelector('.edit-form').addEventListener('submit', function(e) {
+const update = userData => {
+    fetch('/updateUser', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(userData) // JSON 데이터
+    }).then(response => {
+        return response.json()
+    })
+        .then(data => {
+            console.log(data);
+            if (data.result) {
+                closeModal();
+                document.getElementById('user-profile-image').src = userData.profile;
+            } else {
+                alert('정보 수정에 실패하였습니다.');
+            }
+        })
+        .catch(error => console.log(error))
+}
+
+document.querySelector('.edit-form').addEventListener('submit', function (e) {
     e.preventDefault();
     // 여기에 폼 제출 로직 추가
     alert('프로필이 업데이트되었습니다!');
@@ -115,10 +138,8 @@ document.querySelector('.edit-form').addEventListener('submit', function(e) {
 });
 
 // 회원 탈퇴 처리
-document.querySelector('.delete-account-btn').addEventListener('click', function() {
+document.querySelector('.delete-account-btn').addEventListener('click', function () {
     if (confirm('정말로 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
-        // 여기에 회원 탈퇴 로직 추가
-        alert('회원 탈퇴가 완료되었습니다.');
-        closeModal();
+        location.href = '/deleteUser';
     }
 });
