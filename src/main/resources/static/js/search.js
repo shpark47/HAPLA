@@ -140,6 +140,16 @@ const fp = flatpickr(datePickerInput, {
                         z-index: 2;
                     `;
 
+					applyButton.addEventListener("click", function() {
+					    const selectedDates = instance.selectedDates;
+					    if (selectedDates.length === 2) {
+					        const startDate = selectedDates[0].toISOString().split('T')[0]; // 2025-03-11
+					        const endDate = selectedDates[1].toISOString().split('T')[0];   // 2025-03-13
+					        datePickerInput.value = `${startDate} ~ ${endDate}`;
+					        instance.close();
+					    }
+					});
+
                 applyButton.addEventListener("click", function () {
                     const selectedDates = instance.selectedDates;
                     if (selectedDates.length === 2) {
@@ -306,8 +316,90 @@ incrementButtons.forEach(button => {
             let countElement = button.previousElementSibling;
             countElement.textContent = parseInt(countElement.textContent) + 1;
         }
-        updateWarningMessage();
+
     });
+
+    document.getElementsByName('arrivalName')[0].addEventListener('input', function() {
+        const query = this.value;
+        if (query.length >= 1) {
+            searchAirports(query, 'arrival-dropdown');
+        } else {
+            document.getElementById('arrival-dropdown').style.display = 'none';
+        }
+    });
+
+    // 드롭다운 외부 클릭 시 숨김 처리
+    document.addEventListener('click', function(event) {
+        if (!event.target.closest('.dropdown-list') && !event.target.matches('input')) {
+            document.getElementById('departure-dropdown').style.display = 'none';
+            document.getElementById('arrival-dropdown').style.display = 'none';
+        }
+    });
+
+    document.querySelector('.search-btn').addEventListener('click', () => {
+		const form = document.querySelector('.search-form');
+		form.action='/flight/flightSearch';
+		form.submit();
+
+
+        updateWarningMessage();
+
+    });
+	
+	document.addEventListener('DOMContentLoaded', function() {
+	    const moreButton = document.querySelector('#more');
+	    const flightItems = document.querySelectorAll('.flight-item'); // 모든 항목
+
+	    // 초기 상태: 5개 이후 항목 숨기기
+	    let initialLimit = 5;
+	    let index = 0;
+	    for (const item of flightItems) {
+	        if (index >= initialLimit) {
+	            item.classList.add('hidden');
+	        }
+	        index++;
+	    }
+
+	    moreButton.addEventListener('click', function() {
+	        const hiddenItems = document.querySelectorAll('.flight-item.hidden');
+
+	        if (hiddenItems.length > 0) {
+	            // 숨겨진 항목이 있다면 → 모두 표시
+	            for (const item of flightItems) {
+	                item.classList.remove('hidden');
+	            }
+	            this.innerText = '숨기기 ↑'; // 버튼 텍스트 변경
+	        } else {
+	            // 이미 모두 보이는 경우 → 다시 5개까지만 표시
+	            index = 0;
+	            for (const item of flightItems) {
+	                item.classList.toggle('hidden', index >= initialLimit);
+	                index++;
+	            }
+	            this.innerText = '더보기 ↓'; // 버튼 텍스트 변경
+	        }
+	    });
+	});
+	
+	/*<![CDATA[*/
+	   var prices = /*[[${flightsOffers.![price]}]]*/ []; // 가격 리스트 가져오기
+
+	   if (prices.length > 0) {
+	       var minPrice = Math.min.apply(null, prices); // 최솟값 계산
+	       var maxPrice = Math.max.apply(null, prices); // 최댓값 계산
+
+	       document.getElementById("price-range").min = minPrice;
+	       document.getElementById("price-range").max = maxPrice;
+	       document.getElementById("price-range").value = minPrice;
+	       document.getElementById("min-price").textContent = minPrice;
+	       document.getElementById("max-price").textContent = maxPrice;
+	   }
+	   /*]]>*/
+
+
+
+
+
 });
 
 decrementButtons.forEach(button => {
@@ -403,6 +495,5 @@ document.querySelector('.search-btn').addEventListener('click', () => {
     const form = document.querySelector('.search-form');
     form.action = '/flight/flightSearch';
     form.submit();
-
 
 });
