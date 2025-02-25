@@ -10,4 +10,6 @@ public interface UsersMapper {
     Users login(Users user);
 
     int join(Users user);
+
+    int checkNickname(String nickname);
 }

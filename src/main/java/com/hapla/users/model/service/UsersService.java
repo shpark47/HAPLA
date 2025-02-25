@@ -22,4 +22,8 @@ public class UsersService {
     public int join(Users user) {
         return mapper.join(user);
     }
+
+    public int checkNickname(String nickname) {
+        return mapper.checkNickname(nickname);
+    }
 }
