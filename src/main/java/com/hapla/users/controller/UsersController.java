@@ -43,6 +43,8 @@ public class UsersController {
 
         session.setAttribute("loginUser", u);
 
+        System.out.println(session.getAttribute("loginUser"));
+
         return json.toString();
     }
 
@@ -62,7 +64,7 @@ public class UsersController {
     @GetMapping("/users/logout")
     public String logout(SessionStatus session) {
         session.setComplete();
-        return "redirect:/main";
+        return "redirect:/";
     }
 
     private static final String UPLOAD_DIR = "c:/profiles/"; // 파일 저장 경로
@@ -108,10 +110,36 @@ public class UsersController {
         int result = usersService.checkNickname(nickname);
         JSONObject json = new JSONObject();
         if (result > 0) {
-            json.put("result", false);
+            json.put("result", "fail");
         }else{
-            json.put("result", true);
+            json.put("result", "success");
         }
         return json.toString();
+    }
+
+    @PostMapping("/updateUser")
+    @ResponseBody
+    public String updateUser(@RequestBody Users user, Model model) {
+        int result = usersService.updateUser(user);
+        JSONObject json = new JSONObject();
+        if (result > 0) {
+            json.put("result", true);
+            Users u = usersService.login(user);
+            model.addAttribute("loginUser", u);
+        }else{
+            json.put("result", false);
+        }
+        System.out.println(json.toString());
+        return json.toString();
+    }
+
+    @GetMapping("/deleteUser")
+    public String deleteUser(Model model) {
+        int no = ((Users) model.getAttribute("loginUser")).getUserNo();
+        int result = usersService.deleteUser(no);
+        if (result > 0){
+            return "redirect:/users/logout";
+        }
+        throw new Exception("실패");
     }
 }

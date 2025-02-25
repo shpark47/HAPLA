@@ -31,7 +31,9 @@
         <div class="header-banner">HAPLA</div>
         <form class="edit-form">
             <div class="profile-image-container">
-                <input type="hidden" name="profile" id="profileImg">
+                <input type="hidden" name="userNo" id="userNo" th:value="${session.loginUser != null ? session.loginUser.userNo : ''}">
+                <input type="hidden" name="oriNickname" id="oriNickname" th:value="${session.loginUser != null ? session.loginUser.nickname : ''}">
+                <input type="hidden" name="profile" id="profileImg" th:value="${session.loginUser != null ? session.loginUser.profile : ''}">
                 <img th:src="@{${session.loginUser != null ? session.loginUser.profile : '/img/시나모롤.jpg'}}"
                      alt="프로필 이미지" class="profile-image" id="profileImage">
                 <input type="file" id="imageUpload" accept="image/*" style="display: none;">
@@ -62,13 +64,13 @@
             <img src="" alt="프로필 이미지" class="profile-image" id="loginImage">
 
             <label for="nickname" class="header-modal-label">이름:</label>
-            <input type="text" id="loginName" name="name" class="modal-input" readonly>
+            <input type="text" id="loginName" name="name" class="header-modal-input" readonly>
 
             <label for="nickname" class="header-modal-label">닉네임:</label>
-            <input type="text" id="nickname" name="nickname" class="modal-input" required>
+            <input type="text" id="nickname" name="nickname" class="header-modal-input" required>
 
             <label for="email" class="header-modal-label">이메일:</label>
-            <input type="email" id="email" name="email" class="modal-input" required>
+            <input type="email" id="email" name="email" class="header-modal-input" required>
 
             <button id="joinBtn" class="header-modal-button" type="button">가입하기</button>
         </form>
