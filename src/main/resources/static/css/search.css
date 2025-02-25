@@ -73,11 +73,11 @@ h1 {
 }
 
 .flight-search-bar {
-    margin-left: 5rem;
+   margin-left: 5rem;
 }
 
 .traveler-selection {
-    margin-left: 21.5rem;
+   margin-left: 21.5rem;
 }
 
 /* Flatpickr customization */
@@ -208,7 +208,7 @@ h1 {
     font-size: 14px;
 }
 
-.traveler-category .decrement,
+.traveler-category .decrement, 
 .traveler-category .increment {
     width: 32px;
     height: 32px;
@@ -368,6 +368,7 @@ button.reset:hover, button.apply:hover {
     padding: 1.5rem;
     background: white;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 50rem;
 }
 
 .flight-info {
@@ -393,7 +394,6 @@ button.reset:hover, button.apply:hover {
 
 .flight-details {
     flex-grow: 1;
-    display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 1rem;
@@ -402,8 +402,13 @@ button.reset:hover, button.apply:hover {
 
 .time-info {
     text-align: center;
+    align-items: center;
 }
 
+.flight-title{
+	display: flex;
+    align-items: center;
+}
 .flight-time {
     font-size: 1.2em;
     font-weight: bold;
