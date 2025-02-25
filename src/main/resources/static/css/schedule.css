@@ -1,3 +1,12 @@
+/* /* 🌍 전체 컨테이너 flex 설정 */
+body, .container {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    overflow: hidden;
+} */
+
 * {
     margin: 0;
     padding: 0;
@@ -11,25 +20,24 @@ body {
     position: relative;
 }
 
+/* 🌍 오른쪽 Google 지도 */
+#map {
+    flex: 1;
+    height: 100vh;
+}
+/* 🌍 왼쪽 사이드바 */
 .sidebar {
-    width: 300px;
+    width: 20%;
     background: white;
-    /* border-right: 1px solid #e0e0e0; */
-    /* overflow-y: auto; */
-    position: relative;
-    z-index: 2;
-    margin: 1%;
-    margin-left: 1.5%;
+    padding: 15px;
+    border-right: 1px solid #ddd;
+    overflow-y: auto;
 }
 
-.sidebar-head{
+/* .sidebar-head{
 	margin-bottom: 10%;
 }
-.menu{
-	cursor: pointer;
-
-}
-
+ */
 .title{
 	margin-left:3%;
 	padding: 3%;
@@ -40,29 +48,29 @@ body {
     background: white;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); /* ✅ 부드러운 그림자 */
     /* max-width: 100%; ✅ 최대 너비 제한 */
+
 }
 
-.edit{
-	float:right;
+.menu{
 	cursor: pointer;
 }
 
 
-
-.date-container{
-	margin-bottom: 10%;
-	margin-top: 5%;
-
-
-}
-
-.plan-title{
-	margin-bottom: 3%;
-	font-weight: bold;
-}
-
+/* 📅 여행 일정 리스트 스타일 */
 .date-list {
+    margin-top: 15px;
     list-style: none;
+}
+
+.date-container {
+    margin-bottom: 10%;
+	margin-top: 5%;
+}
+
+
+.plan-title {
+    font-weight: bold;
+    margin-bottom: 3%;
 }
 
 .date-item {
@@ -74,19 +82,9 @@ body {
     background: white;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); /* ✅ 부드러운 그림자 */
     max-width: 100%; /* ✅ 최대 너비 제한 */
-}
-
-#date{
-	font-size: 15px;
-	vertical-align: super;
-	color: #8D8D8D;
-	
-}
-
-#location{
-	vertical-align: super;
-	font-size: 16px;
-	color: #8D8D8D;
+    justify-content: center;
+    display: flex;
+    flex-direction: row
 }
 
 .controls {
@@ -94,73 +92,23 @@ body {
     gap: 5px;
     margin-left: auto;
     padding: 1%;
-    display: none;
+    /* display: none; */
 }
 
+.control-add{
+	border: none;
+    background: none;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+/* 🖱️ 버튼 스타일 */
 .control-btn {
-    width: 24px;
-    height: 24px;
     border: 1px solid #e0e0e0;
-    border-radius: 50%;
     background: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    font-size: 16px;
     cursor: pointer;
+    border-radius: inherit;
     
-}
-
-
-.control-btn:hover {
-    background: #f5f5f5;
-}
-
-#map {
-    flex: 1;
-    height: 100%;
-}
-
-.empty-day {
-    color: #999;
-    font-size: 12px;
-}
-
-/* 사이드 패널 스타일 */
-#side-panel {
-    width: 300px;
-    height: 100%;
-    background: white;
-    position: absolute;
-    top: 0;
-    right: -300px;
-    transition: right 1s ease-in-out;
-    border-left: 1px solid #e0e0e0;
-    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
-    z-index: 3;
-    display: flex;
-    flex-direction: column;
-}
-
-#side-panel.active {
-    left: 335px;
-}
-
-.side-panel-header {
-    padding: 15px;
-    border-bottom: 1px solid #f0f0f0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-weight: bold;
-}
-
-.close-btn {
-    cursor: pointer;
-    font-size: 18px;
-}
-
-.side-panel-content {
-    padding: 15px;
-    flex-grow: 1;
-    /* overflow-y: auto; */
+    
 }

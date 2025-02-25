@@ -1,6 +1,6 @@
-package com.hapla.test.controller;
+package com.hapla.common.controller;
 
-import com.hapla.test.service.GooglePlaceService;
+import com.hapla.common.service.GooglePlaceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

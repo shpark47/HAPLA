@@ -1,4 +1,4 @@
-package com.hapla.test.service;
+package com.hapla.common.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
