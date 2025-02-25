@@ -6,20 +6,36 @@
     </select>
     
    	<select id="selectCommList" resultType="com.hapla.comm.model.vo.Comm">
-		SELECT *
-		FROM comm
-			 JOIN users ON comm.user_no = users.user_no
-		WHERE comm.status = 'Y'
+	    SELECT comm.comm_no, comm.category_no, comm.user_no, comm.title, comm.comm_content, comm.views,
+	           comm.create_date, comm.update_date, comm.likes, comm.status,
+	           category.category_name, users.name
+	    FROM comm
+	    JOIN users ON comm.user_no = users.user_no
+	    JOIN category ON comm.category_no = category.category_no
+	    WHERE comm.status = 'Y'
 	</select>
 	
 	<insert id="insertComm">
-		<selectKey order="BEFORE" resultType="_int" keyProperty="commNo">
-         select seq_comm.nextval from dual
-      </selectKey>
-      insert into comm
-      values(#{commNo}, #{categoryNo}, #{name}, #{title}, #{commContent},
-            default, sysdate, sysdate, default, default)
+	    <selectKey order="BEFORE" resultType="int" keyProperty="commNo">
+	        SELECT seq_comm.nextval FROM dual
+	    </selectKey>
+	    INSERT INTO comm 
+	    (comm_no, category_no, user_no, title, comm_content, views, create_date, update_date, likes, status) 
+	    VALUES (#{commNo}, #{categoryNo}, #{userNo}, #{title}, #{commContent}, DEFAULT, SYSDATE, SYSDATE, DEFAULT, DEFAULT)
 	</insert>
+
+	<select id="selectComm" resultType="com.hapla.comm.model.vo.Comm">
+	    SELECT comm.*, users.name
+	    FROM comm
+	    JOIN users ON comm.user_no = users.user_no
+	    WHERE comm.status = 'Y' AND comm.comm_no = #{commNo}
+	</select>
+	
+	<update id="updateCount">
+		update comm
+		set views = views + 1
+		where comm_no = #{commNo}
+	</update>
 </mapper>
 
 

@@ -14,9 +14,9 @@ body {
     line-height: 1.6;
     min-height: 100vh;
     background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
-    url('https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-McLXkiiRUosTY2SMkGDwz4XEMVg9Xr.png');
+    url('/img/indeximg.jpg');
     background-size: cover;
-    background-position: center;
+    background-position: center 60%;
     background-attachment: fixed;
 }
 

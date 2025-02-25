@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <link href="/css/main.css" rel="stylesheet" type="text/css">
-
+    <link href="/css/header.css" rel="stylesheet" type="text/css">
 </head>
 <body>
 <header class="header">
@@ -32,7 +31,9 @@
         <div class="header-banner">HAPLA</div>
         <form class="edit-form">
             <div class="profile-image-container">
-                <img th:src="@{${session.loginUser != null ? session.loginUser.profile : ''}}" alt="프로필 이미지" class="profile-image" id="profileImage">
+                <input type="hidden" name="profile" id="profileImg">
+                <img th:src="@{${session.loginUser != null ? session.loginUser.profile : '/img/시나모롤.jpg'}}"
+                     alt="프로필 이미지" class="profile-image" id="profileImage">
                 <input type="file" id="imageUpload" accept="image/*" style="display: none;">
                 <button type="button" class="image-upload-btn" onclick="document.getElementById('imageUpload').click()">
                     프로필 사진 변경
@@ -40,14 +41,15 @@
             </div>
 
             <label for="nickname" class="header-modal-label">닉네임:</label>
-            <input type="text" id="nickname" name="nickname" class="header-modal-input" th:value="${session.loginUser != null ? session.loginUser.nickname : ''}" required>
+            <input type="text" id="nickname" name="nickname" class="header-modal-input"
+                   th:value="${session.loginUser != null ? session.loginUser.nickname : ''}" required>
 
-            <button id="save" class="header-modal-button" type="submit">변경사항 저장</button>
-
+            <button id="save" class="header-modal-button" type="button">변경사항 저장</button>
             <button type="button" class="delete-account-btn">회원 탈퇴하기</button>
         </form>
     </div>
 </div>
+
 <div class="header-modal hidden" role="dialog" id="joinModal" align="center">
     <div class="header-modal-div">
         <button class="header-close-btn" aria-label="닫기"></button>
@@ -90,7 +92,6 @@
     <script src="https://accounts.google.com/gsi/client"></script>
     <script src="/js/login.js"></script>
     <script src="/js/join.js"></script>
-
 </div>
 </body>
 <script src="/js/header.js"></script>
@@ -98,7 +99,7 @@
 <!-- 도시 검색 모달 -->
 <div id="citySearchModal" class="modal-trip">
     <div class="modal-content">
-       
+
         <!-- <span class="close" onclick="closeCitySearchModal()">&times;</span> -->
 
         <!-- 검색 입력창 -->
@@ -126,14 +127,14 @@
         document.getElementById("citySearchModal").style.display = "none";
     }
 
-	 // 🖱️ 모달 외부 클릭 시 닫기
-	    window.addEventListener("click", function(event) {
-	        const modal = document.getElementById("citySearchModal");
-	        if (event.target === modal) {
-	            closeCitySearchModal();
-	        }
-	    });
-	 
+    // 🖱️ 모달 외부 클릭 시 닫기
+    window.addEventListener("click", function(event) {
+        const modal = document.getElementById("citySearchModal");
+        if (event.target === modal) {
+            closeCitySearchModal();
+        }
+    });
+
     // 🌍 REST Countries API에서 수도(도시) 검색
     let cities = [];
 
@@ -153,7 +154,7 @@
 
     fetchCities(); // API에서 데이터 가져오기
 
- // 🔍 도시 검색 기능
+    // 🔍 도시 검색 기능
     function filterCities() {
         const searchTerm = document.getElementById("searchInput").value.toLowerCase();
         const filteredCities = cities.filter(city =>
@@ -199,8 +200,8 @@
         });
     }
 
-    
- // ✅ 도시 선택 시 실행되는 함수 (도시 정보 저장 & 페이지 이동)
+
+    // ✅ 도시 선택 시 실행되는 함수 (도시 정보 저장 & 페이지 이동)
     function selectCity(city) {
         const cityData = {
             name: city.name, // 도시명

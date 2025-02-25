@@ -474,6 +474,6 @@ public class FlightController {
             System.out.println("Amadeus API Exception: " + e.getMessage());
             e.printStackTrace();
         }
-        	return results;
+        return results;
     }
 }

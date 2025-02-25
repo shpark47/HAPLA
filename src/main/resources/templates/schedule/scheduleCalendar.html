@@ -45,7 +45,7 @@
         // 기본 지도 위치 설정 (초기값: 파리)
         let mapOptions = {
             center: { lat: 48.8566, lng: 2.3522 }, // 파리 기본 위치
-            zoom: 10
+            zoom: 6
         };
 
         // ✅ 저장된 도시 정보가 있으면 지도 위치 변경
@@ -110,11 +110,14 @@
 		function saveDates() {
 		    const startDate = document.getElementById("startDate").value;
 		    const endDate = document.getElementById("endDate").value;
+		    const storedCity = localStorage.getItem("selectedCity"); // 기존에 선택한 도시 정보 가져오기
 
-		    if (startDate && endDate) {
-		        let tripData = JSON.parse(localStorage.getItem("tripData")) || {};
-		        tripData.startDate = startDate;
-		        tripData.endDate = endDate;
+		    if (startDate && endDate && storedCity) {
+		        const tripData = {
+		        		city: JSON.parse(storedCity), // 기존 도시 정보 유지
+		        		startDate: startDate,
+		        		endDate: endDate
+		        };
 
 		        localStorage.setItem("tripData", JSON.stringify(tripData)); // 🔥 날짜까지 저장
 		        window.location.href = "/schedule/schedule"; // 🔥 일정 페이지로 이동

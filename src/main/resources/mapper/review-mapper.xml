@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hapla.review.model.mapper.ReviewMapper">
+    <select id="getListCount" parameterType="int" resultType="int">
+        SELECT COUNT(*) FROM review
+    </select>
     
+    <select id="selectReviewList" resultType="com.hapla.review.model.vo.Review">
+	    SELECT review.review_no, review.user_no, users.name, review.title, review.content, 
+	           review.rating, review.likes, review.create_date, review.update_date
+	    FROM review
+	    JOIN users ON review.user_no = users.user_no
+	    ORDER BY review.create_date DESC
+	</select>
 </mapper>

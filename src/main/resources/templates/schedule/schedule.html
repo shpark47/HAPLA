@@ -17,68 +17,84 @@
                         <path d="M 3 5 A 1.0001 1.0001 0 1 0 3 7 L 21 7 A 1.0001 1.0001 0 1 0 21 5 L 3 5 z M 3 11 A 1.0001 1.0001 0 1 0 3 13 L 21 13 A 1.0001 1.0001 0 1 0 21 11 L 3 11 z M 3 17 A 1.0001 1.0001 0 1 0 3 19 L 21 19 A 1.0001 1.0001 0 1 0 21 17 L 3 17 z"></path>
                     </svg>
                 </span>
-                <span class="title">여행 제목</span>
+                <span class="title" id="tripTitle">여행 제목</span>
+                <span id="tripDates"></span>
             </div>
 
-            <div class="date-list">
-                <div class="date-container">
-                    <div class="plan-title">2월 6일</div>
-                    <div class="date-item">
-                        <button class="control-add">➕ 추가</button>
-                    </div>
-                </div>
-                <div class="date-container">
-                    <div class="plan-title">2월 7일</div>
-                    <div class="date-item">
-                        <button class="control-btn">📍</button>
-                        <button class="control-btn">📝</button>
-                        <button class="control-btn">❌</button>
-                    </div>
-                </div>
-                <div class="date-container">
-                    <div class="plan-title">2월 8일</div>
-                    <div class="date-item">
-                        <button class="control-add">➕ 추가</button>
-                    </div>
-                </div>
-            </div>
+            <!-- ✅ 날짜별 일정 리스트 -->
+            <div class="date-list" id="dateList"></div>
         </div>
 
-        <!-- 🌍 오른쪽 Google 지도 -->
+        <!-- 🌍 Google 지도 -->
         <div id="map"></div>
     </div>
 
     <script>
-    
-    // ✅ 일정 페이지가 로드될 때 실행되는 함수
-    document.addEventListener("DOMContentLoaded", function () {
-        const tripData = localStorage.getItem("tripData");
+        // ✅ 일정 페이지가 로드될 때 실행되는 함수
+        document.addEventListener("DOMContentLoaded", function () {
+            const tripData = localStorage.getItem("tripData");
 
-        if (tripData) {
-            const data = JSON.parse(tripData);
+            if (tripData) {
+                const data = JSON.parse(tripData);
 
-            // ✅ 선택한 도시 정보 적용
-            if (data.city) {
-                document.getElementById("tripTitle").textContent = `${data.city.name}, ${data.city.country}`;
+                // ✅ 선택한 도시 정보 적용
+                if (data.city) {
+                    document.getElementById("tripTitle").textContent = `${data.city.name}, ${data.city.country}`;
+                }
+
+                // ✅ 선택한 날짜 정보 적용
+                document.getElementById("tripDates").textContent = `📅 ${data.startDate} ~ ${data.endDate}`;
+
+                // ✅ 날짜별 일정 리스트 생성
+                generateDateList(data.startDate, data.endDate);
+
+                // ✅ 지도 위치 변경
+                initMap(data.city.lat, data.city.lng);
             }
-
-            // ✅ 선택한 날짜 정보 적용
-            document.getElementById("tripDates").textContent = `📅 ${data.startDate} ~ ${data.endDate}`;
-
-            // ✅ 지도 위치 변경
-            initMap(data.city.lat, data.city.lng);
-        }
-    });
-    
-    
-
-    // ✅ Google 지도 초기화 함수
-    function initMap(lat = 48.8566, lng = 2.3522) {
-        new google.maps.Map(document.getElementById('map'), {
-            center: { lat: lat, lng: lng },
-            zoom: 5
         });
-    }
+
+        // ✅ 날짜별 일정 리스트 생성
+        function generateDateList(start, end) {
+            const dateList = document.getElementById("dateList");
+            dateList.innerHTML = ""; // 기존 내용 초기화
+
+            let startDate = new Date(start);
+            let endDate = new Date(end);
+
+            while (startDate <= endDate) {
+                let formattedDate = startDate.toISOString().split('T')[0];
+
+                let dateContainer = document.createElement("div");
+                dateContainer.classList.add("date-container");
+
+                let planDate = document.createElement("div");
+                planDate.classList.add("plan-date");
+                planDate.textContent = formattedDate; // YYYY-MM-DD 형식으로 출력
+
+                let dateItem = document.createElement("div");
+                dateItem.classList.add("date-item");
+
+                let addButton = document.createElement("button");
+                addButton.classList.add("control-add");
+                addButton.textContent = "➕ 추가";
+
+                dateItem.appendChild(addButton);
+                dateContainer.appendChild(planDate);
+                dateContainer.appendChild(dateItem);
+                dateList.appendChild(dateContainer);
+
+                // 다음 날짜로 이동
+                startDate.setDate(startDate.getDate() + 1);
+            }
+        }
+
+        // ✅ Google 지도 초기화 함수
+        function initMap(lat = 48.8566, lng = 2.3522) {
+            new google.maps.Map(document.getElementById('map'), {
+                center: { lat: lat, lng: lng },
+                zoom: 10 
+            });
+        }
     </script>
     
     <!-- Google Maps API -->

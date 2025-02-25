@@ -29,4 +29,14 @@ public class CommService {
 	public int insertComm(Comm c) {
 		return mapper.insertComm(c);
 	}
+
+	public Comm selectComm(int commNo, String name) {
+		Comm c = mapper.selectComm(commNo);
+		if(c != null && name != null && c.getName().equals(name)) {
+			int result = mapper.updateCount(commNo);
+			if(result > 0) {
+				c.setViews(c.getViews() + 1);
+			}
+		} return c;
+	}
 }

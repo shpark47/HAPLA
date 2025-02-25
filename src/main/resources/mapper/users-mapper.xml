@@ -12,4 +12,8 @@
     <insert id="join">
         insert into users values(seq_users.nextval, #{name}, #{nickname}, #{email}, default, #{profile}, #{type}, default, #{tokenId})
     </insert>
+
+    <select id="checkNickname">
+        select count(*) from users where nickname = #{nickname}
+    </select>
 </mapper>
