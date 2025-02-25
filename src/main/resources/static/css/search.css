@@ -427,6 +427,12 @@ button.reset:hover, button.apply:hover {
 .price-info {
     text-align: right;
     min-width: 200px;
+    display: grid;
+}
+
+.price-title{
+	display: flex;
+	
 }
 
 .price {
@@ -546,5 +552,6 @@ button.reset:hover, button.apply:hover {
     .price-info {
         width: 100%;
         text-align: left;
+        display: gird;
     }
 }
