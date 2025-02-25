@@ -15,4 +15,8 @@ public interface CommMapper {
 	ArrayList<Comm> selectCommList(int i, RowBounds rowBounds);
 
 	int insertComm(Comm c);
+
+	Comm selectComm(int commNo);
+
+	int updateCount(int commNo);
 }

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HAPLA 커뮤니티</title>
     <link href="/css/write.css" rel="stylesheet" type="text/css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
 <div th:replace="~{common/header.html :: topbar}"></div>
@@ -19,20 +20,26 @@
         <h2>커뮤니티</h2>
         <div>
         	<form class="needs-validation" action="/comm/insert" method="POST">
+        		<label for="category">카테고리 선택:</label>
+			    <select id="category" name="categoryNo" class="form-control" required>
+			        <option value="1">지역</option>
+					<option value="2">항공권</option>
+					<option value="3">숙소</option>
+					<option value="4">즐길거리</option>
+					<option value="5">음식점</option>
+			    </select>
 		        <input type="text" class="form-control" id="title" name="title" placeholder="제목을 입력하세요">
 		        <div class="editor-toolbar">
 		            <button><b>B</b></button>
 		            <button><i>I</i></button>
-		            <button><u>U</u></button>
 		            <button>A</button>
 		        </div>
-		        <div class="editor-area" contenteditable="true" placeholder="내용을 입력하세요">
-		        </div>
+		        <textarea class="form-control" cols="165" rows="30" id="commContent" name="commContent" style="resize: none;"></textarea>
 		        <div class="file-upload">첨부파일</div>
 		        <div class="editor-buttons">
-		            <button class="cancel-button" type="button" onclick="javascript:history.back();">취소</button>
-		            <button class="save-button">저장</button>
-		        </div>
+			        <button class="cancel-button" type="button" onclick="history.back();">취소</button>
+			        <button class="save-button" type="submit">저장</button>
+			    </div>
 	        </form>
 		</div>
     </section>

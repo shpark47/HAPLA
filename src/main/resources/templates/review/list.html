@@ -17,31 +17,29 @@
     <div class="container">
         <h2>전체 <strong>(80)</strong></h2>
         <div class="reviews">
-            <div class="review-card">
-                <img src="/img/watch.jpg" alt="시계">
-                <div class="review-info">
-                    <h3>이탈리아에서 산 시계 자랑</h3>
-                    <div class="author">시계 매니아 • 2025/02/07</div>
-                    <div class="rating">★★★★★ 5</div>
-                    <div class="likes">♥ 3</div>
-                </div>
-            </div>
-            <div class="review-card">
-                <img src="/img/towel.jpg" alt="수건">
-                <div class="review-info">
-                    <h3>호텔 후기 (feat. 수건냄새)</h3>
-                    <div class="author">수건 도록 • 2025/02/05</div>
-                    <div class="rating">★★★★☆ 4</div>
-                </div>
-            </div>
-            <div class="review-card">
-                <img src="/img/travel.jpg" alt="여행자">
-                <div class="review-info">
-                    <h3>여러분 유럽 꼭 가보세요~</h3>
-                    <div class="author">배낭여행중아 • 2025/02/01</div>
-                    <div class="rating">★★★★★ 5</div>
-                </div>
-            </div>
+            <div th:each="review : ${reviewList}" class="review-card">
+			    <img th:src="@{/img/watch.jpg}" alt="리뷰 이미지">
+			    <div class="review-info">
+			        <h3 th:text="${review.title}"></h3>
+			        <div class="author">
+			            <span th:text="${review.name}"></span> • <span th:text="${#dates.format(review.createDate, 'yyyy/MM/dd')}"></span>
+			        </div>
+			        <div class="rating">
+					    <span th:each="i : ${#numbers.sequence(1, 5)}">
+					        <svg th:fill="${i <= review.rating ? 'gold' : 'gray'}" width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+					            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.86L12 17.77 6.82 21l1.18-6.86-5-4.87 6.91-1L12 2z"/>
+					        </svg>
+					    </span>
+					</div>
+			        <div class="likes">
+					    <svg th:fill="${review.likes > 0 ? 'red' : 'gray'}" width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+					        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+					    </svg>
+					    <span th:text="${review.likes}"></span>
+					</div>
+
+			    </div>
+			</div>
             <div class="review-card">
                 <img src="/img/shirt.jpg" alt="셔츠">
                 <div class="review-info">
@@ -52,17 +50,26 @@
             </div>
         </div>
 
-        <div class="pagination">
-            <span class="active">1</span>
-            <span>2</span>
-            <span>3</span>
-            <span>4</span>
-            <span>5</span>
-            <span>6</span>
-            <span>7</span>
-            <span>8</span>
-            <span>9</span>
-            <span>10</span>
+        <div class="pagination-container">
+            <ul class="pagination">
+		        <li class="page-item" th:classappend="${pi.currentPage == 1} ? 'disabled'">
+		            <a class="page-link" th:href="@{${loc}(page=${pi.currentPage-1})}" aria-label="Previous">
+		                <span aria-hidden="true">&laquo;</span>
+		            </a>
+		        </li>
+		
+		        <li class="page-item"
+		            th:each="p : ${#numbers.sequence(pi.startPage, pi.endPage)}"
+		            th:classappend="${p == pi.currentPage} ? 'active'">
+		            <a class="page-link" th:href="@{${loc}(page=${p})}">[[${p}]]</a>
+		        </li>
+		
+		        <li class="page-item" th:classappend="${pi.currentPage == pi.endPage} ? 'disabled'">
+		            <a class="page-link" th:href="@{${loc}(page=${pi.currentPage+1})}" aria-label="Next">
+		                <span aria-hidden="true">&raquo;</span>
+		            </a>
+		        </li>
+		    </ul>
         </div>
     </div>
 </main>   
