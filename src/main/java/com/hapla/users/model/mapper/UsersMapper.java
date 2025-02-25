@@ -12,4 +12,8 @@ public interface UsersMapper {
     int join(Users user);
 
     int checkNickname(String nickname);
+
+    int updateUser(Users user);
+
+    int deleteUser(int no);
 }
