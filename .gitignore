@@ -39,3 +39,6 @@ out/
 ### 환경 변수 파일 ###
 .env
 env.zip
+src/main/java/com/hapla/flights/controller/FlightController.java
+src/main/resources/static/css/search.css
+src/main/resources/templates/flightSearchResult.html
