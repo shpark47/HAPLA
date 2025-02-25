@@ -202,28 +202,30 @@
 						</div>
 						<div class="flight-details">
 							<!-- 출발 구간 -->
-							<div class="department">
-								<div class="time-info outbound">
-									<div class="flight-time"
-										th:text="${#temporals.format(flight.outboundDepartureTime, 'a h:mm')}"></div>
-									<div class="airport-code"
-										th:text="${flight.outboundDepartureAirport}"></div>
-								</div>
-								<div class="flight-path"></div>
-								<div class="time-info outbound">
-									<div class="flight-time"
-										th:text="${#temporals.format(flight.outboundArrivalTime, 'a h:mm')}"></div>
-									<div class="airport-code"
-										th:text="${flight.outboundArrivalAirport}"></div>
-								</div>
+							<div class="departure">
+								<div class="flight-title">
+									<div class="time-info outbound">
+										<div class="airport-code"
+											th:text="${flight.outboundDepartureAirport}"></div>
+										<div class="flight-time"
+											th:text="${#temporals.format(flight.outboundDepartureTime, 'a h:mm')}"></div>
+									</div>
+									<div class="flight-path"></div>
+									<div class="time-info outbound">
+										<div class="airport-code"
+											th:text="${flight.outboundArrivalAirport}"></div>
+										<div class="flight-time"
+											th:text="${#temporals.format(flight.outboundArrivalTime, 'a h:mm')}"></div>
+									</div>
 							</div>
-							<div class="duration">
-								<span
-									th:text="${#temporals.format(flight.outboundDepartureTime, 'a h:mm')}"></span>
-								→ <span
-									th:text="${#temporals.format(flight.outboundArrivalTime, 'a h:mm')}"></span>
-								(<span
-									th:text="${flight.outboundHasConnections == 'true' ? '경유 ' + flight.outboundTotalStops + '회' : '직항'}"></span>)
+								<div class="duration">
+									<span
+										th:text="${#temporals.format(flight.outboundDepartureTime, 'a h:mm')}"></span>
+									→ <span
+										th:text="${#temporals.format(flight.outboundArrivalTime, 'a h:mm')}"></span>
+									(<span
+										th:text="${flight.outboundHasConnections == 'true' ? '경유 ' + flight.outboundTotalStops + '회' : '직항'}"></span>)
+								</div>
 							</div>
 
 							<!-- 귀국 구간 (존재하면) -->
@@ -231,30 +233,32 @@
 							<div th:if="${flight.inboundDepartureTime != null}"
 								class="return-section">
 								<hr style="border: 1px dashed #ccc; margin: 10px 0;">
-								<div="return">
-									<div class="time-info inbound">
-										<div class="flight-time"
-											th:text="${#temporals.format(flight.inboundDepartureTime, 'a h:mm')}"></div>
-										<div class="airport-code"
-											th:text="${flight.inboundDepartureAirport}"></div>
-									</div>
-									
-									<div class="flight-path"></div>
-									
-									<div class="time-info inbound">
-										<div class="flight-time"
-											th:text="${#temporals.format(flight.inboundArrivalTime, 'a h:mm')}"></div>
-										<div class="airport-code"
-											th:text="${flight.inboundArrivalAirport}"></div>
-									</div>
-									<div class="duration">
-										<span
-											th:text="${#temporals.format(flight.inboundDepartureTime, 'a h:mm')}"></span>
-										→ <span
-											th:text="${#temporals.format(flight.inboundArrivalTime, 'a h:mm')}"></span>
-										(<span
-											th:text="${flight.inboundHasConnections == 'true' ? '경유 ' + flight.inboundTotalStops + '회' : '직항'}"></span>)
-									</div>
+									<div class="return">
+										<div class="flight-title">
+												<div class="time-info inbound">
+													<div class="airport-code"
+														th:text="${flight.inboundDepartureAirport}"></div>
+													<div class="flight-time"
+														th:text="${#temporals.format(flight.inboundDepartureTime, 'a h:mm')}"></div>
+												</div>
+												
+												<div class="flight-path"></div>
+												
+												<div class="time-info inbound">
+													<div class="airport-code"
+														th:text="${flight.inboundArrivalAirport}"></div>
+													<div class="flight-time"
+														th:text="${#temporals.format(flight.inboundArrivalTime, 'a h:mm')}"></div>
+												</div>
+											</div>
+											<div class="duration">
+												<span
+													th:text="${#temporals.format(flight.inboundDepartureTime, 'a h:mm')}"></span>
+												→ <span
+													th:text="${#temporals.format(flight.inboundArrivalTime, 'a h:mm')}"></span>
+												(<span
+													th:text="${flight.inboundHasConnections == 'true' ? '경유 ' + flight.inboundTotalStops + '회' : '직항'}"></span>)
+											</div>
 								</div>
 							</div>
 						</div>
