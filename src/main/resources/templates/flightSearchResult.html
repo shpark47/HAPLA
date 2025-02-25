@@ -39,7 +39,7 @@
 		<!-- 항공권 검색창 (초기에 숨김) -->
 		<div class="flight-search-bar" style="display: none;">
 			<form class="search-form">
-				<div class="trip-group">	
+				<div class="trip-group">
 					<button type="button">왕복</button>
 					<button type="button">편도</button>
 					<button type="button">다구간</button>
@@ -135,45 +135,55 @@
 		<aside class="filters">
 			<div class="filter-group">
 				<h4>경유</h4>
-				<label><input type="checkbox" name="layover" value="direct">직항</label> 
-				<label><input type="checkbox" name="layover" value="1stop"> 1회 경유</label> 
-				<label><input type="checkbox" name="layover" value="2plusstops"> 2회 이상 경유</label>
+				<label><input type="checkbox" name="layover" value="direct">직항</label>
+				<label><input type="checkbox" name="layover" value="1stop">
+					1회 경유</label> <label><input type="checkbox" name="layover"
+					value="2plusstops"> 2회 이상 경유</label>
 			</div>
 			<hr>
 			<div class="filter-group">
 				<h4>출발 시간</h4>
-				<label><input type="checkbox" name="departure-time" value="morning"> 오전 (06:00 - 11:59)</label> 
-				<label><input type="checkbox" name="departure-time" value="afternoon"> 오후 (12:00 - 17:59)</label> 
-				<label><input type="checkbox" name="departure-time" value="evening"> 저녁 (18:00 - 23:59)</label> 
-				<label><input type="checkbox" name="departure-time" value="night"> 심야 (00:00 - 05:59)</label>
+				<label><input type="checkbox" name="departure-time"
+					value="morning"> 오전 (06:00 - 11:59)</label> <label><input
+					type="checkbox" name="departure-time" value="afternoon"> 오후
+					(12:00 - 17:59)</label> <label><input type="checkbox"
+					name="departure-time" value="evening"> 저녁 (18:00 - 23:59)</label> <label><input
+					type="checkbox" name="departure-time" value="night"> 심야
+					(00:00 - 05:59)</label>
 			</div>
 			<hr>
 			<div class="filter-group">
-			    <h4>항공사</h4>
-			    <div id="airline-filters">
-			        <div th:each="flight, stat : ${flightOffers}">
-			            <div class="flight-item" th:class="${stat.count > 5} ? 'hidden' : ''">
-			                <label>
-			                    <input type="checkbox" name="airline-filter" th:value="${flight.airline}" th:text="${flight.airline}">
-			                </label>
-			            </div>
-			        </div>
-			    </div>
-			    <button type="button" id="more">더보기 ↓</button>
+				<h4>항공사</h4>
+				<div id="airline-filters">
+					<div th:each="flight, stat : ${flightOffers}">
+						<div class="flight-item"
+							th:class="${stat.count > 5} ? 'hidden' : ''">
+							<label> <input type="checkbox" name="airline-filter"
+								th:value="${flight.airline}" th:text="${flight.airline}">
+							</label>
+						</div>
+					</div>
+				</div>
+				<button type="button" id="more">더보기 ↓</button>
 			</div>
 			<hr>
 			<div id="price">
 				<h4>가격</h4>
 				<input type="range" id="price-range" min="" max="" value="">
-				<p>최소 가격: <span id="min-price"></span></p>
-				<p>최대 가격: <span id="max-price"></span></p>
+				<p>
+					최소 가격: <span id="min-price"></span>
+				</p>
+				<p>
+					최대 가격: <span id="max-price"></span>
+				</p>
 			</div>
 		</aside>
 
 		<main class="flight-results"
 			th:if="${flightOffers != null and not #lists.isEmpty(flightOffers)}">
 			<div class="flight-result-header">
-				<h2 th:text="${#lists.size(flightOffers) + '개의 항공권 검색됨'}">항공권 검색 결과</h2>
+				<h2 th:text="${#lists.size(flightOffers) + '개의 항공권 검색됨'}">항공권
+					검색 결과</h2>
 				<div class="sort-options">
 					<span>정렬순서: </span> <select id="sort-select">
 						<option value="best">가성비 최고</option>
@@ -182,56 +192,80 @@
 					</select>
 				</div>
 			</div>
-
 			<div id="flight-list">
-    <div th:each="flight : ${flightOffers}" class="flight-container">
-        <div class="flight-info">
-            <div class="airline-info">
-                <span th:text="${flight.airline}"></span>
-            </div>
-            <div class="flight-details">
-                <!-- 출발 구간 -->
-                <div class="time-info outbound">
-                    <div class="flight-time" th:text="${flight.outboundDepartureTime}"></div>
-                    <div class="airport-code" th:text="${flight.outboundDepartureAirport}"></div>
-                </div>
-                <div class="flight-path"></div>
-                <div class="duration">
-                    <span th:text="${flight.outboundDepartureTime}"></span> → 
-                    <span th:text="${flight.outboundArrivalTime}"></span> 
-                    (<span th:text="${flight.outboundHasConnections == 'true' ? '경유 ' + flight.outboundTotalStops + '회' : '직항'}"></span>)
-                </div>
-                <div class="time-info outbound">
-                    <div class="flight-time" th:text="${flight.outboundArrivalTime}"></div>
-                    <div class="airport-code" th:text="${flight.outboundArrivalAirport}"></div>
-                </div>
+				<div th:each="flight : ${flightOffers}" class="flight-container">
+					<div class="flight-info">
+						<div class="airline-info">
+							<span th:text="${flight.outboundAirline}"></span> <span
+								th:if="${flight.inboundAirline != null and flight.inboundAirline != flight.outboundAirline}"
+								th:text="${flight.inboundAirline}"></span>
+						</div>
+						<div class="flight-details">
+							<!-- 출발 구간 -->
+							<div class="department">
+								<div class="time-info outbound">
+									<div class="flight-time"
+										th:text="${#temporals.format(flight.outboundDepartureTime, 'a h:mm')}"></div>
+									<div class="airport-code"
+										th:text="${flight.outboundDepartureAirport}"></div>
+								</div>
+								<div class="flight-path"></div>
+								<div class="time-info outbound">
+									<div class="flight-time"
+										th:text="${#temporals.format(flight.outboundArrivalTime, 'a h:mm')}"></div>
+									<div class="airport-code"
+										th:text="${flight.outboundArrivalAirport}"></div>
+								</div>
+							</div>
+							<div class="duration">
+								<span
+									th:text="${#temporals.format(flight.outboundDepartureTime, 'a h:mm')}"></span>
+								→ <span
+									th:text="${#temporals.format(flight.outboundArrivalTime, 'a h:mm')}"></span>
+								(<span
+									th:text="${flight.outboundHasConnections == 'true' ? '경유 ' + flight.outboundTotalStops + '회' : '직항'}"></span>)
+							</div>
 
-                <!-- 반환 구간 (존재하면) -->
-                <div th:if="${flight.inboundDepartureTime != null}" class="return-section">
-                    <hr style="border: 1px dashed #ccc; margin: 10px 0;">
-                    <div class="time-info inbound">
-                        <div class="flight-time" th:text="${flight.inboundDepartureTime}"></div>
-                        <div class="airport-code" th:text="${flight.inboundDepartureAirport}"></div>
-                    </div>
-                    <div class="flight-path"></div>
-                    <div class="duration">
-                        <span th:text="${flight.inboundDepartureTime}"></span> → 
-                        <span th:text="${flight.inboundArrivalTime}"></span> 
-                        (<span th:text="${flight.inboundHasConnections == 'true' ? '경유 ' + flight.inboundTotalStops + '회' : '직항'}"></span>)
-                    </div>
-                    <div class="time-info inbound">
-                        <div class="flight-time" th:text="${flight.inboundArrivalTime}"></div>
-                        <div class="airport-code" th:text="${flight.inboundArrivalAirport}"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="price-info">
-                <strong>가격:</strong> <span th:text="${flight.price}"></span>
-                <button class="view-deal">예약하기</button>
-            </div>
-        </div>
-    </div>
-</div>
+							<!-- 귀국 구간 (존재하면) -->
+							
+							<div th:if="${flight.inboundDepartureTime != null}"
+								class="return-section">
+								<hr style="border: 1px dashed #ccc; margin: 10px 0;">
+								<div="return">
+									<div class="time-info inbound">
+										<div class="flight-time"
+											th:text="${#temporals.format(flight.inboundDepartureTime, 'a h:mm')}"></div>
+										<div class="airport-code"
+											th:text="${flight.inboundDepartureAirport}"></div>
+									</div>
+									
+									<div class="flight-path"></div>
+									
+									<div class="time-info inbound">
+										<div class="flight-time"
+											th:text="${#temporals.format(flight.inboundArrivalTime, 'a h:mm')}"></div>
+										<div class="airport-code"
+											th:text="${flight.inboundArrivalAirport}"></div>
+									</div>
+									<div class="duration">
+										<span
+											th:text="${#temporals.format(flight.inboundDepartureTime, 'a h:mm')}"></span>
+										→ <span
+											th:text="${#temporals.format(flight.inboundArrivalTime, 'a h:mm')}"></span>
+										(<span
+											th:text="${flight.inboundHasConnections == 'true' ? '경유 ' + flight.inboundTotalStops + '회' : '직항'}"></span>)
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="price-info">
+							<strong>가격:</strong> <span th:text="${flight.price}"></span>
+							<button class="view-deal">예약하기</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
 		</main>
 	</div>
 
