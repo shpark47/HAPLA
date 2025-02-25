@@ -6,9 +6,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.hapla.comm.model.service.CommService;
 import com.hapla.comm.model.vo.Comm;
@@ -52,17 +54,67 @@ public class CommController {
 	}
     
     @PostMapping("insert")
-	public String insertComm(@ModelAttribute Comm c, HttpSession session) {
-    	c.setUserNo(((Users)session.getAttribute("loginUser")).getUserNo());
-		int result = commService.insertComm(c);
-		
-		if(result > 0) {
-			return "redirect:/comm/list";
-		} else {
-			throw new RuntimeException("게시글 작성을 실패하였습니다.");
-		}
-		
-	}
+    public String insertComm(@ModelAttribute Comm c, HttpSession session) {
+        Users loginUser = (Users) session.getAttribute("loginUser");
+
+        if (loginUser == null) {
+            throw new RuntimeException("로그인이 필요합니다.");
+        }
+
+        // 로그인한 사용자의 userNo를 Comm 객체에 설정
+        c.setUserNo(loginUser.getUserNo());
+
+        int result = commService.insertComm(c);
+        
+        if (result > 0) {
+            return "redirect:/comm/list";
+        } else {
+            throw new RuntimeException("게시글 작성을 실패하였습니다.");
+        }
+    }
    
+//    @GetMapping("/{id}/{page}")
+//    public ModelAndView selectComm(@PathVariable("id") int commNo, @PathVariable("page") int page, HttpSession session, ModelAndView mv) {
+//    	Users loginUser = (Users)session.getAttribute("loginUser");
+//    	String name = null;
+//    	if(loginUser != null) {
+//    		name = loginUser.getName();
+//    	}
+//    	
+//    	Comm c = commService.selectComm(commNo, name);
+////    	ArrayList<Reply> list = bService.selectReplyList(bId);
+//    	
+//    	if(c != null) {
+////    		mv.addObject("list", list);
+//			mv.addObject("c", c).addObject("page", page).setViewName("comm/detail");
+//			return mv;
+//    	} else {
+//    		throw new RuntimeException("게시글 상세조회를 실패하였습니다.");
+//    	}
+//    }
     
+    @GetMapping("/{id}/{page}")
+    public ModelAndView selectComm(@PathVariable("id") int commNo, 
+                                   @PathVariable("page") int page, 
+                                   HttpSession session, 
+                                   ModelAndView mv) {
+        // 현재 로그인한 사용자 정보 가져오기
+        Users loginUser = (Users) session.getAttribute("loginUser");
+        String name = (loginUser != null) ? loginUser.getName() : null;
+
+        // 게시글 상세 조회
+        Comm c = commService.selectComm(commNo, name);
+
+        if (c == null) {
+            mv.addObject("message", "존재하지 않는 게시글입니다.")
+              .setViewName("error/404"); // ✅ 사용자 친화적인 에러 페이지로 이동
+            return mv;
+        }
+
+        mv.addObject("c", c)
+          .addObject("page", page)
+          .setViewName("comm/detail"); // ✅ 게시글 상세 페이지로 이동
+
+        return mv;
+    }
 }
