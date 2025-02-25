@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hapla.admin.model.mapper.AdminMapper">
+    <select id="userListCount" resultType = "int">
+    	select count(*)
+    	from users
+    	<where>
+    		<if test = "keyword != null and keyword != ''">
+    			nickname LIKE '%' || #{keyword} || '%'
+    		</if>
+    	</where>
+    </select>
+    
+    <select id="totalComm" resultType="int">
+    	select count(*)
+    	from comm c
+    		join users u on c.user_no = u.user_no
+    	<where>
+    		<if test = "keyword != null and keyword != ''">
+    			u.nickname LIKE '%' || #{keyword} || '%'
+    		</if>
+    	</where>
+    </select>
+    
+    <select id="totalReview" resultType = "int">
+    	select count(*)
+    	from review r
+    		join users u on r.user_no = u.user_no
+    	<where>
+    		<if test = "keyword != null and keyword != ''">
+    			u.nickname LIKE '%' || #{keyword} || '%'
+    		</if>
+    	</where>
+    </select>
+    
+    <select id="selectUserList">
+    	select *
+    	from users
+    	<where>
+    		<if test = "keyword != null and keyword != ''">
+    			nickname LIKE '%' || #{keyword} || '%'
+    		</if>
+    	</where>
+    	order by create_date desc
+    </select>
+    
+    <select id="userWrite" resultType = "int">
+    	select count(*)
+    	from users 
+    	<where>
+    		<if test = "keyword != null and keyword != ''">
+    			nickname LIKE '%' || #{keyword} || '%'
+    		</if>
+    	</where>
+    </select>
+    
+    <select id="selectUserWriteList" resultType = "AdminUsers">
+    	select  distinct u.user_no, u.nickname, c.title, r.title, r.rating
+    	from users u
+    		left join comm c on u.user_no = c.user_no
+    		left join review r on u.user_no = r.user_no
+    	<where>
+    		<if test = "keyword != null and keyword != ''">
+    			u.nickname LIKE '%' || #{keyword} || '%'
+    		</if>
+    	</where>
+    	order by u.nickname asc
+    </select>
+    
+<!--     <select id="userReportCount"> -->
+<!--     	select count(*) -->
+<!--     	from users u -->
+<!--     		left join comm c on u.user_no = c.user_no -->
+<!--     		left join  -->
+<!--     	<where> -->
+<!--     		<if test = "keyword != null and keyword != ''"> -->
+<!--     			u.nickname LIKE '%' || #{keyword} || '%' -->
+<!--     		</if> -->
+<!--     		<if test=""></if> -->
+<!--     	</where> -->
+<!--     </select> -->
+    
+    <select id="selectCommList">
+    	select distinct u.user_no, u.nickname,r.title, ry.title,c.title, r.content, ry.content,c.content,    
+    	from users u
+    		left join comm c on u.user_no = c.user_no
+    		left join review r on u.user_no = r.user_no
+    		left join reply ry on u.user_no = ry.user_no 
+    	<where>
+    		<if test="keyword != null and keyword != ''">
+    		</if>
+    	</where>	
+    </select>
+    
+    
+</mapper>

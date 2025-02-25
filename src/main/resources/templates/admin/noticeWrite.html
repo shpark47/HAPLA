@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>공지사항 작성 - 여행 웹사이트 관리자 페이지</title>
+      <link href="/admin-css/noticeWrite.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>여행 웹사이트 관리자 페이지</h1>
+        </div>
+    </header>
+
+    <nav>
+        <div class="container">
+            <ul>
+                <li><a href="../main">🏠 MAIN</a></li>
+                <li><a href="users">👥 사용자 조회</a></li>
+                <li><a href="stats">📊 통계 조회</a></li>
+                <li><a href="booking">🏨 예약 현황</a></li>
+                <li><a href="revenue">💰 매출 분석</a></li>
+                <li><a href="notice">📢 공지사항</a></li>
+                <li><a href="report">🚨 신고 관리</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <h2>📢 공지사항 작성</h2>
+            <form id="noticeForm">
+                <div class="form-group">
+                    <label for="noticeTitle">제목</label>
+                    <input type="text" id="noticeTitle" name="noticeTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="noticeContent">내용</label>
+                    <textarea id="noticeContent" name="noticeContent" required></textarea>
+                </div>
+       
+            </form>
+			<button type="submit" class="btn">작성하기</button>
+			 </div>
+    </div>

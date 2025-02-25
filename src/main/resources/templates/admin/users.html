@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>여행 웹사이트 관리자 페이지</title>
+    <link href="/admin-css/users.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>여행 웹사이트 관리자 페이지</h1>
+        </div>
+    </header>
+
+    <nav>
+        <div class="container">
+            <ul>
+				<li><a href="../main">🏠 MAIN</a></li>
+                <li><a href="users">👥 사용자 조회</a></li>
+                <li><a href="stats">📊 통계 조회</a></li>
+                <li><a href="booking">🏨 예약 현황</a></li>
+                <li><a href="revenue">💰 매출 분석</a></li>
+                <li><a href="notice">📢 공지사항</a></li>
+                <li><a href="report">🚨 신고 관리</a></li>
+            </ul>
+        </div>
+    </nav> 
+
+    <div class="container">
+        <div class="card" id="users">
+            <h2>👥 사용자 조회</h2>
+            <table>
+            	<thead>
+	                <tr>
+	                    <th>닉네임</th>
+	                    <th>이메일</th>
+	                    <th>가입일</th>
+	                </tr>
+                </thead>
+                <tbody>
+	                <tr th:each= "user : ${list}">
+	                    <td th:text = "${user.nickname}"></td>
+	                    <td th:text = "${user.email}"></td>
+	                    <td th:text = "${user.createDate}"></td>
+	                </tr>
+	                <tr th:if = "${#lists.isEmpty(list)}"> 
+	                	<td colspan = "3" class=  "no-data"> 조회된 사용자가 없습니다. </td>
+	                </tr>
+               </tbody>
+            </table>
+            
+            <!-- 페이징 -->
+            <div class="pagination" th:if="${not #lists.isEmpty(list)}">            
+                <!-- 이전 페이지 -->
+                <a th:if="${userPi.currentPage > 1}" 
+                   th:href="@{${loc}(userPage=${userPi.currentPage-1}, userkeyword=${userkeyword})}"
+                   class="page-link">&lt;</a>
+
+                <!-- 페이지 번호 -->
+                <th:block th:each="page : ${#numbers.sequence(userPi.startPage, userPi.endPage)}">
+                    <a th:if="${page != userPi.currentPage}"
+                       th:href="@{${loc}(userPage=${page}, userkeyword=${userkeyword})}"
+                       th:text="${page}"
+                       class="page-link"></a>
+                    <span th:if="${page == userPi.currentPage}"
+                          th:text="${page}"
+                          class="page-link active"></span>
+                </th:block>
+
+                <!-- 다음 페이지 -->
+                <a th:if="${userPi.currentPage < userPi.maxPage}"
+                   th:href="@{${loc}(page=${userPi.currentPage+1}, userkeyword=${userkeyword})}"
+                   class="page-link">&gt;</a>
+            </div>
+            
+            <form th:action = "@{users}" class="search-form">
+            	<input type="text" name="userkeyword" th:value="${userkeyword}" placeholder="닉네임을 입력하세요">
+            	<button type="submit">검색</button>
+            </form>
+        </div>
+     
+        <div class="card" id="users">
+            <h2>사용자 활동 조회</h2>
+            <div class="activity-summary">
+                <div class="activity-item">
+                    <h3>총 사용자</h3>
+                    <p th:text = "${totalUsers != null ? totalUsers + '명' : '0명'}">0명</p>
+                </div>
+                <div class="activity-item">
+                    <h3>총 게시글</h3>
+                    <p th:text="${totalComm != null ? totalComm + '개' : '0개'}">0개</p>
+                </div>
+                <div class="activity-item">
+                    <h3>총 리뷰</h3>
+                    <p th:text="${totalReview != null ? totalReview + '개' : '0개'}">0개</p>
+                </div>
+            </div>
+			<table>
+				<thead>
+			                <tr>
+			                    <th>닉네임</th>
+			                    <th>게시글</th>
+			                    <th>리뷰</th>
+			                </tr>
+			     </thead>
+			     <tbody>           
+			                <tr th:each = "alist : ${alist}">
+			                <!-- 닉네임 -->
+			                    <td th:text = "${alist.nickname}"></td>
+			                <!-- 게시글 -->    
+			                    <td>
+			                        <ul th:if="${not #lists.isEmpty(alist.comm)}">
+			                            <li th:each = "comm: ${alist.comm}">
+			                            <span th:text="${comm.title}"></span>
+			                            </li>  
+			                        </ul>
+			                        <span th:if="${#lists.isEmpty(alist.comm)}" class="no-data">작성한 게시글이 없습니다.</span>
+			                        
+			                    </td>
+			                <!-- 리뷰 -->
+			                    <td>
+			                        <ul th:if="${not #lists.isEmpty(alist.review)}">
+			                            <li th:each="review : ${alist.review}">
+			                            <span th:text="${review.title}"></span>
+			                            <span class="rating" 
+                                          th:text="${'(' + #strings.repeat('★', review.rating) + #strings.repeat('☆', 5-review.rating) + ')'}">
+                                    	</span>  
+			                            </li> 
+			                        </ul>
+			                        <span th:if="${#lists.isEmpty(alist.review)}" class ="no-data">작성한 리뷰가 없습니다.</span>
+			                    </td>
+			                    
+			                </tr>
+			                <tr th:if="${#lists.isEmpty(alist)}">
+					            <td colspan="3" class="no-data">조회된 사용자가 없습니다.</td>
+					        </tr>
+			                </tbody>
+			            </table>
+			            
+		<!-- 페이징 -->
+            <div class="pagination" th:if="${not #lists.isEmpty(alist)}">            
+        <!-- 이전 페이지 -->
+               <a th:if="${writePi.currentPage > 1}"
+                   th:href="@{${loc}(writePage=${writePi.currentPage-1}, writekeyword=${writekeyword})}"
+                   class="page-link">&lt;</a>
+          <!-- 페이지 번호 -->
+                <th:block th:each="page : ${#numbers.sequence(writePi.startPage, writePi.endPage)}">
+                    <a th:if="${page != writePi.currentPage}"
+                       th:href="@{${loc}(writePage=${page}, writekeyword=${writekeyword})}"
+                       th:text="${page}"
+                       class="page-link"></a>
+                    <span th:if="${page == writePi.currentPage}"
+                          th:text="${page}"
+                          class="page-link active"></span>
+                </th:block>
+
+                <!-- 다음 페이지 -->
+                <a th:if="${writePi.currentPage < writePi.maxPage}"
+                   th:href="@{${loc}(writePage=${writePi.currentPage+1}, writekeyword=${writekeyword})}"
+                   class="page-link">&gt;</a>
+            </div>
+				<!-- 닉네임 검색  -->		
+					<form th:action="@{write}" class="search-form">
+		                <input type="text" name="writekeyword" th:value="${writekeyword}" placeholder="닉네임을 입력하세요">
+		                <button type="submit">검색</button>
+		            </form>
+				</div>	
+			</div>		
+</body>
+</html>
