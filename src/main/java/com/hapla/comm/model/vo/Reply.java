@@ -1,4 +1,4 @@
-package com.hapla.review.model.vo;
+package com.hapla.comm.model.vo;
 
 import java.sql.Date;
 
@@ -10,17 +10,14 @@ import lombok.ToString;
 
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
-public class Review {
-	private int reviewNo;
+public class Reply {
+	private int replyNo;
 	private int userNo;
-	private String name;
-	private String title;
-	private String content;
-	private int rating;
-	private int likes;
+	private int commNo;
+	private String replyContent;
 	private Date createDate;
 	private Date updateDate;
 }

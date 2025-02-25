@@ -21,80 +21,33 @@
 			<h2>커뮤니티</h2>
 			<table>
 				<tr>
-					<th>제목</th>
-					<td colspan="3" width="400px"></td>
-					<th>좋아요</th>
-					<td class="likes">❤️ 1</td>
+				    <th>제목</th>
+				    <td colspan="3" width="400px">[[${c.title}]]</td> <!-- ✅ 수정 -->
+				    <th>좋아요</th>
+				    <td class="likes">❤️ 1</td>
 				</tr>
 				<tr>
-					<th width="50px">등록자</th>
-					<td></td>
-					<th width="50px">등록일</th>
-					<td></td>
-					<th>조회수</th>
-					<td></td>
+				    <th width="50px">등록자</th>
+				    <td>[[${c.name}]]</td> <!-- ✅ 수정 -->
+				    <th width="50px">등록일</th>
+				    <td>[[${#dates.format(c.createDate, 'yyyy-MM-dd')}]]</td> <!-- ✅ 수정 -->
+				    <th>조회수</th>
+				    <td>[[${c.views}]]</td> <!-- ✅ 수정 -->
 				</tr>
 				<tr>
-					<th colspan="6">내용</th>
+				    <th colspan="6">내용</th>
 				</tr>
 				<tr>
-					<td colspan="6"></td>
+				    <td colspan="6">[[${c.commContent}]]</td> <!-- ✅ 수정 -->
 				</tr>
+
 			</table>
 
 			<h3>댓글 1</h3>
-			<div class="question-container">
-				<div class="questionDetail" th:utext="${q.qnaDetail}"></div>
-				<div class="comments">
-					<table>
-						<thead>
-							<tr>
-								<th width="15%">댓글 작성자</th>
-								<th width="75%">댓글</th>
-								<th width="10%"></th>
-								<th width="10%"></th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr th:each="r : ${r}">
-								<td>키보드 워리어</td>
-								<td class="repComment">[[${r.repComment}]]</td>
-								<td>
-									<div>
-										<button>신고</button>
-									</div>
-								</td>
-								<td>
-									<th:block th:if="${session.loginUser != null && r.userNick eq session.loginUser.userNick}">
-										<input type="hidden" th:value="${r.repNo}" name="repNo">
-										<span class="updel">
-											<!-- 수정(연필)아이콘 -->
-											<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
-												<path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z" />
-											</svg>
-										</span>
-										<!-- currentColor : 기본색 -->
-	                                 	&nbsp;
-	                                 	<span class="updel">
-											<!-- 삭제(쓰레기통) 아이콘 --> 
-											<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
-												<path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5" /></svg>
-										</span>
-										<input type="hidden" th:value="${r.repComment}">
-										<!-- 댓글 수정은 안하고 원래 댓글로 돌려놓으려고 할 때 사용 -->
-									</th:block>
-								</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-				<div class="comment-section">
-					<textarea class="comment-box" placeholder="댓글 내용을 입력하세요"></textarea>
-					<button class="comment-button">댓글 등록</button>
-				</div>
-			</div>
 		</section>
 	</main>
 	<div th:replace="~{common/footer.html :: foot}"></div>
 </body>
+		
+
 </html>
