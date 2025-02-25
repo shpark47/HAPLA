@@ -16,4 +16,12 @@
     <select id="checkNickname">
         select count(*) from users where nickname = #{nickname}
     </select>
+
+    <update id="updateUser">
+        update users set profile = #{profile}, nickname = #{nickname} where user_no = #{userNo}
+    </update>
+
+    <delete id="deleteUser">
+        delete from users where user_no = #{no}
+    </delete>
 </mapper>
