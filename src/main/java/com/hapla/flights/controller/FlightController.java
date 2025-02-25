@@ -4,11 +4,16 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -96,7 +101,7 @@ public class FlightController {
 
         try {
             // IATA code extraction
-        	String iataPattern = "\\((\\w{3})\\)";
+            String iataPattern = "\\((\\w{3})\\)";
             Pattern pattern = Pattern.compile(iataPattern);
             Matcher departureMatcher = pattern.matcher(departure);
             Matcher arrivalMatcher = pattern.matcher(arrival);
@@ -114,10 +119,36 @@ public class FlightController {
 
             // Date parsing
             String[] dateSplit = dates.split(" ~ ");
-            String departureDate = dateSplit[0];
-            String returnDate = (dateSplit.length > 1) ? dateSplit[1] : null;
+            String departureDate = dateSplit[0].trim();
+            String returnDate = (dateSplit.length > 1) ? dateSplit[1].trim() : null;
             
             System.out.println("Parsed dates - Departure: " + departureDate + ", Return: " + returnDate);
+
+            // returnDate 유효성 검사 및 기본값 설정
+            if (returnDate == null || returnDate.isEmpty()) {
+                try {
+                    LocalDate depDate = LocalDate.parse(departureDate);
+                    returnDate = depDate.plusDays(7).toString(); // 출발일로부터 7일 후로 기본값 설정
+                    System.out.println("Return date not provided or empty, defaulting to: " + returnDate);
+                } catch (DateTimeParseException e) {
+                    System.out.println("Invalid departure date format: " + departureDate);
+                    model.addAttribute("error", "잘못된 날짜 형식입니다.");
+                    return "flightSearchResult";
+                }
+            } else {
+                try {
+                    LocalDate depDate = LocalDate.parse(departureDate);
+                    LocalDate retDate = LocalDate.parse(returnDate);
+                    if (retDate.isBefore(depDate) || retDate.isEqual(depDate)) {
+                        returnDate = depDate.plusDays(7).toString(); // 반환 날짜가 출발 날짜보다 이전/같으면 7일 후로 설정
+                        System.out.println("Invalid return date, defaulting to: " + returnDate);
+                    }
+                } catch (DateTimeParseException e) {
+                    System.out.println("Invalid return date format: " + returnDate);
+                    model.addAttribute("error", "잘못된 반환 날짜 형식입니다.");
+                    return "flightSearchResult";
+                }
+            }
 
             // Check if domestic flight
             boolean isDomestic = isDomesticFlight(departureCode, arrivalCode);
@@ -126,13 +157,12 @@ public class FlightController {
             // API key verification
             System.out.println("API Keys present:");
             System.out.println("TAGO_API_KEY: " + TAGO_API_KEY);
-            System.out.println("AMADEUS_API_ID: " + AMADEUS_API_ID  + (AMADEUS_API_ID != null && !AMADEUS_API_ID.isEmpty()));
-            System.out.println("AMADEUS_API_KEY: " + AMADEUS_API_KEY +  (AMADEUS_API_KEY != null && !AMADEUS_API_KEY.isEmpty()));
+            System.out.println("AMADEUS_API_ID: " + AMADEUS_API_ID + (AMADEUS_API_ID != null && !AMADEUS_API_ID.isEmpty()));
+            System.out.println("AMADEUS_API_KEY: " + AMADEUS_API_KEY + (AMADEUS_API_KEY != null && !AMADEUS_API_KEY.isEmpty()));
 
             List<Map<String, String>> flightOffers;
             if (isDomestic) {
                 flightOffers = getDomesticFlightOffers(departureCode, arrivalCode, departureDate, returnDate, travelers);
-                System.out.println("<<<<<<<<<" + flightOffers);
             } else {
                 String accessToken = getAmadeusAccessToken();
                 if (accessToken == null) {
@@ -143,12 +173,33 @@ public class FlightController {
                 flightOffers = getFlightOffers(accessToken, departureCode, arrivalCode, departureDate, returnDate, travelers);
             }
 
-            System.out.println("Flight offers found: " + (flightOffers != null ? flightOffers.size() : "null"));
-            if (flightOffers != null && !flightOffers.isEmpty()) {
-                System.out.println("First flight offer: " + flightOffers.get(0));
+            // 항공사 이름(airline) 기준으로 중복 제거
+            List<String> uniqueAirlines = flightOffers.stream()
+                    .map(offer -> offer.get("airline"))
+                    .filter(Objects::nonNull)
+                    .distinct()
+                    .collect(Collectors.toList());
+
+            // 각 항공사에 해당하는 고유 항공편 목록 생성 (선택적)
+            List<Map<String, String>> uniqueFlightOffers = new ArrayList<>();
+            for (String airline : uniqueAirlines) {
+                Map<String, String> firstOffer = flightOffers.stream()
+                        .filter(offer -> airline.equals(offer.get("airline")))
+                        .findFirst()
+                        .orElse(null);
+                if (firstOffer != null) {
+                    uniqueFlightOffers.add(firstOffer);
+                }
             }
 
-            model.addAttribute("flightOffers", flightOffers);
+            System.out.println("<<<<<<<<<" + uniqueFlightOffers);
+
+            System.out.println("Flight offers found: " + (uniqueFlightOffers != null ? uniqueFlightOffers.size() : "null"));
+            if (uniqueFlightOffers != null && !uniqueFlightOffers.isEmpty()) {
+                System.out.println("First flight offer: " + uniqueFlightOffers.get(0));
+            }
+
+            model.addAttribute("flightOffers", uniqueFlightOffers);
             return "flightSearchResult";
 
         } catch (Exception e) {
@@ -157,6 +208,26 @@ public class FlightController {
             model.addAttribute("error", "항공권 검색 중 오류가 발생했습니다: " + e.getMessage());
             return "flightSearchResult";
         }
+    }
+    // 중복 데이터 제거 메서드
+    private List<Map<String, String>> removeDuplicates(List<Map<String, String>> flightOffers) {
+        if (flightOffers == null || flightOffers.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<Map<String, String>> uniqueOffers = new ArrayList<>();
+        Set<String> seen = new HashSet<>();
+
+        for (Map<String, String> offer : flightOffers) {
+            // 중복 기준: flightNumber와 departureTime 조합 (예시)
+            String key = offer.get("flightNumber") + "_" + offer.get("departureTime");
+            if (!seen.contains(key)) {
+                seen.add(key);
+                uniqueOffers.add(offer);
+            }
+        }
+
+        return uniqueOffers;
     }
 
     // Helper method to determine if flight is domestic
@@ -216,7 +287,8 @@ public class FlightController {
         try {
             String url = "http://apis.data.go.kr/1613000/DmstcFlightNvgInfoService/getFlightOpratInfoList" 
                     + "?serviceKey=" + TAGO_API_KEY 
-                 
+                    + "&pageNo=1" // 페이지 번호 추가
+                    + "&numOfRows=10" // 한 페이지당 항목 수 추가
                     + "&_type=json" 
                     + "&depAirportId=" + URLEncoder.encode(getAirportId(departure), "UTF-8") 
                     + "&arrAirportId=" + URLEncoder.encode(getAirportId(arrival), "UTF-8") 
@@ -292,9 +364,9 @@ public class FlightController {
                 + "?originLocationCode=" + departure
                 + "&destinationLocationCode=" + arrival 
                 + "&departureDate=" + departureDate 
-                + "&returnDate=" + (returnDate != null ? returnDate : "") 
+                + (returnDate != null ? "&returnDate=" + returnDate : "") 
                 + "&adults=" + travelers 
-                + "&max=10";
+                + "&max=200";
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + accessToken);
@@ -310,41 +382,93 @@ public class FlightController {
             if (response.getStatusCode() == HttpStatus.OK) {
                 JSONObject json = new JSONObject(response.getBody());
                 JSONArray flights = json.getJSONArray("data");
-                System.out.println("Number of flights: " + flights.length());
+                JSONObject dictionaries = json.optJSONObject("dictionaries"); // optJSONObject로 null 체크
+                JSONObject carriersDict = (dictionaries != null) ? dictionaries.optJSONObject("carriers") : new JSONObject(); // carriers가 없으면 빈 JSONObject
+
+                System.out.println("Number of flights returned: " + flights.length()); // 반환된 항공편 수 디버깅
 
                 for (int i = 0; i < flights.length(); i++) {
                     JSONObject flight = flights.getJSONObject(i);
-                    JSONObject itinerary = flight.getJSONArray("itineraries").getJSONObject(0);
-                    JSONArray segments = itinerary.getJSONArray("segments");
+                    JSONArray itineraries = flight.getJSONArray("itineraries");
 
-                    JSONObject firstSegment = segments.getJSONObject(0);
-                    JSONObject lastSegment = segments.getJSONObject(segments.length() - 1);
+                    // 출발 구간 (첫 번째 itinerary)
+                    JSONObject outboundItinerary = itineraries.getJSONObject(0);
+                    JSONArray outboundSegments = outboundItinerary.getJSONArray("segments");
+                    JSONObject outboundFirstSegment = outboundSegments.getJSONObject(0);
+                    JSONObject outboundLastSegment = outboundSegments.getJSONObject(outboundSegments.length() - 1);
+
+                    // 반환 구간 (두 번째 itinerary, 존재하면)
+                    JSONObject inboundItinerary = itineraries.optJSONObject(1); // 두 번째 itinerary가 없을 수 있으므로 optJSONObject 사용
+                    JSONArray inboundSegments = null; // inboundSegments 선언
+                    JSONObject inboundFirstSegment = null;
+                    JSONObject inboundLastSegment = null;
+                    if (inboundItinerary != null) {
+                        inboundSegments = inboundItinerary.getJSONArray("segments"); // inboundSegments 초기화
+                        inboundFirstSegment = inboundSegments.getJSONObject(0);
+                        inboundLastSegment = inboundSegments.getJSONObject(inboundSegments.length() - 1);
+                    }
 
                     Map<String, String> flightData = new HashMap<>();
                     flightData.put("price", flight.getJSONObject("price").getString("total") + " EUR");
-                    flightData.put("airline", firstSegment.getString("carrierCode"));
-                    flightData.put("flightNumber", firstSegment.getString("number"));
+                    
+                    // carriersDict에서 airline 코드(예: "EY")를 이름(예: "ETIHAD AIRWAYS")으로 변환
+                    String carrierCode = outboundFirstSegment.getString("carrierCode");
+                    String airlineName = carriersDict.optString(carrierCode, carrierCode); // carriers가 없으면 carrierCode 자체 사용
+                    flightData.put("airline", airlineName);
 
-                    flightData.put("departureTime", firstSegment.getJSONObject("departure").getString("at"));
-                    flightData.put("departureAirport", firstSegment.getJSONObject("departure").getString("iataCode"));
+                    // 출발 구간 정보
+                    flightData.put("outboundDepartureTime", outboundFirstSegment.getJSONObject("departure").getString("at"));
+                    flightData.put("outboundDepartureAirport", outboundFirstSegment.getJSONObject("departure").getString("iataCode"));
+                    flightData.put("outboundArrivalTime", outboundLastSegment.getJSONObject("arrival").getString("at"));
+                    flightData.put("outboundArrivalAirport", outboundLastSegment.getJSONObject("arrival").getString("iataCode"));
 
-                    flightData.put("arrivalTime", lastSegment.getJSONObject("arrival").getString("at"));
-                    flightData.put("arrivalAirport", lastSegment.getJSONObject("arrival").getString("iataCode"));
+                    // 반환 구간 정보 (존재하면)
+                    if (inboundFirstSegment != null && inboundLastSegment != null) {
+                        flightData.put("inboundDepartureTime", inboundFirstSegment.getJSONObject("departure").getString("at"));
+                        flightData.put("inboundDepartureAirport", inboundFirstSegment.getJSONObject("departure").getString("iataCode"));
+                        flightData.put("inboundArrivalTime", inboundLastSegment.getJSONObject("arrival").getString("at"));
+                        flightData.put("inboundArrivalAirport", inboundLastSegment.getJSONObject("arrival").getString("iataCode"));
+                    }
 
-                    if (segments.length() > 1) {
-                        flightData.put("hasConnections", "true");
-                        flightData.put("totalStops", String.valueOf(segments.length() - 1));
+                    // 경유 정보 (출발 구간)
+                    if (outboundSegments.length() > 1) {
+                        flightData.put("outboundHasConnections", "true");
+                        flightData.put("outboundTotalStops", String.valueOf(outboundSegments.length() - 1));
 
-                        StringBuilder connections = new StringBuilder();
-                        for (int j = 0; j < segments.length() - 1; j++) {
-                            JSONObject segment = segments.getJSONObject(j);
-                            connections.append(segment.getJSONObject("arrival").getString("iataCode"));
-                            if (j < segments.length() - 2) {
-                                connections.append(", ");
+                        StringBuilder outboundConnections = new StringBuilder();
+                        for (int j = 0; j < outboundSegments.length() - 1; j++) {
+                            JSONObject segment = outboundSegments.getJSONObject(j);
+                            outboundConnections.append(segment.getJSONObject("arrival").getString("iataCode"));
+                            if (j < outboundSegments.length() - 2) {
+                                outboundConnections.append(", ");
                             }
                         }
-                        flightData.put("connectionAirports", connections.toString());
+                        flightData.put("outboundConnectionAirports", outboundConnections.toString());
+                    } else {
+                        flightData.put("outboundHasConnections", "false");
+                        flightData.put("outboundTotalStops", "0");
                     }
+
+                    // 경유 정보 (반환 구간, 존재하면)
+                    if (inboundSegments != null && inboundSegments.length() > 1) {
+                        flightData.put("inboundHasConnections", "true");
+                        flightData.put("inboundTotalStops", String.valueOf(inboundSegments.length() - 1));
+
+                        StringBuilder inboundConnections = new StringBuilder();
+                        for (int j = 0; j < inboundSegments.length() - 1; j++) {
+                            JSONObject segment = inboundSegments.getJSONObject(j);
+                            inboundConnections.append(segment.getJSONObject("arrival").getString("iataCode"));
+                            if (j < inboundSegments.length() - 2) {
+                                inboundConnections.append(", ");
+                            }
+                        }
+                        flightData.put("inboundConnectionAirports", inboundConnections.toString());
+                    } else if (inboundSegments != null) {
+                        flightData.put("inboundHasConnections", "false");
+                        flightData.put("inboundTotalStops", "0");
+                    }
+
+                    flightData.put("flightNumber", outboundFirstSegment.getString("number"));
 
                     results.add(flightData);
                 }
@@ -356,5 +480,5 @@ public class FlightController {
             e.printStackTrace();
         }
         return results;
-    }
+	}
 }
