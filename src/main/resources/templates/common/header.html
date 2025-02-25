@@ -102,7 +102,7 @@
 <div id="citySearchModal" class="modal-trip">
     <div class="modal-content">
 
-        <!-- <span class="close" onclick="closeCitySearchModal()">&times;</span> -->
+        <span class="close" onclick="closeCitySearchModal()">&times;</span>
 
         <!-- 검색 입력창 -->
         <div class="search-container">
@@ -130,9 +130,11 @@
     }
 
     // 🖱️ 모달 외부 클릭 시 닫기
-    window.addEventListener("click", function(event) {
+    document.addEventListener("click", function(event) {
         const modal = document.getElementById("citySearchModal");
-        if (event.target === modal) {
+        if (event.target.innerText != '여행 일정' && modal.style.display == 'block' && !modal.contains(event.target)) {
+	        console.log(modal.style.display);
+			console.log(modal.contains(event.target));
             closeCitySearchModal();
         }
     });
