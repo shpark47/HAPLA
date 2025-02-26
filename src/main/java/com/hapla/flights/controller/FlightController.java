@@ -400,18 +400,24 @@ public class FlightController {
                     Map<String, Object> flightData = new HashMap<>();
                     flightData.put("price", flight.getJSONObject("price").getString("total") + " EUR");
 
+                    // carrierCode 추가
                     String outboundCarrierCode = outboundFirstSegment.getString("carrierCode");
                     String outboundAirline = carriersDict.optString(outboundCarrierCode, outboundCarrierCode);
 
+                    flightData.put("carrierCode", outboundCarrierCode);  // ✅ 추가
                     flightData.put("airline", outboundAirline);
                     flightData.put("outboundAirline", outboundAirline);
+                    flightData.put("outboundCarrierCode", outboundCarrierCode); // ✅ 추가
 
                     if (inboundFirstSegment != null) {
                         String inboundCarrierCode = inboundFirstSegment.getString("carrierCode");
                         String inboundAirline = carriersDict.optString(inboundCarrierCode, inboundCarrierCode);
+
+                        flightData.put("inboundCarrierCode", inboundCarrierCode); // ✅ 추가
                         flightData.put("inboundAirline", inboundAirline);
                     } else {
                         flightData.put("inboundAirline", outboundAirline);
+                        flightData.put("inboundCarrierCode", outboundCarrierCode); // ✅ 추가
                     }
 
                     flightData.put("outboundDepartureTime", LocalDateTime.parse(outboundFirstSegment.getJSONObject("departure").getString("at")));
@@ -464,7 +470,6 @@ public class FlightController {
 
                     flightData.put("flightNumber", outboundFirstSegment.getString("number"));
 
-
                     results.add(flightData);
                 }
             } else {
@@ -474,6 +479,7 @@ public class FlightController {
             System.out.println("Amadeus API Exception: " + e.getMessage());
             e.printStackTrace();
         }
+
         return results;
     }
 }

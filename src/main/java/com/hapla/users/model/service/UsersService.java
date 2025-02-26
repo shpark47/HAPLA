@@ -26,4 +26,12 @@ public class UsersService {
     public int checkNickname(String nickname) {
         return mapper.checkNickname(nickname);
     }
+
+    public int updateUser(Users user) {
+        return mapper.updateUser(user);
+    }
+
+    public int deleteUser(int no) {
+        return mapper.deleteUser(no);
+    }
 }
