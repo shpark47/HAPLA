@@ -16,4 +16,5 @@ public class Trip {
 	private Date startDate;
 	private Date endDate;
 	private Date createDate;
+	private String cityName;
 }
