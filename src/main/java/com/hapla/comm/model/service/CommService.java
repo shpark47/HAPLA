@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.hapla.comm.model.mapper.CommMapper;
 import com.hapla.comm.model.vo.Comm;
+import com.hapla.comm.model.vo.Reply;
 import com.hapla.common.PageInfo;
 
 import lombok.RequiredArgsConstructor;
@@ -38,5 +39,13 @@ public class CommService {
 				c.setViews(c.getViews() + 1);
 			}
 		} return c;
+	}
+
+	public ArrayList<Reply> selectReplyList(int commNo) {
+		return mapper.selectReplyList(commNo);
+	}
+
+	public int insertReply(Reply r) {
+		return mapper.insertReply(r);
 	}
 }

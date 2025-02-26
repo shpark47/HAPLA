@@ -10,8 +10,8 @@
 	           comm.create_date, comm.update_date, comm.likes, comm.status,
 	           category.category_name, users.name
 	    FROM comm
-	    JOIN users ON comm.user_no = users.user_no
-	    JOIN category ON comm.category_no = category.category_no
+	    	 JOIN users ON comm.user_no = users.user_no
+	    	 JOIN category ON comm.category_no = category.category_no
 	    WHERE comm.status = 'Y'
 	</select>
 	
@@ -27,7 +27,7 @@
 	<select id="selectComm" resultType="com.hapla.comm.model.vo.Comm">
 	    SELECT comm.*, users.name
 	    FROM comm
-	    JOIN users ON comm.user_no = users.user_no
+	    	 JOIN users ON comm.user_no = users.user_no
 	    WHERE comm.status = 'Y' AND comm.comm_no = #{commNo}
 	</select>
 	
@@ -36,6 +36,18 @@
 		set views = views + 1
 		where comm_no = #{commNo}
 	</update>
+	
+	<select id="selectReplyList" resultType="com.hapla.comm.model.vo.Reply">
+		select reply.*
+		from reply
+			 join users on reply.user_no = users.user_no
+		where reply.comm_no = #{commNo}
+	</select>
+	
+	<insert id="insertReply">
+		insert into reply
+		values (seq.reply.nextval, #{userNo}, #{commNo}, #{replyContent}, sysdate, sysdate)
+	</insert>
 </mapper>
 
 

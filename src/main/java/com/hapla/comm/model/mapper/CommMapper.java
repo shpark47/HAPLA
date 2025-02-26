@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.session.RowBounds;
 
 import com.hapla.comm.model.vo.Comm;
+import com.hapla.comm.model.vo.Reply;
 
 @Mapper
 public interface CommMapper {
@@ -19,4 +20,8 @@ public interface CommMapper {
 	Comm selectComm(int commNo);
 
 	int updateCount(int commNo);
+
+	ArrayList<Reply> selectReplyList(int commNo);
+
+	int insertReply(Reply r);
 }

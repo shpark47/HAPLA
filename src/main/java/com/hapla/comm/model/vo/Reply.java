@@ -17,6 +17,7 @@ public class Reply {
 	private int replyNo;
 	private int userNo;
 	private int commNo;
+	private String name;
 	private String replyContent;
 	private Date createDate;
 	private Date updateDate;

@@ -1,5 +1,6 @@
 package com.hapla.comm.controller;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import org.springframework.stereotype.Controller;
@@ -10,15 +11,20 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hapla.comm.model.service.CommService;
 import com.hapla.comm.model.vo.Comm;
+import com.hapla.comm.model.vo.Reply;
 import com.hapla.common.PageInfo;
 import com.hapla.common.Pagination;
 import com.hapla.users.model.vo.Users;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
@@ -104,17 +110,39 @@ public class CommController {
 
         // 게시글 상세 조회
         Comm c = commService.selectComm(commNo, name);
+        ArrayList<Reply> list = commService.selectReplyList(commNo);
 
         if (c == null) {
-            mv.addObject("message", "존재하지 않는 게시글입니다.")
-              .setViewName("error/404"); // ✅ 사용자 친화적인 에러 페이지로 이동
+            mv.addObject("message", "존재하지 않는 게시글입니다.").setViewName("error/404"); // ✅ 사용자 친화적인 에러 페이지로 이동
             return mv;
         }
 
-        mv.addObject("c", c)
-          .addObject("page", page)
-          .setViewName("comm/detail"); // ✅ 게시글 상세 페이지로 이동
+        mv.addObject("c", c).addObject("page", page).setViewName("comm/detail"); // ✅ 게시글 상세 페이지로 이동
+        mv.addObject("list", list);
 
         return mv;
+    }
+    
+    @GetMapping("rinsert")
+    @ResponseBody
+    public String insertReply(@ModelAttribute Reply r, HttpServletResponse response) {
+    	int result = commService.insertReply(r);
+    	ArrayList<Reply> list = commService.selectReplyList(r.getCommNo());
+    	
+    	response.setContentType("application/json; charset=UTF-8");
+    	
+    	ObjectMapper om = new ObjectMapper();
+    	
+    	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    	om.setDateFormat(sdf);
+    	
+    	String strJson = null;
+    	
+    	try {
+			strJson = om.writeValueAsString(list);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+    	return strJson;
     }
 }
