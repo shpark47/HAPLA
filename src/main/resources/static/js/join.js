@@ -13,7 +13,6 @@ document.querySelector('#joinBtn').addEventListener('click', () => {
         .then((response) => response.json())
         .then((data) => {
             if (data.success){
-                console.log('fdsafa');
                 document.getElementById("joinModal").classList.add('hidden');
                 document.getElementById('loginModal').classList.remove('hidden');
                 alert('회원가입에 성공하였습니다. 로그인해주세요.')
