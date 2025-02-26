@@ -16,6 +16,8 @@ public class HaplaApplication {
 		System.setProperty("google_client_secret", dotenv.get("google_client_secret"));
 		System.setProperty("AMADEUS_API_ID", dotenv.get("AMADEUS_API_ID"));
 		System.setProperty("AMADEUS_API_KEY", dotenv.get("AMADEUS_API_KEY"));
+		System.setProperty("r2.access-key", dotenv.get("r2.access-key"));
+		System.setProperty("r2.secret-key", dotenv.get("r2.secret-key"));
 
 		SpringApplication.run(HaplaApplication.class, args);
 		
