@@ -1,12 +1,13 @@
 package com.hapla.users.controller;
 
-import com.google.gson.JsonObject;
 import com.hapla.exception.Exception;
 import com.hapla.users.model.service.UsersService;
 import com.hapla.users.model.vo.Users;
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import net.minidev.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -14,12 +15,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -67,7 +69,31 @@ public class UsersController {
         return "redirect:/";
     }
 
-    private static final String UPLOAD_DIR = "c:/profiles/"; // 파일 저장 경로
+    // 환경 변수에서 R2 설정 가져오기
+    @Value("${r2.access-key}")
+    private String r2AccessKey;
+
+    @Value("${r2.secret-key}")
+    private String r2SecretKey;
+
+    @Value("${r2.bucket-name}")
+    private String r2BucketName;
+
+    // R2 엔드포인트와 공개 URL 설정
+    private static final String R2_ENDPOINT = "https://33a78afb4d99dee34672fc2e9b3a305d.r2.cloudflarestorage.com/";
+    private static final String R2_PUBLIC_URL = "https://pub-04c6fc4d78f440d78896dc3d2f55f689.r2.dev/";
+
+    private S3Client s3Client; // final 제거
+
+    @PostConstruct
+    public void initS3Client() {
+        AwsBasicCredentials credentials = AwsBasicCredentials.create(r2AccessKey, r2SecretKey);
+        this.s3Client = S3Client.builder()
+                .region(Region.US_EAST_1)
+                .endpointOverride(java.net.URI.create(R2_ENDPOINT))
+                .credentialsProvider(StaticCredentialsProvider.create(credentials))
+                .build();
+    }
 
     @PostMapping("/upload")
     @ResponseBody
@@ -77,24 +103,26 @@ public class UsersController {
         }
 
         try {
+            // 파일 이름 생성
             String originalFilename = image.getOriginalFilename();
             String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
             String renameFileName = new SimpleDateFormat("yyyyMMddHHmmssSSS")
                     .format(new Date()) + (int)(Math.random() * 100000) + extension;
 
-            Path uploadPath = Paths.get(UPLOAD_DIR);
-            Files.createDirectories(uploadPath);
-            Path filePath = uploadPath.resolve(renameFileName);
-            image.transferTo(filePath.toFile());
+            // R2에 업로드
+            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                    .bucket(r2BucketName)
+                    .key(renameFileName)
+                    .build();
 
-            if (!Files.exists(filePath)) {
-                throw new IOException("파일 저장 실패: " + filePath);
-            }
-            System.out.println("파일 저장 성공: " + filePath);
+            s3Client.putObject(putObjectRequest, software.amazon.awssdk.core.sync.RequestBody.fromInputStream(image.getInputStream(), image.getSize()));
 
-            String imagePath = "/profiles/" + renameFileName; // 클라이언트가 사용할 경로
+            // 클라이언트에 반환할 공개 URL
+            String imagePath = R2_PUBLIC_URL + renameFileName;
             Map<String, String> response = new HashMap<>();
             response.put("imagePath", imagePath);
+            System.out.println("파일 업로드 성공: " + imagePath);
+
             return ResponseEntity.ok(response);
 
         } catch (IOException e) {
