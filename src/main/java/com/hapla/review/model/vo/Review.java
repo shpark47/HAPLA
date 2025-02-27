@@ -23,4 +23,6 @@ public class Review {
 	private int likes;
 	private Date createDate;
 	private Date updateDate;
+	private String when;
+	private String withWhom;
 }
