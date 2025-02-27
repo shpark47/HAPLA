@@ -3,9 +3,8 @@ package com.hapla.schedule.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.hapla.schedule.model.service.ScheduleService;
 import com.hapla.schedule.model.vo.Trip;
@@ -26,7 +25,7 @@ public class ScheduleController {
 	 * this.scheduleService = scheduleService; }
 	 */
 	
-	// 캘린더 페이지
+	// 캘린더 페이지로 이동
 	@GetMapping("/scheduleCalendar")
 	public String ScheduleCalendar() {
 		return "/schedule/scheduleCalendar";
@@ -44,5 +43,5 @@ public class ScheduleController {
 		System.out.println("trip : " + trip);
 		return "/schedule/schedule";
 	}
-	
+
 }
