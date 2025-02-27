@@ -38,16 +38,14 @@ body {
 	margin-bottom: 10%;
 }
  */
-.title{
-	margin-left:3%;
-	padding: 3%;
-	vertical-align: super;
+ 
+.sidebar-title{
+	margin-top: 5%;
+}
+
+.trip-title{
+	font-size: 20px;
 	font-weight: bold;
-    border-radius: 15px; /* ✅ 모서리를 둥글게 */
-    border: 1px solid #e0e0e0; /* ✅ 테두리 추가 */
-    background: white;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); /* ✅ 부드러운 그림자 */
-    /* max-width: 100%; ✅ 최대 너비 제한 */
 
 }
 
@@ -55,6 +53,12 @@ body {
 	cursor: pointer;
 }
 
+#tripDates{
+	display: flex;
+    width: 100%;
+    margin-top: 3%;
+    margin-bottom: 10%;
+}
 
 /* 📅 여행 일정 리스트 스타일 */
 .date-list {
@@ -84,7 +88,8 @@ body {
     max-width: 100%; /* ✅ 최대 너비 제한 */
     justify-content: center;
     display: flex;
-    flex-direction: row
+    flex-direction: row;
+    margin-top: 3%;
 }
 
 .controls {

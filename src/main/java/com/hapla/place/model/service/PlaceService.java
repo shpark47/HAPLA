@@ -1,5 +1,8 @@
-package com.hapla.common.service;
+package com.hapla.place.model.service;
 
+import com.hapla.place.model.mapper.PlaceMapper;
+import com.hapla.place.model.vo.Place;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.beans.factory.annotation.Value;
@@ -8,7 +11,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
 
 @Service
-public class GooglePlaceService {
+@RequiredArgsConstructor
+public class PlaceService {
+
+    private final PlaceMapper mapper;
 
     @Value("${google.api.key}")
     private String apiKey;
@@ -37,5 +43,21 @@ public class GooglePlaceService {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public int countStar(String placeId) {
+        return mapper.countStar(placeId);
+    }
+
+    public int checkPlace(Place place) {
+        return mapper.checkPlace(place);
+    }
+
+    public int insertPlace(Place place) {
+        return mapper.insertPlace(place);
+    }
+
+    public int deletePlace(Place place) {
+        return mapper.deletePlace(place);
     }
 }

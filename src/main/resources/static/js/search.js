@@ -12,7 +12,7 @@ const placeholderMap = {
 };
 
 // 일반 검색 ------------------------------------------------------------------------
-let selectedCategory = "여행지+관광명소+숙박+음식점"; // 기본 카테고리
+let selectedCategory = "tourist_attraction+landmark+lodging+restaurant"; // 기본 카테고리
 
 categoryButtons.forEach(button => {
     button.addEventListener('click', function () {
@@ -26,49 +26,60 @@ categoryButtons.forEach(button => {
     });
 });
 
-// 장소 검색 함수 (서버로 요청을 보냄)
+// ✅ 장소 검색 함수 (서버로 요청을 보냄)
 async function searchPlaces() {
-    let city = document.querySelector('#search-input-text').value;
-    if (!city) {
-        alert("도시명을 입력하세요.");
-        return;
+    let city = document.querySelector('#search-input-text').value; // 검색 입력창에서 도시 이름 가져오기
+    if (!city) { // 도시 이름이 입력되지 않은 경우
+        alert("도시명을 입력하세요."); // 경고 메시지 표시
+        return; // 함수 종료
     }
 
     // 서버로 도시 이름과 선택된 카테고리 보내기
     let response = await fetch(`/search?city=${encodeURIComponent(city)}&category=${selectedCategory}`);
-    let data = await response.json();
-    console.log(data);
+    // fetch를 사용해 서버에 GET 요청을 보내고, 도시 이름과 카테고리를 쿼리 파라미터로 전달
+    // encodeURIComponent로 특수 문자를 URL에 맞게 인코딩
+    let data = await response.json(); // 서버 응답을 JSON 형식으로 변환
+    console.log(data); // 응답 데이터 콘솔에 출력 (디버깅용)
 
     // 서버 응답이 성공적이면 장소 표시
-    if (data.status === "OK") {
-        displayPlaces(data.results);
-    } else {
-        alert("검색 결과가 없습니다.");
+    if (data.status === "OK") { // 응답 상태가 "OK"인 경우
+        displayPlaces(data.results); // 검색 결과를 화면에 표시하는 함수 호출
+    } else { // 응답 상태가 "OK"가 아닌 경우 (검색 실패)
+        alert("검색 결과가 없습니다."); // 사용자에게 검색 실패 메시지 표시
     }
 }
 
+// ✅ 검색된 장소를 화면에 표시하는 함수
 function displayPlaces(places) {
-    let container = document.querySelector(".destinations-grid");
-    container.innerHTML = "";
+    let container = document.querySelector(".destinations-grid"); // 장소 카드를 표시할 컨테이너 요소 선택
+    container.innerHTML = ""; // 기존 내용을 초기화하여 중복 표시 방지
 
-    places.forEach(place => {
+    places.forEach(place => { // 검색된 장소 목록을 하나씩 순회
         console.log(place.photos ? place.photos[0].photo_reference : 'No photo available');
+        // 장소에 사진이 있으면 첫 번째 사진의 참조를 출력, 없으면 "No photo available" 출력 (디버깅용)
 
-        let name = place.name || "이름 없음";  // 이름이 없는 경우 처리
-        let rating = place.rating ? `⭐ ${place.rating}` : "⭐ 없음";
+        let name = place.name || "이름 없음"; // 장소 이름이 없으면 "이름 없음"으로 기본값 설정
+        let rating = place.rating ? `⭐ ${place.rating}` : "⭐ 없음"; // 평점이 있으면 별표와 함께 표시, 없으면 "없음"
         let reviews = place.user_ratings_total ? `${place.user_ratings_total} 리뷰` : "리뷰 없음";
+        // 리뷰 수가 있으면 숫자와 함께 표시, 없으면 "리뷰 없음"
 
         // 사진 URL 생성: Google Places API의 photo 엔드포인트를 통해 사진을 가져옵니다.
         let photoUrl = place.photos && place.photos[0].photo_reference ?
             `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${place.photos[0].photo_reference}&key=AIzaSyCEHjTtVqBclz07ADqbkGjqGIe94Cq-S60` :
-            "/img/시나모롤.jpg";  // 기본 이미지
+            "/img/시나모롤.jpg"; // 사진이 있으면 Google API로 URL 생성, 없으면 기본 이미지 사용
 
-        let div = document.createElement("div");
-        div.className = "destination-card";
+        // ✅ place.types 배열 전체에서 첫 번째로 나오는 타입을 찾습니다
+        let placeTypes = place.types.find(type =>
+            ['tourist_attraction', 'landmark', 'lodging', 'restaurant'].includes(type)
+        ) || "unknown"; // 원하는 타입이 없으면 "unknown"을 기본값으로 설정
+
+        let div = document.createElement("div"); // 새로운 장소 카드 요소 생성
+        div.className = "destination-card"; // CSS 클래스 추가 (스타일링용)
         div.innerHTML = `
+            <input type="hidden" name="type" value="${placeTypes}">
             <img src="${photoUrl}" alt="${name}">
             <div class="destination-info">
-            <h3>${name}</h3>
+            <h3>${name}</h3> 
             <p class="rating">${rating}</p>
             <p class="review-count">${reviews}</p>
             <h5>${place.place_id}</h5>
@@ -77,11 +88,11 @@ function displayPlaces(places) {
 
         // 카드 클릭 시 상세 페이지로 이동
         div.addEventListener("click", () => {
-            let encodedPlaceId = encodeURIComponent(place.place_id);
-            location.href = `/detail/${encodedPlaceId}`;
+            let encodedPlaceId = encodeURIComponent(place.place_id); // place_id를 URL 안전하게 인코딩
+            location.href = `/detail/${encodedPlaceId}/${placeTypes}`; // 상세 페이지 URL로 이동
         });
 
-        container.appendChild(div);
+        container.appendChild(div); // 생성한 카드를 컨테이너에 추가
     });
 }
 

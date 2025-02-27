@@ -26,4 +26,6 @@ public class SecurityConfig { // 설정 파일의 역할을 할 클래스
                 .csrf(csrf -> csrf.disable()); // 개발 시 CSRF 보호를 비활성화
         return http.build();
     }
+    
+    
 }
