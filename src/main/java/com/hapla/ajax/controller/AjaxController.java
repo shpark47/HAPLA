@@ -12,5 +12,7 @@ import lombok.RequiredArgsConstructor;
 @SessionAttributes("loginUser")
 public class AjaxController {
 	
+
+	
 	
 }
