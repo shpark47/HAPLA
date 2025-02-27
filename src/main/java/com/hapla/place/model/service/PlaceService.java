@@ -1,6 +1,7 @@
 package com.hapla.place.model.service;
 
 import com.hapla.place.model.mapper.PlaceMapper;
+import com.hapla.place.model.vo.Place;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -46,5 +47,17 @@ public class PlaceService {
 
     public int countStar(String placeId) {
         return mapper.countStar(placeId);
+    }
+
+    public int checkPlace(Place place) {
+        return mapper.checkPlace(place);
+    }
+
+    public int insertPlace(Place place) {
+        return mapper.insertPlace(place);
+    }
+
+    public int deletePlace(Place place) {
+        return mapper.deletePlace(place);
     }
 }
