@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.7.1.js"
+            integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
     <title>장소 상세</title>
     <style>
         body {
@@ -10,6 +12,7 @@
             margin: 0;
             padding: 0;
         }
+
         .place-detail-container {
             max-width: 800px;
             margin: 20px auto;
@@ -18,6 +21,7 @@
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
+
         .place-detail-container img {
             width: 100%;
             height: 400px;
@@ -25,41 +29,81 @@
             border-radius: 8px;
             cursor: pointer;
         }
+
         .place-info {
             margin-top: 20px;
         }
+
         .place-info h2 {
             font-size: 24px;
             color: #0099cc;
             margin: 0;
         }
+
         .place-info .like-container {
             font-size: 24px;
             color: #0099cc;
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
+            display: flex; /* 요소들을 가로로 배치 */
+            justify-content: flex-end; /* 오른쪽 정렬 유지 */
+            align-items: center; /* 세로 중앙 정렬 */
+            gap: 5px; /* 하트와 숫자 사이 간격 */
         }
+
         .place-info .like-container label {
             margin: 0;
             cursor: pointer;
         }
+
         .place-info .header-container {
             display: grid;
             grid-template-columns: 1fr auto; /* 두 개의 열, 첫 번째는 1fr, 두 번째는 auto */
             align-items: center;
         }
+
         .place-info p {
-            font-size: 16px;
             margin: 8px 0;
         }
+
         .rating {
             color: #ff9800;
             font-weight: bold;
         }
+
         .place-info a {
             color: #0099cc;
             text-decoration: none;
+        }
+
+        #star {
+            margin: 0;
+        }
+
+        #star img {
+            width: 32px; /* 하트 이미지 크기 */
+            height: 32px;
+            vertical-align: middle; /* 세로 정렬 조정 */
+        }
+
+        #count {
+            margin: 0;
+            font-size: 16px; /* 숫자 크기 조정 */
+            line-height: 32px; /* 하트 높이에 맞춰 세로 정렬 */
+        }
+
+        /* 반응형 디자인 */
+        @media (max-width: 768px) {
+            .like-container {
+                gap: 3px; /* 작은 화면에서 간격 줄이기 */
+            }
+
+            #count {
+                font-size: 14px; /* 작은 화면에서 텍스트 크기 줄이기 */
+            }
+
+            #star img {
+                width: 24px; /* 작은 화면에서 하트 크기 줄이기 */
+                height: 24px;
+            }
         }
     </style>
 </head>
@@ -68,18 +112,25 @@
 
 <div class="place-detail-container">
     <!-- 이미지 -->
-    <img onclick="goGoogleMap()" th:src="'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=' + ${placeDetails.result.photos[0]['photo_reference']} + '&key=AIzaSyCEHjTtVqBclz07ADqbkGjqGIe94Cq-S60'" alt="장소 사진" width="400" height="300"/>
+    <img onclick="goGoogleMap()"
+         th:src="'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=' + ${placeDetails.result.photos[0]['photo_reference']} + '&key=AIzaSyCEHjTtVqBclz07ADqbkGjqGIe94Cq-S60'"
+         alt="장소 사진" width="400" height="300"/>
 
     <div class="place-info">
-        <input type="hidden" name="type" th:value="${type}">
+        <input type="hidden" name="type" id="type" th:value="${type}">
         <input type="hidden" name="placeId" id="placeId" th:value="${placeId}">
 
         <!-- 장소 이름과 좋아요 표시 -->
         <div class="header-container">
             <h2 th:text="${placeDetails.result.name}">장소 이름</h2>
             <div class="like-container">
-                <label id="star">♡</label> <!-- 좋아요 표시 -->
-                <label for="star" th:text="${count}"></label>
+                <label id="star">
+                    <img th:if="${check == true}" src="/img/heart2.svg" alt="Filled Heart"
+                         style="width: 32px; height: 32px;">
+                    <img th:unless="${check == true}" src="/img/heart1.svg" alt="Empty Heart"
+                         style="width: 32px; height: 32px;">
+                </label>
+                <label for="star" id="count" th:text="${count}"></label>
             </div>
         </div>
 
@@ -106,26 +157,42 @@
 </body>
 <script th:inline="javascript">
     const goGoogleMap = () => {
-        location.href='https://www.google.com/maps/place/?q=place_id:'+document.getElementById('placeId').value;
+        location.href = 'https://www.google.com/maps/place/?q=place_id:' + document.getElementById('placeId').value;
     }
 
     window.onload = () => {
-        const userNo = /*[[session.loginUser.userNo]]*/0;
-        document.getElementById('star').addEventListener('click', ()=>{
-            fetch("/star", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json", // 요청 헤더 설정
-                },
-                body: JSON.stringify({
-                    userNo: userNo,
-                    apiId: document.getElementById('placeId').value
-                }), // 요청 본문에 JSON 데이터 포함
-            })
-                .then((response) => response.json()) // 응답을 JSON으로 변환
-                .then((data) => {
-                    console.log(data); // 서버 응답 출력
-                })
+        const userNo = /*[[${session.loginUser != null ? session.loginUser.userNo : 0}]]*/0;
+        console.log(userNo);
+        document.getElementById('star').addEventListener('click', () => {
+            if (userNo == 0) {
+                alert('로그인 후 이용해 주세요.');
+            } else {
+
+
+                $.ajax({
+                    url: '/star',
+                    data: {
+                        userNo: userNo,
+                        type: document.getElementById('type').value,
+                        apiId: document.getElementById('placeId').value
+                    },
+                    type: "post",
+                    success: data => {
+                        const count = document.getElementById('count');
+                        const star = document.getElementById('star');
+                        if (data == 'insert') {
+                            count.innerText = parseInt(count.innerText) + 1;
+                            star.innerHTML = '<img th:if="${check == true}" src="/img/heart2.svg" alt="Filled Heart" style="width: 32px; height: 32px;">';
+                        } else if (data == 'delete') {
+                            count.innerText = parseInt(count.innerText) - 1;
+                            star.innerHTML = '<img th:unless="${check == true}" src="/img/heart1.svg" alt="Empty Heart" style="width: 32px; height: 32px;">';
+                        } else {
+                            alert('오류 발생');
+                        }
+                    },
+                    error: data => console.log(data)
+                });
+            }
         });
     }
 </script>
