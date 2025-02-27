@@ -8,7 +8,8 @@
 <link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script src="https	://npmcdn.com/flatpickr/dist/l10n/ko.js"></script>
+<script src="https://npmcdn.com/flatpickr/dist/l10n/ko.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 </head>
 <body>
@@ -40,9 +41,8 @@
 		<div class="flight-search-bar" style="display: none;">
 			<form class="search-form">
 				<div class="trip-group">
-					<button type="button" id="return">왕복</button>
+					<button type="button" class="active" id="return">왕복</button>
 					<button type="button" id="go">편도</button>
-					<button type="button" id="many">다구간</button>
 				</div>
 				<!-- 출발지 입력 필드 아래에 드롭다운 추가 -->
 				<br>
@@ -62,11 +62,11 @@
 								d="M23,19.198H1c-0.221,0-0.4,0.18-0.4,0.4s0.18,0.4,0.4,0.4h22c0.221,0,0.4-0.18,0.4-0.4S23.221,19.198,23,19.198z" />
 	                        </g>
 	                    </svg>
-						<input type="text" placeholder="출발지" name="departureName">
+						<input type="text" placeholder="출발지" name="departureName" autocomplete="off">
 						<!-- 드롭다운 리스트 -->
 						<ul id="departure-dropdown" class="dropdown-list"></ul>
 					</div>
-	
+
 					<!-- 도착지 입력 필드 아래에 드롭다운 추가 -->
 					<div class="input-group">
 						<svg xmlns="http://www.w3.org/2000/svg"
@@ -80,18 +80,18 @@
 								transform="rotate(15 12 12) translate(0 -1)" />
 	                        <line x1="3" y1="21" x2="21" y2="21" />
 	                    </svg>
-						<input type="text" placeholder="도착지" name="arrivalName">
+						<input type="text" placeholder="도착지" name="arrivalName" autocomplete="off">
 						<!-- 드롭다운 리스트 -->
 						<ul id="arrival-dropdown" class="dropdown-list"></ul>
 					</div>
-	
+
 					<div class="calendar-container">
 						<input type="text" name="dates" class="date-picker"
 							placeholder="출발일 → 도착일">
 					</div>
 					<button type="button" class="traveler-picker">여행자 1명</button>
-					<button type="button" class="search-btn">검색</button>
-					<div class="traveler-section" style="display:none;">
+					<button type="button" class="research-btn">검색</button>
+					<div class="traveler-section" style="display: none;">
 						<div class="traveler-selection" style="display: none;">
 							<input type="hidden" name="travelers" value="1" />
 							<div class="traveler-category">
@@ -133,7 +133,7 @@
 			</form>
 		</div>
 	</section>
-	
+
 	<hr>
 	<div class="search-results-container">
 		<aside class="filters">
@@ -200,11 +200,9 @@
 				<div th:each="flight : ${flightOffers}" class="flight-container">
 					<div class="flight-info">
 						<div class="airline-info">
-							<img th:src="@{'https://www.alternativeairlines.com/img/airline-logos/' + ${flight.carrierCode} + '.png'}">
-
-
-							<span th:text="${flight.outboundAirline}"></span> 
-							<span th:if="${flight.inboundAirline != null and flight.inboundAirline != flight.outboundAirline}" th:text="${flight.inboundAirline}"></span>
+							<span th:text="${flight.outboundAirline}"></span> <span
+								th:if="${flight.inboundAirline != null and flight.inboundAirline != flight.outboundAirline}"
+								th:text="${flight.inboundAirline}"></span>
 						</div>
 						<div class="flight-details">
 							<!-- 출발 구간 -->
@@ -223,7 +221,7 @@
 										<div class="flight-time"
 											th:text="${#temporals.format(flight.outboundArrivalTime, 'a h:mm')}"></div>
 									</div>
-							</div>
+								</div>
 								<div class="duration">
 									<span
 										th:text="${#temporals.format(flight.outboundDepartureTime, 'a h:mm')}"></span>
@@ -235,46 +233,48 @@
 							</div>
 
 							<!-- 귀국 구간 (존재하면) -->
-							
+
 							<div th:if="${flight.inboundDepartureTime != null}"
 								class="return-section">
 								<hr style="border: 1px dashed #ccc; margin: 10px 0;">
-									<div class="return">
-										<div class="flight-title">
-												<div class="time-info inbound">
-													<div class="airport-code"
-														th:text="${flight.inboundDepartureAirport}"></div>
-													<div class="flight-time"
-														th:text="${#temporals.format(flight.inboundDepartureTime, 'a h:mm')}"></div>
-												</div>
-												
-												<div class="flight-path"></div>
-												
-												<div class="time-info inbound">
-													<div class="airport-code"
-														th:text="${flight.inboundArrivalAirport}"></div>
-													<div class="flight-time"
-														th:text="${#temporals.format(flight.inboundArrivalTime, 'a h:mm')}"></div>
-												</div>
-											</div>
-											<div class="duration">
-												<span
-													th:text="${#temporals.format(flight.inboundDepartureTime, 'a h:mm')}"></span>
-												→ <span
-													th:text="${#temporals.format(flight.inboundArrivalTime, 'a h:mm')}"></span>
-												(<span
-													th:text="${flight.inboundHasConnections == 'true' ? '경유 ' + flight.inboundTotalStops + '회' : '직항'}"></span>)
-											</div>
+								<div class="return">
+									<div class="flight-title">
+										<div class="time-info inbound">
+											<div class="airport-code"
+												th:text="${flight.inboundDepartureAirport}"></div>
+											<div class="flight-time"
+												th:text="${#temporals.format(flight.inboundDepartureTime, 'a h:mm')}"></div>
+										</div>
+
+										<div class="flight-path"></div>
+
+										<div class="time-info inbound">
+											<div class="airport-code"
+												th:text="${flight.inboundArrivalAirport}"></div>
+											<div class="flight-time"
+												th:text="${#temporals.format(flight.inboundArrivalTime, 'a h:mm')}"></div>
+										</div>
+									</div>
+									<div class="duration">
+										<span
+											th:text="${#temporals.format(flight.inboundDepartureTime, 'a h:mm')}"></span>
+										→ <span
+											th:text="${#temporals.format(flight.inboundArrivalTime, 'a h:mm')}"></span>
+										(<span
+											th:text="${flight.inboundHasConnections == 'true' ? '경유 ' + flight.inboundTotalStops + '회' : '직항'}"></span>)
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
-						<div class="flight-price">
-							<div class="price-info">
-								<div class="price-title"><strong>가격 :&nbsp</strong>   <span th:text=" ${flight.price}"></span></div>
-								<button class="view-deal">예약하기</button>
+					<div class="flight-price">
+						<div class="price-info">
+							<div class="price-title">
+								<strong>가격 :&nbsp</strong> <span th:text=" ${flight.price}"></span>
 							</div>
+							<button class="view-deal">예약하기</button>
 						</div>
+					</div>
 				</div>
 			</div>
 
@@ -282,5 +282,6 @@
 	</div>
 	<div th:replace="~{common/footer.html :: foot}"></div>
 	<script th:inline="javascript" src="/js/search.js"></script>
+	<script th:inline="javascript" src="/js/flightSearchResult.js"></script>
 </body>
 </html>

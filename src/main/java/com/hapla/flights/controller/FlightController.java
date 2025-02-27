@@ -265,6 +265,7 @@ public class FlightController {
             ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
             if (response.getStatusCode() == HttpStatus.OK) {
                 JSONObject json = new JSONObject(response.getBody());
+                System.out.println("json : " + json);
                 return json.getString("access_token");
             }
         } catch (Exception e) {
@@ -347,6 +348,8 @@ public class FlightController {
         return tagoDateTime.substring(0, 4) + "-" + tagoDateTime.substring(4, 6) + "-" + tagoDateTime.substring(6, 8)
                 + "T" + tagoDateTime.substring(8, 10) + ":" + tagoDateTime.substring(10, 12) + ":00";
     }
+    
+    
 
     private List<Map<String, Object>> getFlightOffers(String accessToken, String departure, String arrival,
             String departureDate, String returnDate, String travelers) {
@@ -357,7 +360,7 @@ public class FlightController {
                 + "&departureDate=" + departureDate
                 + (returnDate != null ? "&returnDate=" + returnDate : "")
                 + "&adults=" + travelers
-                + "&max=200";
+                + "&max=100";
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + accessToken);
