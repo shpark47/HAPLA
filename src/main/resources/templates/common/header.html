@@ -17,7 +17,7 @@
             <a onclick="openModal()">내 정보</a>
             <a href="/comm/list">커뮤니티</a>
             <a href="#">여행지추천</a>
-            <a onclick="openCitySearchModal()">여행 일정</a>
+            <a onclick="openTripPlanModal()">여행 일정</a>
             <a href="/review/main">리뷰 작성</a>
             <a href="#">문의하기</a>
             <a href="/users/logout">로그아웃</a>
@@ -98,17 +98,30 @@
 </body>
 <script src="/js/header.js"></script>
 
-<!-- 도시 검색 모달 -->
-<div id="citySearchModal" class="modal-trip">
-    <div class="modal-content">
 
+<!-- 여행 일정 모달 -->
+<div id="tripPlanModal" class="modal-trip hidden">
+   <div class="modal-content">
+      <!--  -->
+      <div class="button-container">
+         <button id="planListBtn" class="planList">일정 목록</button>
+         <button id="makePlanBtn" class="makePlan" onclick="openCitySearchModal()">일정 생성</button>
+      </div>
+   </div>
+</div>
+
+
+<!-- 도시 검색 모달 -->
+<div id="citySearchModal" class="modal-trip hidden">
+    <div class="modal-content">
+      
         <!-- <span class="close" onclick="closeCitySearchModal()">&times;</span> -->
 
         <!-- 검색 입력창 -->
         <div class="search-container">
             <input type="text" id="searchInput" placeholder="도시 이름을 입력하세요..." oninput="filterCities()">
             <span class="search-icon">
-            	<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
+               <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
             </span>
         </div>
 
@@ -118,11 +131,43 @@
 </div>
 
 <script>
-    //🌍 모달 열기
-    function openCitySearchModal() {
-        document.getElementById("citySearchModal").style.display = "block";
-        filterCities();
+
+   // 여행일정 모달 열기
+   function openTripPlanModal(){
+      document.getElementById("tripPlanModal").style.display = "block";
+      document.getElementById("tripPlanModal").modal.classList.remove("hidden");
+   }
+   
+   // 모달 닫기
+    function closeTripPlanModal() {
+        document.getElementById("tripPlanModal").style.display = "none";
     }
+   
+   // 🖱️ 모달 외부 클릭 시 닫기
+    document.addEventListener("click", function(event) {
+        const modal = document.getElementById("tripPlanModal");
+        if (event.target.innerText != '여행 일정' && modal.style.display == 'block' && !modal.contains(event.target)) {
+	        //console.log(modal.style.display);
+	        //console.log(modal.contains(event.target));
+         closeTripPlanModal();
+        }
+    });
+
+    
+    //🌍 모달 열기
+     function openCitySearchModal() {
+    	document.getElementById("tripPlanModal").style.display = "none";
+        document.getElementById("citySearchModal").style.display = "block";
+        document.getElementById("tripPlanModal").classList.remove("hidden");
+     // ✅ 검색창 입력값이 있는 경우만 `filterCities()` 실행
+        const searchInput = document.getElementById("searchInput").value.trim();
+        if (searchInput !== "") {
+            filterCities(searchInput);  // 🔥 검색어를 전달
+        } else {
+            displayCityList();  // 🔥 검색어가 없으면 기본 인기 도시 출력
+        }
+    }
+     
 
     // ❌ 모달 닫기
     function closeCitySearchModal() {
@@ -133,12 +178,14 @@
     document.addEventListener("click", function(event) {
         const modal = document.getElementById("citySearchModal");
         if (event.target.innerText != '여행 일정' && modal.style.display == 'block' && !modal.contains(event.target)) {
-	        console.log(modal.style.display);
-			console.log(modal.contains(event.target));
+           //console.log(modal.style.display);
+           //console.log(modal.contains(event.target));
             closeCitySearchModal();
         }
     });
-	</script>
+    
+    
+</script>
     <!-- Google Places API 스크립트 -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCEHjTtVqBclz07ADqbkGjqGIe94Cq-S60&libraries=places"></script>
 
@@ -151,9 +198,9 @@
         input.setAttribute("autocomplete", "off");
         
         const autocomplete = new google.maps.places.Autocomplete(input, {
-            types: ['geocode'],	// 도시 자동완성 최소화(검색창 드롭다운 비활성화)
-        	fields: ["name", "formatted_address", "geometry"],
-        	// types: ['(cities)'], // 도시만 검색
+            types: ['geocode'],   // 도시 자동완성 최소화(검색창 드롭다운 비활성화)
+           fields: ["name", "formatted_address", "geometry"],
+           // types: ['(cities)'], // 도시만 검색
         });
 
         // ✅ 도시 선택 시 이벤트
@@ -208,6 +255,12 @@
 
     // 🔍 도시 검색 기능 (검색된 결과 출력)
     function filterCities(searchTerm) {
+    	if (!searchTerm || typeof searchTerm !== "string") {
+            console.warn("⚠ 검색어가 유효하지 않습니다. 기본 인기 도시를 표시합니다.");
+            displayCityList(); // 🔥 검색어가 없으면 인기 도시 표시
+            return;
+        }
+    	
         const service = new google.maps.places.PlacesService(document.createElement("div"));
 
         const request = {
