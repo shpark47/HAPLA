@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HAPLA 커뮤니티</title>
+    <link href="/css/reviewDetail.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<div th:replace="~{common/header.html :: topbar}"></div>
+<main class="content">
+    <h2 style="color: #58a;">리뷰</h2>
+    <input type="text" class="search-bar" placeholder="장소 또는 액티비티로 검색">
+
+    <div class="review-container">
+        <div class="review-header">
+            <img src="https://via.placeholder.com/40" alt="프로필 이미지" class="profile-img">
+            <div>
+                <p class="review-meta">janedoe123</p>
+                <p class="review-meta">2025/02/07</p>
+            </div>
+        </div>
+        
+        <p class="review-title">[1박2일] KAP>KAP 그린투어 + 소금 호수 캠핑, 다시 카파도키아로</p>
+
+        <div class="gallery">
+            <img src="https://via.placeholder.com/180" alt="소금 호수">
+            <img src="https://via.placeholder.com/180" alt="협곡">
+            <img src="https://via.placeholder.com/180" alt="캠핑장">
+        </div>
+
+        <div class="like-section">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/1/13/Facebook_like_thumb.png" 
+                 alt="좋아요" class="like-icon">
+            <span class="like-count">3</span>
+        </div>
+    </div>
+</main>   
+<div th:replace="~{common/footer.html :: foot}"></div>
+</body>
+</html>

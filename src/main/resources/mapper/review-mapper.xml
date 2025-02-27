@@ -7,9 +7,25 @@
     
     <select id="selectReviewList" resultType="com.hapla.review.model.vo.Review">
 	    SELECT review.review_no, review.user_no, users.name, review.title, review.content, 
-	           review.rating, review.likes, review.create_date, review.update_date
+	           review.rating, review.create_date, review.update_date, review.when, review.with_whom
 	    FROM review
 	    JOIN users ON review.user_no = users.user_no
 	    ORDER BY review.create_date DESC
 	</select>
+	
+	<select id="selectReview" resultType="com.hapla.review.model.vo.Review">
+		select review.*, users.name
+		from review
+			 join users on review.user_no = users.user_no
+		where review.review_no = #{reviewNo}
+	</select>
+	
+	<insert id="insertReview">
+	    <selectKey order="BEFORE" resultType="int" keyProperty="reviewNo">
+	        SELECT seq_review.nextval FROM dual
+	    </selectKey>
+	    INSERT INTO review 
+	    (review_no, user_no, title, content, rating, create_date, update_date, when, with_whom) 
+	    VALUES (#{reviewNo}, #{userNo}, #{title}, #{content}, #{rating}, SYSDATE, SYSDATE, #{when}, #{withWhom})
+	</insert>
 </mapper>
