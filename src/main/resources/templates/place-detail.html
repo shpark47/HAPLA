@@ -56,5 +56,9 @@
 </div>
 <div th:replace="~{common/footer.html :: foot}"></div>
 </body>
-<script src="/js/place-detail.js" th:inline="javascript"></script>
+<script th:inline="javascript">
+    // Thymeleaf로 userNo를 전역 변수로 설정
+    window.userNo = [[${session.loginUser != null ? session.loginUser.userNo : 0}]];
+</script>
+<script src="/js/place-detail.js"></script>
 </html>

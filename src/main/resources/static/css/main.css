@@ -16,6 +16,7 @@ body {
 }
 
 .popular-destinations h2 {
+    margin-top: 20px;
     width: 100%;
     max-width: 80%;
     text-align: left;
