@@ -13,7 +13,12 @@ document.addEventListener("click", function (event) {
     const modal = document.getElementById("tripPlanModal");
     if (!modal.classList.contains("hidden") && !modal.contains(event.target) && event.target.innerText !== "여행 일정") {
         closeTripPlanModal();
-		closeCitySearchModal();
+    }
+
+    const modal2 = document.getElementById("citySearchModal");
+    console.log(event.target.innerText !== "일정 생성")
+    if (!modal2.classList.contains("hidden") && !modal2.contains(event.target) && event.target.innerText !== "여행 일정" && event.target.innerText !== "일정 생성") {
+        closeCitySearchModal();
     }
 });
 
@@ -28,14 +33,6 @@ function openCitySearchModal() {
 function closeCitySearchModal() {
     document.getElementById("citySearchModal").classList.add("hidden");
 }
-
-// 🖱️ 모달 외부 클릭 시 닫기 (중복 제거)
-/*document.addEventListener("click", function (event) {
-    const modal = document.getElementById("citySearchModal");
-    if (!modal.classList.contains("hidden") && !modal.contains(event.target) && event.target.innerText !== "여행 일정") {
-        
-    }
-});*/
 
 // 🌍 Google Places API 자동완성 검색 적용
 function initCitySearch() {
