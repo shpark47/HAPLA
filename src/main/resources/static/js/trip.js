@@ -34,6 +34,18 @@ function closeCitySearchModal() {
     document.getElementById("citySearchModal").classList.add("hidden");
 }
 
+// 일정 목록 버튼 클릭 시 페이지 이동
+document.addEventListener("DOMContentLoaded", function () {
+    const planListBtn = document.getElementById("planListBtn");
+
+    if (planListBtn) {
+        planListBtn.addEventListener("click", function () {
+            console.log("📋 일정 목록 페이지로 이동");
+            window.location.href = "/schedule/scheduleList"; 
+        });
+    }
+});
+
 // 🌍 Google Places API 자동완성 검색 적용
 function initCitySearch() {
     const input = document.getElementById("searchInput");
