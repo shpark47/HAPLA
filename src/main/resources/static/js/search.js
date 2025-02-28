@@ -14,7 +14,7 @@ const placeholderMap = {
 };
 
 // 일반 검색 ------------------------------------------------------------------------
-let selectedCategory = "tourist_attraction+landmark+lodging+restaurant"; // 기본 카테고리
+let selectedCategory = "전체"; // 기본 카테고리
 
 categoryButtons.forEach(button => {
     button.addEventListener('click', function () {
@@ -36,25 +36,40 @@ async function searchPlaces() {
         return; // 함수 종료
     }
 
-    // 서버로 도시 이름과 선택된 카테고리 보내기
-    let response = await fetch(`/search?city=${encodeURIComponent(city)}&category=${selectedCategory}`);
-    // fetch를 사용해 서버에 GET 요청을 보내고, 도시 이름과 카테고리를 쿼리 파라미터로 전달
-    // encodeURIComponent로 특수 문자를 URL에 맞게 인코딩
-    let data = await response.json(); // 서버 응답을 JSON 형식으로 변환
-    console.log(data); // 응답 데이터 콘솔에 출력 (디버깅용)
+    if (selectedCategory == '전체'){
+        fetch(`/searchAll?city=${encodeURIComponent(city)}`)
+            .then(response => response.json())
+            .then(data => {
+                displayAllPlace(data);
+            });
+    }else{
+        // 서버로 도시 이름과 선택된 카테고리 보내기
+        let response = await fetch(`/search?city=${encodeURIComponent(city)}&category=${selectedCategory}`);
+        // fetch를 사용해 서버에 GET 요청을 보내고, 도시 이름과 카테고리를 쿼리 파라미터로 전달
+        // encodeURIComponent로 특수 문자를 URL에 맞게 인코딩
+        let data = await response.json(); // 서버 응답을 JSON 형식으로 변환
+        console.log(data); // 응답 데이터 콘솔에 출력 (디버깅용)
 
-    // 서버 응답이 성공적이면 장소 표시
-    if (data.status === "OK") { // 응답 상태가 "OK"인 경우
-        displayPlaces(data.results); // 검색 결과를 화면에 표시하는 함수 호출
-    } else { // 응답 상태가 "OK"가 아닌 경우 (검색 실패)
-        alert("검색 결과가 없습니다."); // 사용자에게 검색 실패 메시지 표시
+        // 서버 응답이 성공적이면 장소 표시
+        if (data.status === "OK") { // 응답 상태가 "OK"인 경우
+            displayPlaces(data.results); // 검색 결과를 화면에 표시하는 함수 호출
+        } else { // 응답 상태가 "OK"가 아닌 경우 (검색 실패)
+            alert("검색 결과가 없습니다."); // 사용자에게 검색 실패 메시지 표시
+        }
     }
 }
 
 // ✅ 검색된 장소를 화면에 표시하는 함수
 function displayPlaces(places) {
-    let container = document.querySelector(".destinations-grid"); // 장소 카드를 표시할 컨테이너 요소 선택
-    container.innerHTML = ""; // 기존 내용을 초기화하여 중복 표시 방지
+    let container = document.getElementById('search-all-data');
+    let inDiv = document.createElement("div"); // 장소 카드를 표시할 컨테이너 요소 선택
+    inDiv.classList.add('destinations-grid');
+    container.innerHTML = '';
+
+    const h2 = document.createElement('h2');
+    h2.innerText = '검색 결과';
+    container.appendChild(h2);
+    container.appendChild(inDiv);
 
     places.forEach(place => { // 검색된 장소 목록을 하나씩 순회
         console.log(place.photos ? place.photos[0].photo_reference : 'No photo available');
@@ -84,7 +99,6 @@ function displayPlaces(places) {
             <h3>${name}</h3> 
             <p class="rating">${rating}</p>
             <p class="review-count">${reviews}</p>
-            <h5>${place.place_id}</h5>
             </div>
         `;
 
@@ -94,9 +108,62 @@ function displayPlaces(places) {
             location.href = `/detail/${encodedPlaceId}/${placeTypes}`; // 상세 페이지 URL로 이동
         });
 
-        container.appendChild(div); // 생성한 카드를 컨테이너에 추가
+        inDiv.appendChild(div); // 생성한 카드를 컨테이너에 추가
     });
 }
+
+const displayAllPlace = places => {
+    let container = document.getElementById('search-all-data');
+    let div = document.createElement("div");
+    container.innerHTML = "";
+
+    div.innerHTML = `
+        <h2>${places.main_info.name}</h2>
+        <img src="${places.main_info.photo_url}" alt="${places.main_info.name}">
+        <p>${places.main_info.description}</p>
+        `;
+    container.innerHTML = div.innerHTML;
+
+    const categories = [
+        { title: '여행지', data: places.tourist_attraction, type: 'tourist_attraction' },
+        { title: '관광명소', data: places.landmark, type: 'landmark' },
+        { title: '숙박', data: places.lodging, type: 'lodging' },
+        { title: '음식점', data: places.restaurant, type: 'restaurant' }
+    ];
+
+    categories.forEach(category => {
+        const h2 = document.createElement('h2');
+        h2.innerText = category.title;
+        container.appendChild(h2);
+        container.appendChild(otherPlace(category.data, category.type));
+    });
+}
+
+const otherPlace = (p, category) => {
+    let grid = document.createElement("div");
+    grid.classList.add('destinations-grid');
+    p.forEach(attr => {
+        const div = document.createElement('div');
+        div.className = 'destination-card';
+        div.innerHTML = `
+            <input type="hidden" name="type" value="${category}">
+            <img src="${attr.photo_url}" alt="${attr.name}">
+            <div class="destination-info">
+            <h3>${attr.name}</h3> 
+            <p class="rating">${attr.rating}</p>
+            <p class="review-count">${attr.review_count}</p>
+            </div>
+        `;
+
+        div.addEventListener("click", () => {
+            let encodedPlaceId = encodeURIComponent(attr.place_id); // place_id를 URL 안전하게 인코딩
+            location.href = `/detail/${encodedPlaceId}/${category}`; // 상세 페이지 URL로 이동
+        });
+
+        grid.appendChild(div);
+    });
+    return grid;
+};
 
 
 // 항공 -----------------------------------------------------------------------------
@@ -387,7 +454,7 @@ incrementButtons.forEach(button => {
     document.querySelector('.apply').addEventListener('click', () => {
         updateWarningMessage();
     });
-	
+
 	document.addEventListener('DOMContentLoaded', function() {
 	    const moreButton = document.querySelector('#more');
 	    const flightItems = document.querySelectorAll('.flight-item'); // 모든 항목
@@ -422,7 +489,7 @@ incrementButtons.forEach(button => {
 	        }
 	    });
 	});
-	
+
 	/*<![CDATA[*/
 	   var prices = /*[[${flightsOffers.![price]}]]*/ []; // 가격 리스트 가져오기
 

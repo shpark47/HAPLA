@@ -1,16 +1,14 @@
 package com.hapla.review.controller;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.hapla.comm.model.vo.Comm;
@@ -43,9 +41,8 @@ public class ReviewController {
 //		}
 		
 		int listCount = reviewService.getListCount(1);
-		
 		PageInfo pi = Pagination.getPageInfo(currentPage, listCount, 5);
-		ArrayList<Comm> list = reviewService.selectReviewList(pi, 1);
+		ArrayList<Review> list = reviewService.selectReviewList(pi, 1);
 		
 		model.addAttribute("list", list).addAttribute("pi", pi);
 		model.addAttribute("loc", request.getRequestURI());
@@ -89,8 +86,6 @@ public class ReviewController {
 //	        throw new RuntimeException("게시글 작성을 실패하였습니다.");
 //	    }
 //	}
-
-
 
 	
 	@GetMapping("/{id}/{page}")
