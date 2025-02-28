@@ -28,4 +28,5 @@
 	    (review_no, user_no, title, content, rating, create_date, update_date, when, with_whom) 
 	    VALUES (#{reviewNo}, #{userNo}, #{title}, #{content}, #{rating}, SYSDATE, SYSDATE, #{when}, #{withWhom})
 	</insert>
+	
 </mapper>
