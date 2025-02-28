@@ -1,6 +1,9 @@
 package com.hapla.schedule.controller;
 
+import java.util.List;
+
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,5 +50,22 @@ public class ScheduleController {
 		// 서비스 호출하여 DB 저장
 		scheduleService.saveTrip(trip);
 		return "/schedule/schedule";
+	}
+	
+	// 일정 목록 페이지로 이동
+//	@GetMapping("/scheduleList")
+//	public String ScheduleList() {
+//		return "/schedule/scheduleList";
+//	}
+	
+	@GetMapping("/scheduleList")
+	public String ScheduleList(@ModelAttribute Trip trip, HttpSession session, Model model) {
+		
+		Users user = (Users)session.getAttribute("loginUser");
+		
+		List<Trip> schedules = scheduleService.getMySchedule(user.getUserNo());
+		
+		model.addAttribute("trip", schedules);
+		return "/schedule/scheduleList";
 	}
 }

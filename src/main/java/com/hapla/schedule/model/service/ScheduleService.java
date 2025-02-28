@@ -1,5 +1,7 @@
 package com.hapla.schedule.model.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.hapla.schedule.model.mapper.ScheduleMapper;
@@ -16,6 +18,10 @@ public class ScheduleService {
 	// 일정 저장 메소드
 	public void saveTrip(Trip trip) {
 		scheduleMapper.saveTrip(trip);
+	}
+
+	public List<Trip> getMySchedule(int userNo) {
+		return scheduleMapper.getMySchedule(userNo);
 	}
 
 }
