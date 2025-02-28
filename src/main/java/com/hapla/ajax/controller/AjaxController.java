@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/schedule")
+@RequestMapping({"/schedule", "/flight"})
 @RequiredArgsConstructor
 @SessionAttributes("loginUser")
 public class AjaxController {

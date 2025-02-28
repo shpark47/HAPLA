@@ -31,6 +31,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -85,130 +86,9 @@ public class FlightController {
                 .collect(Collectors.toList());
     }
 
-    @GetMapping("/flightSearch")
-    public String flightSearch(@RequestParam("departureName") String departure,
-            @RequestParam("arrivalName") String arrival, @RequestParam("dates") String dates,
-            @RequestParam("travelers") String travelers, Model model) {
+    
 
-        System.out.println("=== Flight Search Started ===");
-        System.out.println("Input parameters:");
-        System.out.println("Departure: " + departure);
-        System.out.println("Arrival: " + arrival);
-        System.out.println("Dates: " + dates);
-        System.out.println("Travelers: " + travelers);
-
-        try {
-            String iataPattern = "\\((\\w{3})\\)";
-            Pattern pattern = Pattern.compile(iataPattern);
-            Matcher departureMatcher = pattern.matcher(departure);
-            Matcher arrivalMatcher = pattern.matcher(arrival);
-
-            if (!departureMatcher.find() || !arrivalMatcher.find()) {
-                System.out.println("Failed to extract IATA codes");
-                model.addAttribute("error", "출발지와 도착지에서 IATA 코드를 찾을 수 없습니다.");
-                return "flightSearchResult";
-            }
-
-            String departureCode = departureMatcher.group(1);
-            String arrivalCode = arrivalMatcher.group(1);
-
-            System.out.println("Extracted IATA codes - Departure: " + departureCode + ", Arrival: " + arrivalCode);
-
-            String[] dateSplit = dates.split(" ~ ");
-            String departureDate = dateSplit[0].trim();
-            String returnDate = (dateSplit.length > 1) ? dateSplit[1].trim() : null;
-
-            System.out.println("Parsed dates - Departure: " + departureDate + ", Return: " + returnDate);
-
-            if (returnDate == null || returnDate.isEmpty()) {
-                try {
-                    LocalDate depDate = LocalDate.parse(departureDate);
-                    returnDate = depDate.plusDays(7).toString();
-                    System.out.println("Return date not provided or empty, defaulting to: " + returnDate);
-                } catch (DateTimeParseException e) {
-                    System.out.println("Invalid departure date format: " + departureDate);
-                    model.addAttribute("error", "잘못된 날짜 형식입니다.");
-                    return "flightSearchResult";
-                }
-            } else {
-                try {
-                    LocalDate depDate = LocalDate.parse(departureDate);
-                    LocalDate retDate = LocalDate.parse(returnDate);
-                    if (retDate.isBefore(depDate) || retDate.isEqual(depDate)) {
-                        returnDate = depDate.plusDays(7).toString();
-                        System.out.println("Invalid return date, defaulting to: " + returnDate);
-                    }
-                } catch (DateTimeParseException e) {
-                    System.out.println("Invalid return date format: " + returnDate);
-                    model.addAttribute("error", "잘못된 반환 날짜 형식입니다.");
-                    return "flightSearchResult";
-                }
-            }
-
-            boolean isDomestic = isDomesticFlight(departureCode, arrivalCode);
-            System.out.println("Is domestic flight: " + isDomestic);
-
-            System.out.println("API Keys present:");
-            System.out.println("TAGO_API_KEY: " + TAGO_API_KEY);
-            System.out.println("AMADEUS_API_ID: " + AMADEUS_API_ID + (AMADEUS_API_ID != null && !AMADEUS_API_ID.isEmpty()));
-            System.out.println("AMADEUS_API_KEY: " + AMADEUS_API_KEY + (AMADEUS_API_KEY != null && !AMADEUS_API_KEY.isEmpty()));
-
-            List<Map<String, Object>> flightOffers;
-            if (isDomestic) {
-                flightOffers = getDomesticFlightOffers(departureCode, arrivalCode, departureDate, returnDate, travelers);
-            } else {
-                String accessToken = getAmadeusAccessToken();
-                if (accessToken == null) {
-                    System.out.println("Failed to get Amadeus access token");
-                    model.addAttribute("error", "국제선 항공권 검색 실패: 인증 오류");
-                    return "flightSearchResult";
-                }
-                flightOffers = getFlightOffers(accessToken, departureCode, arrivalCode, departureDate, returnDate, travelers);
-            }
-
-            if (flightOffers == null || flightOffers.isEmpty()) {
-                System.out.println("No flight offers retrieved.");
-                model.addAttribute("error", "항공편을 찾을 수 없습니다.");
-                return "flightSearchResult";
-            }
-
-            List<String> uniqueAirlines = flightOffers.stream()
-                    .map(offer -> (String) offer.get("airline"))
-                    .filter(Objects::nonNull)
-                    .distinct()
-                    .collect(Collectors.toList());
-
-            List<Map<String, Object>> uniqueFlightOffers = new ArrayList<>();
-            for (String airline : uniqueAirlines) {
-                Map<String, Object> firstOffer = flightOffers.stream()
-                        .filter(offer -> airline.equals(offer.get("airline")))
-                        .findFirst()
-                        .orElse(null);
-                if (firstOffer != null) {
-                    uniqueFlightOffers.add(firstOffer);
-                }
-            }
-
-            System.out.println("<<<<<<<<<" + uniqueFlightOffers);
-            System.out.println("Flight offers found: " + uniqueFlightOffers.size());
-            if (!uniqueFlightOffers.isEmpty()) {
-                System.out.println("First flight offer: " + uniqueFlightOffers.get(0));
-                System.out.println("Outbound Airline: " + uniqueFlightOffers.get(0).get("outboundAirline"));
-                System.out.println("Inbound Airline: " + uniqueFlightOffers.get(0).get("inboundAirline"));
-            }
-
-            model.addAttribute("flightOffers", uniqueFlightOffers);
-            return "flightSearchResult";
-
-        } catch (Exception e) {
-            System.out.println("Exception in flight search: " + e.getMessage());
-            e.printStackTrace();
-            model.addAttribute("error", "항공권 검색 중 오류가 발생했습니다: " + e.getMessage());
-            return "flightSearchResult";
-        }
-    }
-
-    private List<Map<String, Object>> removeDuplicates(List<Map<String, Object>> flightOffers) {
+    public List<Map<String, Object>> removeDuplicates(List<Map<String, Object>> flightOffers) {
         if (flightOffers == null || flightOffers.isEmpty()) {
             return new ArrayList<>();
         }
@@ -227,13 +107,13 @@ public class FlightController {
         return uniqueOffers;
     }
 
-    private boolean isDomesticFlight(String departureCode, String arrivalCode) {
+    public boolean isDomesticFlight(String departureCode, String arrivalCode) {
         List<String> koreanAirports = Arrays.asList("ICN", "GMP", "PUS", "CJU", "TAE", "KWJ", "RSU", "KPO", "WJU",
                 "USN", "HIN", "YNY");
         return koreanAirports.contains(departureCode) && koreanAirports.contains(arrivalCode);
     }
 
-    private String getAirportId(String iataCode) {
+    public String getAirportId(String iataCode) {
         Map<String, String> airportIdMap = new HashMap<>();
         airportIdMap.put("ICN", "NAARKSI");
         airportIdMap.put("GMP", "NAARKSS");
@@ -251,7 +131,7 @@ public class FlightController {
         return airportIdMap.getOrDefault(iataCode, "UNKNOWN");
     }
 
-    private String getAmadeusAccessToken() {
+    public String getAmadeusAccessToken() {
         RestTemplate restTemplate = new RestTemplate();
         String url = "https://test.api.amadeus.com/v1/security/oauth2/token";
 
@@ -265,6 +145,7 @@ public class FlightController {
             ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
             if (response.getStatusCode() == HttpStatus.OK) {
                 JSONObject json = new JSONObject(response.getBody());
+                System.out.println("json : " + json);
                 return json.getString("access_token");
             }
         } catch (Exception e) {
@@ -274,7 +155,7 @@ public class FlightController {
         return null;
     }
 
-    private List<Map<String, Object>> getDomesticFlightOffers(String departure, String arrival, String departureDate, String returnDate, String travelers) {
+    public List<Map<String, Object>> getDomesticFlightOffers(String departure, String arrival, String departureDate, String returnDate, String travelers) {
         RestTemplate restTemplate = new RestTemplate();
         List<Map<String, Object>> results = new ArrayList<>();
 
@@ -343,12 +224,179 @@ public class FlightController {
         return results;
     }
 
-    private String formatTAGODateTime(String tagoDateTime) {
+    public String formatTAGODateTime(String tagoDateTime) {
         return tagoDateTime.substring(0, 4) + "-" + tagoDateTime.substring(4, 6) + "-" + tagoDateTime.substring(6, 8)
                 + "T" + tagoDateTime.substring(8, 10) + ":" + tagoDateTime.substring(10, 12) + ":00";
     }
+    
+    @GetMapping("/flightSearch")
+    public Object flightSearch(@RequestParam("departureName") String departure,
+            @RequestParam("arrivalName") String arrival, @RequestParam("dates") String dates,
+            @RequestParam("travelers") String travelers, Model model,
+            @RequestHeader(value="X-requested-With", required = false)String requestedWith){
 
-    private List<Map<String, Object>> getFlightOffers(String accessToken, String departure, String arrival,
+        System.out.println("=== Flight Search Started ===");
+        System.out.println("Input parameters:");
+        System.out.println("Departure: " + departure);
+        System.out.println("Arrival: " + arrival);
+        System.out.println("Dates: " + dates);
+        System.out.println("Travelers: " + travelers);
+        
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            String iataPattern = "\\((\\w{3})\\)";
+            Pattern pattern = Pattern.compile(iataPattern);
+            Matcher departureMatcher = pattern.matcher(departure);
+            Matcher arrivalMatcher = pattern.matcher(arrival);
+            if (!departureMatcher.find() || !arrivalMatcher.find()) {
+	            if(!"XMLHttpRequest".equals(requestedWith)) {	
+		            
+		                System.out.println("Failed to extract IATA codes");
+		                model.addAttribute("error", "출발지와 도착지에서 IATA 코드를 찾을 수 없습니다.");
+		                return "flightSearchResult";
+		            }
+	             else {
+			        	response.put("status", "error");
+			            response.put("message", "출발지와 도착지에서 IATA 코드를 찾을 수 없습니다.");
+			            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+	            }
+            }
+
+            String departureCode = departureMatcher.group(1);
+            String arrivalCode = arrivalMatcher.group(1);
+
+            System.out.println("Extracted IATA codes - Departure: " + departureCode + ", Arrival: " + arrivalCode);
+
+            String[] dateSplit = dates.split(" ~ ");
+            String departureDate = dateSplit[0].trim();
+            String returnDate = (dateSplit.length > 1) ? dateSplit[1].trim() : null;
+
+            System.out.println("Parsed dates - Departure: " + departureDate + ", Return: " + returnDate);
+
+            if (returnDate == null || returnDate.isEmpty()) {
+                try {
+                    LocalDate depDate = LocalDate.parse(departureDate);
+                    returnDate = depDate.plusDays(7).toString();
+                    System.out.println("Return date not provided or empty, defaulting to: " + returnDate);
+                } catch (DateTimeParseException e) {
+                    System.out.println("Invalid departure date format: " + departureDate);
+                    if(!"XMLHttpRequest".equals(requestedWith)) {
+	                    model.addAttribute("error", "잘못된 날짜 형식입니다.");
+	                    return "flightSearchResult";
+                    } else {
+                    	response.put("status", "error");
+    		            response.put("message", "잘못된 날짜 형식입니다.");
+    		            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+                    }
+                }
+            } else {
+                try {
+                    LocalDate depDate = LocalDate.parse(departureDate);
+                    LocalDate retDate = LocalDate.parse(returnDate);
+                    if (retDate.isBefore(depDate) || retDate.isEqual(depDate)) {
+                        returnDate = depDate.plusDays(7).toString();
+                        System.out.println("Invalid return date, defaulting to: " + returnDate);
+                    }
+                } catch (DateTimeParseException e) {
+                    System.out.println("Invalid return date format: " + returnDate);
+                    if(!"XMLHttpRequest".equals(requestedWith)) {
+	                    model.addAttribute("error", "잘못된 반환 날짜 형식입니다.");
+	                    return "flightSearchResult";
+                    } else {
+                    	response.put("status", "error");
+    		            response.put("message", "잘못된 반환 날짜 형식입니다.");
+    		            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+                    }
+                }
+            }
+
+            boolean isDomestic = isDomesticFlight(departureCode, arrivalCode);
+            System.out.println("Is domestic flight: " + isDomestic);
+
+            System.out.println("API Keys present:");
+            System.out.println("TAGO_API_KEY: " + TAGO_API_KEY);
+            System.out.println("AMADEUS_API_ID: " + AMADEUS_API_ID + (AMADEUS_API_ID != null && !AMADEUS_API_ID.isEmpty()));
+            System.out.println("AMADEUS_API_KEY: " + AMADEUS_API_KEY + (AMADEUS_API_KEY != null && !AMADEUS_API_KEY.isEmpty()));
+
+            List<Map<String, Object>> flightOffers;
+            if (isDomestic) {
+                flightOffers = getDomesticFlightOffers(departureCode, arrivalCode, departureDate, returnDate, travelers);
+            } else {
+                String accessToken = getAmadeusAccessToken();
+                if (accessToken == null) {
+                    System.out.println("Failed to get Amadeus access token");
+                    if(!"XMLHttpRequest".equals(requestedWith)) {
+	                    model.addAttribute("error", "국제선 항공권 검색 실패: 인증 오류");
+	                    return "flightSearchResult";
+                    } else {
+                    	response.put("status", "error");
+    		            response.put("message", "국제선 항공권 검색 실패: 인증 오류");
+    		            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+                    }
+                }
+                flightOffers = getFlightOffers(accessToken, departureCode, arrivalCode, departureDate, returnDate, travelers);
+            }
+
+            if (flightOffers == null || flightOffers.isEmpty()) {
+                System.out.println("No flight offers retrieved.");
+                if(!"XMLHttpRequest".equals(requestedWith)) {
+	                model.addAttribute("error", "항공편을 찾을 수 없습니다.");
+	                return "flightSearchResult";
+                } else {
+                	response.put("status", "error");
+		            response.put("message", "항공편을 찾을 수 없습니다.");
+		            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+                }
+            }
+
+            List<String> uniqueAirlines = flightOffers.stream()
+                    .map(offer -> (String) offer.get("airline"))
+                    .filter(Objects::nonNull)
+                    .distinct()
+                    .collect(Collectors.toList());
+
+            List<Map<String, Object>> uniqueFlightOffers = new ArrayList<>();
+            for (String airline : uniqueAirlines) {
+                Map<String, Object> firstOffer = flightOffers.stream()
+                        .filter(offer -> airline.equals(offer.get("airline")))
+                        .findFirst()
+                        .orElse(null);
+                if (firstOffer != null) {
+                    uniqueFlightOffers.add(firstOffer);
+                }
+            }
+
+            System.out.println("<<<<<<<<<" + uniqueFlightOffers);
+            System.out.println("Flight offers found: " + uniqueFlightOffers.size());
+            if (!uniqueFlightOffers.isEmpty()) {
+                System.out.println("First flight offer: " + uniqueFlightOffers.get(0));
+                System.out.println("Outbound Airline: " + uniqueFlightOffers.get(0).get("outboundAirline"));
+                System.out.println("Inbound Airline: " + uniqueFlightOffers.get(0).get("inboundAirline"));
+            }
+            if(!"XMLHttpRequest".equals(requestedWith)) {
+	            model.addAttribute("flightOffers", uniqueFlightOffers);
+	            return "flightSearchResult";
+            } else {
+            	System.out.println("uniqueFlightOffers : " +uniqueFlightOffers);
+            	return ResponseEntity.ok(uniqueFlightOffers);
+            }
+        } catch (Exception e) {
+            System.out.println("Exception in flight search: " + e.getMessage());
+            e.printStackTrace();
+            if(!"XMLHttpRequest".equals(requestedWith)) {
+	            model.addAttribute("error", "항공권 검색 중 오류가 발생했습니다: " + e.getMessage());
+	            return "flightSearchResult";
+            } else {
+            	response.put("status", "error");
+	            response.put("message", "항공권 검색 중 오류가 발행했습니다 : " + e.getMessage());
+	            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
+        }
+    }
+    
+
+    public List<Map<String, Object>> getFlightOffers(String accessToken, String departure, String arrival,
             String departureDate, String returnDate, String travelers) {
         RestTemplate restTemplate = new RestTemplate();
         String url = "https://test.api.amadeus.com/v2/shopping/flight-offers"
@@ -357,7 +405,7 @@ public class FlightController {
                 + "&departureDate=" + departureDate
                 + (returnDate != null ? "&returnDate=" + returnDate : "")
                 + "&adults=" + travelers
-                + "&max=200";
+                + "&max=100";
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + accessToken);
@@ -400,18 +448,24 @@ public class FlightController {
                     Map<String, Object> flightData = new HashMap<>();
                     flightData.put("price", flight.getJSONObject("price").getString("total") + " EUR");
 
+                    // carrierCode 추가
                     String outboundCarrierCode = outboundFirstSegment.getString("carrierCode");
                     String outboundAirline = carriersDict.optString(outboundCarrierCode, outboundCarrierCode);
 
+                    flightData.put("carrierCode", outboundCarrierCode);  // ✅ 추가
                     flightData.put("airline", outboundAirline);
                     flightData.put("outboundAirline", outboundAirline);
+                    flightData.put("outboundCarrierCode", outboundCarrierCode); // ✅ 추가
 
                     if (inboundFirstSegment != null) {
                         String inboundCarrierCode = inboundFirstSegment.getString("carrierCode");
                         String inboundAirline = carriersDict.optString(inboundCarrierCode, inboundCarrierCode);
+
+                        flightData.put("inboundCarrierCode", inboundCarrierCode); // ✅ 추가
                         flightData.put("inboundAirline", inboundAirline);
                     } else {
                         flightData.put("inboundAirline", outboundAirline);
+                        flightData.put("inboundCarrierCode", outboundCarrierCode); // ✅ 추가
                     }
 
                     flightData.put("outboundDepartureTime", LocalDateTime.parse(outboundFirstSegment.getJSONObject("departure").getString("at")));
@@ -464,7 +518,6 @@ public class FlightController {
 
                     flightData.put("flightNumber", outboundFirstSegment.getString("number"));
 
-
                     results.add(flightData);
                 }
             } else {
@@ -474,6 +527,7 @@ public class FlightController {
             System.out.println("Amadeus API Exception: " + e.getMessage());
             e.printStackTrace();
         }
+
         return results;
     }
 }
