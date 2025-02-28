@@ -266,18 +266,51 @@
 
 /* 🌍 모달 스타일 */
 .modal-trip {
-    display: none;
     position: fixed;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    width: 50%;
+    width: 40%;
+    max-width: 700px;
     background: white;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
     border-radius: 10px;
     padding: 20px;
     z-index: 1000;
     
+}
+
+/* 버튼 컨테이너 */
+.button-container{
+	display:flex;
+	flex-direction: column;
+	gap:15px;
+	margin-top:20px;	
+}
+
+/* 큰 버튼 스타일 */
+.trip-button{
+	width: 100%;
+	padding: 15px;
+	font-size: 18px;
+	font-weight: bold;
+	border:none;
+	cursor: pointer;
+	transition: 0.3s;
+}
+
+.trip-button:nth-child(1){
+	background: #007bff;
+	color: white;
+}
+
+.trip-button:nth-child(1){
+	background: #28a745;
+	color: white;
+}
+
+.trip-button:hover{
+	opacity: 0.8;
 }
 
 /* 모달 창 */
