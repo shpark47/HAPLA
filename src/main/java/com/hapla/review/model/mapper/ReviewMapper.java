@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 
 import com.hapla.comm.model.vo.Comm;
 import com.hapla.common.PageInfo;
+import com.hapla.review.model.vo.Review;
 
 @Mapper
 public interface ReviewMapper {
@@ -13,5 +14,9 @@ public interface ReviewMapper {
 	int getListCount(int i);
 
 	ArrayList<Comm> selectReviewList(PageInfo pi, int i);
+
+	Review selectReview(int reviewNo);
+
+	int insertReview(Review r);
 	
 }

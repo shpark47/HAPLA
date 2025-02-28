@@ -3,9 +3,7 @@ package com.hapla.schedule.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.hapla.schedule.model.service.ScheduleService;
 import com.hapla.schedule.model.vo.Trip;
@@ -26,7 +24,7 @@ public class ScheduleController {
 	 * this.scheduleService = scheduleService; }
 	 */
 	
-	// 캘린더 페이지
+	// 캘린더 페이지로 이동
 	@GetMapping("/scheduleCalendar")
 	public String ScheduleCalendar() {
 		return "/schedule/scheduleCalendar";
@@ -37,12 +35,17 @@ public class ScheduleController {
 	public String Schedule(@ModelAttribute Trip trip, HttpSession session) {
 		
 		Users user = (Users)session.getAttribute("loginUser");
+		
+		// Trip 객체 생성
 		trip.setUserNo(user.getUserNo());
+		trip.setStartDate(trip.getStartDate());
+		trip.setEndDate(trip.getEndDate());
+		trip.setCityName(trip.getCityName());
+		
+		// System.out.println("trip : " + trip);
 		
 		// 서비스 호출하여 DB 저장
-//		scheduleService.saveTrip(trip);
-		System.out.println("trip : " + trip);
+		scheduleService.saveTrip(trip);
 		return "/schedule/schedule";
 	}
-	
 }

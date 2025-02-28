@@ -7,8 +7,7 @@
     
    	<select id="selectCommList" resultType="com.hapla.comm.model.vo.Comm">
 	    SELECT comm.comm_no, comm.category_no, comm.user_no, comm.title, comm.comm_content, comm.views,
-	           comm.create_date, comm.update_date, comm.likes, comm.status,
-	           category.category_name, users.name
+	           comm.create_date, comm.update_date, comm.status, category.category_name, users.name
 	    FROM comm
 	    	 JOIN users ON comm.user_no = users.user_no
 	    	 JOIN category ON comm.category_no = category.category_no
@@ -20,8 +19,8 @@
 	        SELECT seq_comm.nextval FROM dual
 	    </selectKey>
 	    INSERT INTO comm 
-	    (comm_no, category_no, user_no, title, comm_content, views, create_date, update_date, likes, status) 
-	    VALUES (#{commNo}, #{categoryNo}, #{userNo}, #{title}, #{commContent}, DEFAULT, SYSDATE, SYSDATE, DEFAULT, DEFAULT)
+	    (comm_no, category_no, user_no, title, comm_content, views, create_date, update_date, status) 
+	    VALUES (#{commNo}, #{categoryNo}, #{userNo}, #{title}, #{commContent}, DEFAULT, SYSDATE, SYSDATE, DEFAULT)
 	</insert>
 
 	<select id="selectComm" resultType="com.hapla.comm.model.vo.Comm">
