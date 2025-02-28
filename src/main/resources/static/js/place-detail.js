@@ -3,14 +3,13 @@ const goGoogleMap = () => {
 }
 
 window.onload = () => {
-    const userNo = /*[[${session.loginUser != null ? session.loginUser.userNo : 0}]]*/0;
+    const userNo = window.userNo;
     console.log(userNo);
     document.getElementById('star').addEventListener('click', () => {
+        console.log(userNo)
         if (userNo == 0) {
             alert('로그인 후 이용해 주세요.');
         } else {
-
-
             $.ajax({
                 url: '/star',
                 data: {
@@ -24,10 +23,10 @@ window.onload = () => {
                     const star = document.getElementById('star');
                     if (data == 'insert') {
                         count.innerText = parseInt(count.innerText) + 1;
-                        star.innerHTML = '<img th:if="${check == true}" src="/img/heart2.svg" alt="Filled Heart" style="width: 32px; height: 32px;">';
+                        star.innerHTML = '<img src="/img/heart2.svg" alt="Filled Heart" style="width: 32px; height: 32px;">';
                     } else if (data == 'delete') {
                         count.innerText = parseInt(count.innerText) - 1;
-                        star.innerHTML = '<img th:unless="${check == true}" src="/img/heart1.svg" alt="Empty Heart" style="width: 32px; height: 32px;">';
+                        star.innerHTML = '<img src="/img/heart1.svg" alt="Empty Heart" style="width: 32px; height: 32px;">';
                     } else {
                         alert('오류 발생');
                     }
