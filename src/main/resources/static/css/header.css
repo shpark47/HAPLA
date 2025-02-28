@@ -287,13 +287,32 @@
 /* 버튼 컨테이너 */
 .button-container{
 	display:flex;
-	flex-direction: column;
-	gap:15px;
-	margin-top:20px;	
+	flex-direction: row;
+	gap:15px;	
 }
 
 /* 큰 버튼 스타일 */
 .trip-button{
+	flex: 1;
+	text-align: center;
+}
+
+.planList, .makePlan{
+	width: 100%;
+	height: 100%;
+	padding: 15px;
+	font-size: 20px;
+	font-weight: bold;
+	border:none;
+	cursor: pointer;
+	transition: 0.3s;
+	background-color: #0099cc;
+	color: white;
+	border-radius: 10px; /* 버튼을 둥글게 */
+    box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.15); /* 그림자 효과 */
+}
+
+/* .makePlan{
 	width: 100%;
 	padding: 15px;
 	font-size: 18px;
@@ -301,17 +320,8 @@
 	border:none;
 	cursor: pointer;
 	transition: 0.3s;
-}
+} */
 
-.trip-button:nth-child(1){
-	background: #007bff;
-	color: white;
-}
-
-.trip-button:nth-child(1){
-	background: #28a745;
-	color: white;
-}
 
 .trip-button:hover{
 	opacity: 0.8;

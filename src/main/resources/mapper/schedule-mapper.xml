@@ -9,4 +9,11 @@
 		values (seq_trip.NEXTVAL, #{userNo}, default, #{startDate}, #{endDate}, sysdate, #{cityName})
 	</insert>
 
+	<select id="getMySchedule">
+		select *
+		from trip
+		where user_no = #{userNo} 
+		
+	</select>
+
 </mapper>

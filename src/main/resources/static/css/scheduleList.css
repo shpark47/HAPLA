@@ -24,9 +24,9 @@ body {
 }
 
 .title{
-	padding: 5%;
-    margin: 1%;
-    margin-left: 1.5%;
+	margin-top: 5%;
+	font-size: 20px;
+	font-weight: bold;
 }
 
 .sidebar-head{
@@ -35,18 +35,6 @@ body {
 .menu{
 	cursor: pointer;
 
-}
-
-.title{
-	margin-left:3%;
-	padding: 3%;
-	vertical-align: super;
-	font-weight: bold;
-    border-radius: 15px; /* ✅ 모서리를 둥글게 */
-    border: 1px solid #e0e0e0; /* ✅ 테두리 추가 */
-    background: white;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); /* ✅ 부드러운 그림자 */
-    /* max-width: 100%; ✅ 최대 너비 제한 */
 }
 
 .edit{
