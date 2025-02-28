@@ -1,3 +1,5 @@
+let query='';
+
 const categoryButtons = document.querySelectorAll('.search-categories button');
 const inputText = document.querySelector('#search-input-text');
 const searchBar = document.querySelector('.search-bar');
@@ -366,7 +368,7 @@ incrementButtons.forEach(button => {
     });
 
     document.getElementsByName('arrivalName')[0].addEventListener('input', function() {
-        const query = this.value;
+        query = this.value;
         if (query.length >= 1) {
             searchAirports(query, 'arrival-dropdown');
         } else {
@@ -506,7 +508,7 @@ function searchAirports(query, dropdownId) {
 }
 
 document.getElementsByName('departureName')[0].addEventListener('input', function () {
-    const query = this.value;
+    query = this.value;
     if (query.length >= 1) {
         searchAirports(query, 'departure-dropdown');
     } else {
@@ -515,7 +517,7 @@ document.getElementsByName('departureName')[0].addEventListener('input', functio
 });
 
 document.getElementsByName('arrivalName')[0].addEventListener('input', function () {
-    const query = this.value;
+    query = this.value;
     if (query.length >= 1) {
         searchAirports(query, 'arrival-dropdown');
     } else {

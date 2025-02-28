@@ -293,27 +293,24 @@ const departureName = document.querySelector('input[name="departureName"]');
 const arrivalName = document.querySelector('input[name="arrivalName"]');
 const dates = document.querySelector('input[name="dates"]');
 const travelers = document.querySelector('input[name="travelers"]');
-//const flightWay = document.querySelectorAll('button[class="active"]')[1].id;
-const formData = new FormData();
-formData.append('departureName', departureName.value);
-formData.append('arrivalName', arrivalName.value);
-formData.append('dates', dates.value);
-formData.append('travelers', travelers.value);
+
 
 
 //formData.append('departure', )
 researchBtn.addEventListener('click', function() {
-	console.log(flightWay);
+	const url = `/flight/flightSearch?departureName=${encodeURIComponent(departureName.value)}&arrivalName=${encodeURIComponent(arrivalName.value)}&dates=${encodeURIComponent(dates.value)}&travelers=${encodeURIComponent(travelers.value)}&query=${encodeURIComponent(query)}`;
+	fetch(url, {
+		method: 'get',
+		headers: {
+			'X-Requested-With' : 'XMLHttpRequest'		
+		},
+	})
+	.then(response => response.json())	
+	.then(data => {
+		console.log(data);
+	})
+		
 	
-	fetch('/flight/search', {
-		method: 'POST',
-		body: formData
-	})
-	.then(response =>{
-		if(!response.ok) {
-			throw new Error('HTTP error! status : ${response.status')
-		}
-	})
 		
 	
 

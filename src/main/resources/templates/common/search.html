@@ -13,6 +13,9 @@
 </head>
 <body>
 	<section class="main-search">
+		<div th:if="${error}" class="error-message" style="color: red; margin-bottom: 10px;">
+            <p th:text="${error}">오류 메시지가 여기에 표시됩니다.</p>
+        </div>
 		<h1>어디로 가시나요?</h1>
 		<div class="search-categories">
 			<button class="active" data-category="tourist_attraction+landmark+lodging+restaurant">전체</button>
