@@ -1,6 +1,7 @@
 package com.hapla.review.model.service;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
@@ -18,7 +19,7 @@ public class ReviewService {
 	public int getListCount(int i) {
 		return mapper.getListCount(i);
 	}
-	public ArrayList<Comm> selectReviewList(PageInfo pi, int i) {
+	public ArrayList<Review> selectReviewList(PageInfo pi, int i) {
 		return mapper.selectReviewList(pi, i);
 	}
 	public Review selectReview(int reviewNo) {

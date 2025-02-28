@@ -7,7 +7,6 @@
     <link href="/css/reviewWrite.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <div th:replace="~{common/header.html :: topbar}"></div>
 <main class="content">
     <!-- 블러 처리된 배경 -->
@@ -17,7 +16,7 @@
 
     <!-- 리뷰 작성 컨테이너 -->
     <div class="container">
-        <form class="review-form" action="/review/insert" method="POST" onsubmit="return submitReview()">
+        <form class="review-form" id="review-form">
             <div class="form-group">
                 <label>1. 리뷰 제목</label>
                 <input class="form-control" id="title" name="title" style="height:10px;" placeholder="제목을 입력하세요" required>
@@ -69,7 +68,7 @@
 </main>
 <div th:replace="~{common/footer.html :: foot}"></div>
 
-<script th:inline="javascript">
+<script>
     /* ⭐ 별점 평가 선택 */
     function setRating(rating) {
         let stars = document.querySelectorAll('.rating span');
@@ -103,39 +102,54 @@
         selectedTag.value = tag.innerText;
     }
 
-    /* ⭐ 리뷰 제출 (AJAX 요청) */
-    function submitReview() {
-        let rating = parseInt($("#rating-value").val()) || 3; // ⭐ 빈 값이면 기본값 3
-        let content = $("#review-content").val().trim(); // ⭐ 공백 제거
-        let when = $("#when").val().trim() || "최근 1개월 이내"; // ⭐ 기본값 설정
-        let withWhom = $("#withWhom-value").val() || "혼자"; // ⭐ 기본값 설정
+    /* ⭐ 리뷰 제출 (fetch API 비동기 요청) */
+    document.getElementById("review-form").addEventListener("submit", function(event) {
+        event.preventDefault(); // 기본 제출 방지
+
+        let title = document.getElementById("title").value.trim();
+        let rating = document.getElementById("rating-value").value.trim();
+        let content = document.getElementById("review-content").value.trim();
+        let when = document.getElementById("when").value.trim();
+        let withWhom = document.getElementById("withWhom-value").value.trim();
+
+        if (!title) {
+            alert("리뷰 제목을 입력해주세요.");
+            return;
+        }
 
         if (!content) {
             alert("리뷰 내용을 입력해주세요.");
-            return false; // ✅ 내용이 비어 있으면 서버로 전송하지 않음
+            return;
         }
 
-        $.ajax({
-            type: "POST",
-            url: "/review/insert",
-            contentType: "application/json",
-            data: JSON.stringify({
-                rating: rating,
-                content: content,
-                when: when,
-                withWhom: withWhom
-            }),
-            success: function(response) {
-                alert("리뷰가 저장되었습니다!");
-                window.location.href = "/review/list";
-            },
-            error: function(error) {
-                alert("리뷰 저장 실패");
-            }
-        });
+        let reviewData = {
+            title: title,
+            rating: rating,
+            content: content,
+            when: when,
+            withWhom: withWhom
+        };
 
-        return false; // ✅ 폼이 실제로 submit되지 않도록 방지 (AJAX만 실행)
-    }
+        fetch("/review/insert", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(reviewData)
+        })
+        .then(response => response.json())  // ✅ JSON 변환
+        .then(data => {
+            if (data.status === "success") {
+                alert(data.message);
+                window.location.href = "/review/list";  // ✅ 성공 시 list.html 이동
+            } else {
+                alert("오류 발생: " + data.message);  // ✅ 실패 시 에러 메시지 출력
+            }
+        })
+        .catch(error => {
+            alert("서버 오류: " + error.message);
+        });
+    });
 </script>
 
 </body>

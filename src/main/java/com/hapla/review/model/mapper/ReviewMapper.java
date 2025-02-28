@@ -1,6 +1,7 @@
 package com.hapla.review.model.mapper;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 
@@ -13,10 +14,11 @@ public interface ReviewMapper {
 
 	int getListCount(int i);
 
-	ArrayList<Comm> selectReviewList(PageInfo pi, int i);
+	ArrayList<Review> selectReviewList(PageInfo pi, int i);
 
 	Review selectReview(int reviewNo);
 
 	int insertReview(Review r);
+
 	
 }
