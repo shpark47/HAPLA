@@ -274,42 +274,49 @@ public class FlightController {
 
             System.out.println("Parsed dates - Departure: " + departureDate + ", Return: " + returnDate);
 
-            if (returnDate == null || returnDate.isEmpty()) {
-                try {
-                    LocalDate depDate = LocalDate.parse(departureDate);
-                    returnDate = depDate.plusDays(7).toString();
-                    System.out.println("Return date not provided or empty, defaulting to: " + returnDate);
-                } catch (DateTimeParseException e) {
-                    System.out.println("Invalid departure date format: " + departureDate);
-                    if(!"XMLHttpRequest".equals(requestedWith)) {
-	                    model.addAttribute("error", "잘못된 날짜 형식입니다.");
-	                    return "flightSearchResult";
-                    } else {
-                    	response.put("status", "error");
-    		            response.put("message", "잘못된 날짜 형식입니다.");
-    		            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-                    }
+            
+         // 1. departureDate 파싱 및 유효성 검사 (returnDate는 기본값으로 강제로 설정하지 않음)
+            try {
+                LocalDate depDate = LocalDate.parse(departureDate);
+            } catch (DateTimeParseException e) {
+                System.out.println("Invalid departure date format: " + departureDate);
+                if (!"XMLHttpRequest".equals(requestedWith)) {
+                    model.addAttribute("error", "잘못된 날짜 형식입니다.");
+                    return "flightSearchResult";
+                } else {
+                    response.put("status", "error");
+                    response.put("message", "잘못된 날짜 형식입니다.");
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
                 }
-            } else {
+            }
+
+            // 2. returnDate가 제공된 경우에만 파싱 및 유효성 검사
+            if (returnDate != null && !returnDate.trim().isEmpty()) {
                 try {
                     LocalDate depDate = LocalDate.parse(departureDate);
                     LocalDate retDate = LocalDate.parse(returnDate);
-                    if (retDate.isBefore(depDate) || retDate.isEqual(depDate)) {
-                        returnDate = depDate.plusDays(7).toString();
-                        System.out.println("Invalid return date, defaulting to: " + returnDate);
+                    if (retDate.isBefore(depDate)) {
+                        System.out.println("Return date is before departure date: " + returnDate + ", treating as one-way.");
+                        returnDate = null; // 출발일보다 이전이면 편도로 처리
+                    } else if (retDate.isEqual(depDate)) {
+                        System.out.println("Return date equals departure date: " + returnDate + ", treating as one-way.");
+                        returnDate = null; // 출발일과 같으면 편도로 처리 (필요에 따라 정책 변경 가능)
                     }
                 } catch (DateTimeParseException e) {
                     System.out.println("Invalid return date format: " + returnDate);
-                    if(!"XMLHttpRequest".equals(requestedWith)) {
-	                    model.addAttribute("error", "잘못된 반환 날짜 형식입니다.");
-	                    return "flightSearchResult";
+                    if (!"XMLHttpRequest".equals(requestedWith)) {
+                        model.addAttribute("error", "잘못된 반환 날짜 형식입니다.");
+                        return "flightSearchResult";
                     } else {
-                    	response.put("status", "error");
-    		            response.put("message", "잘못된 반환 날짜 형식입니다.");
-    		            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+                        response.put("status", "error");
+                        response.put("message", "잘못된 반환 날짜 형식입니다.");
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
                     }
                 }
+            } else {
+                System.out.println("No return date provided, treating as one-way search.");
             }
+        
 
             boolean isDomestic = isDomesticFlight(departureCode, arrivalCode);
             System.out.println("Is domestic flight: " + isDomestic);
