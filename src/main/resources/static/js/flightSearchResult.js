@@ -279,15 +279,6 @@ inputBtns.forEach(array => {  // 🔴 'array'는 각 요소(버튼)
 });
 
 
-//const reserveBtns = document.querySelectorAll('.view-deal');
-//const form = document.querySelector('search-from');
-//	for(const reserveBtn of reserveBtns) { 
-//		reserveBtn.addEventListener('click', function() {
-//	// https://www.skyscanner.co.kr/transport/flights/icn/jfk/250315/250322/
-//	 	
-//	});
-//}
-
 const researchBtn = document.querySelector('.research-btn');
 const departureName = document.querySelector('input[name="departureName"]');
 const arrivalName = document.querySelector('input[name="arrivalName"]');
@@ -296,24 +287,119 @@ const travelers = document.querySelector('input[name="travelers"]');
 
 
 
-//formData.append('departure', )
 researchBtn.addEventListener('click', function() {
-	const url = `/flight/flightSearch?departureName=${encodeURIComponent(departureName.value)}&arrivalName=${encodeURIComponent(arrivalName.value)}&dates=${encodeURIComponent(dates.value)}&travelers=${encodeURIComponent(travelers.value)}&query=${encodeURIComponent(query)}`;
-	fetch(url, {
-		method: 'get',
-		headers: {
-			'X-Requested-With' : 'XMLHttpRequest'		
-		},
-	})
-	.then(response => response.json())	
-	.then(data => {
-		console.log(data);
-	})
-		
-	
-		
-	
+    const url = `/flight/flightSearch?departureName=${encodeURIComponent(departureName.value)}&arrivalName=${encodeURIComponent(arrivalName.value)}&dates=${encodeURIComponent(dates.value)}&travelers=${encodeURIComponent(travelers.value)}&query=${encodeURIComponent(query)}`;
 
-			 	
+    fetch(url, {
+        method: 'get',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        const resultsContainer = document.querySelector('.search-results-container');
+        const flightResults = document.querySelector('.flight-results'); // 기존 검색 결과 부분
 
+        if (flightResults) {
+            flightResults.remove(); // 기존 검색 결과만 삭제
+        }
+
+        // 새로운 검색 결과 생성
+        const newResults = document.createElement('main');
+        newResults.classList.add('flight-results');
+
+        if (data.length > 0) {
+            newResults.innerHTML = `
+                <div class="flight-result-header">
+                    <h2>${data.length}개의 항공권 검색됨</h2>
+                    <div class="sort-options">
+                        <span>정렬순서: </span> 
+                        <select id="sort-select">
+                            <option value="best">가성비 최고</option>
+                            <option value="price">최저가</option>
+                            <option value="duration">최단시간</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="flight-list">
+                    ${data.map(flight => `
+                        <div class="flight-container">
+                            <div class="flight-info">
+                                <div class="airline-info">
+                                    <span>${flight.outboundAirline}</span>
+                                    ${flight.inboundAirline && flight.inboundAirline !== flight.outboundAirline ? `<span>${flight.inboundAirline}</span>` : ''}
+                                </div>
+                                <div class="flight-details">
+                                    <div class="departure">
+                                        <div class="flight-title">
+                                            <div class="time-info outbound">
+                                                <div class="airport-code">${flight.outboundDepartureAirport}</div>
+                                                <div class="flight-time">${flight.outboundDepartureTime}</div>
+                                            </div>
+                                            <div class="flight-path"></div>
+                                            <div class="time-info outbound">
+                                                <div class="airport-code">${flight.outboundArrivalAirport}</div>
+                                                <div class="flight-time">${flight.outboundArrivalTime}</div>
+                                            </div>
+                                        </div>
+                                        <div class="duration">
+                                            ${flight.outboundDepartureTime} → ${flight.outboundArrivalTime} 
+                                            (${flight.outboundHasConnections ? `경유 ${flight.outboundTotalStops}회` : '직항'})
+                                        </div>
+                                    </div>
+                                    ${flight.inboundDepartureTime ? `
+                                        <div class="return-section">
+                                            <hr style="border: 1px dashed #ccc; margin: 10px 0;">
+                                            <div class="return">
+                                                <div class="flight-title">
+                                                    <div class="time-info inbound">
+                                                        <div class="airport-code">${flight.inboundDepartureAirport}</div>
+                                                        <div class="flight-time">${flight.inboundDepartureTime}</div>
+                                                    </div>
+                                                    <div class="flight-path"></div>
+                                                    <div class="time-info inbound">
+                                                        <div class="airport-code">${flight.inboundArrivalAirport}</div>
+                                                        <div class="flight-time">${flight.inboundArrivalTime}</div>
+                                                    </div>
+                                                </div>
+												<div class="duration">
+													<span>${formatTime(flight.outboundDepartureTime)}</span> → 
+													<span>${formatTime(flight.outboundArrivalTime)}</span> 
+													(${flight.outboundHasConnections === 'true' ? `경유 ${flight.outboundTotalStops}회` : '직항'})
+												</div>
+                                            </div>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            </div>
+                            <div class="flight-price">
+                                <div class="price-info">
+                                    <div class="price-title">
+                                        <strong>가격 :&nbsp</strong> <span>${flight.price}</span>
+                                    </div>
+                                    <button class="view-deal">예약하기</button>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        } else {
+            newResults.innerHTML = `<p>검색 결과가 없습니다.</p>`;
+        }
+
+        resultsContainer.appendChild(newResults);
+    })
+    .catch(error => console.error('Error fetching flight data:', error));
 });
+
+// 시간 형식 변환 함수 (HH:mm 포맷을 오전/오후로 변환)
+function formatTime(timeString) {
+	const date = new Date(timeString);
+	const hours = date.getHours();
+	const minutes = String(date.getMinutes()).padStart(2, '0');
+	const period = hours < 12 ? '오전' : '오후';
+	const formattedHours = hours % 12 || 12; // 0시는 12로 변환
+	return `${period} ${formattedHours}:${minutes}`;
+}
