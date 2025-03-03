@@ -412,7 +412,7 @@ public class FlightController {
                 + "&departureDate=" + departureDate
                 + (returnDate != null ? "&returnDate=" + returnDate : "")
                 + "&adults=" + travelers
-                + "&max=100";
+                + "&max=250";
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + accessToken);
@@ -463,6 +463,7 @@ public class FlightController {
                     flightData.put("airline", outboundAirline);
                     flightData.put("outboundAirline", outboundAirline);
                     flightData.put("outboundCarrierCode", outboundCarrierCode); // ✅ 추가
+                    flightData.put("inboundSegment", inboundSegments);
 
                     if (inboundFirstSegment != null) {
                         String inboundCarrierCode = inboundFirstSegment.getString("carrierCode");
@@ -479,6 +480,7 @@ public class FlightController {
                     flightData.put("outboundDepartureAirport", outboundFirstSegment.getJSONObject("departure").getString("iataCode"));
                     flightData.put("outboundArrivalTime", LocalDateTime.parse(outboundLastSegment.getJSONObject("arrival").getString("at")));
                     flightData.put("outboundArrivalAirport", outboundLastSegment.getJSONObject("arrival").getString("iataCode"));
+                    flightData.put("inboundSegment", inboundSegments);
 
                     if (inboundFirstSegment != null && inboundLastSegment != null) {
                         flightData.put("inboundDepartureTime", LocalDateTime.parse(inboundFirstSegment.getJSONObject("departure").getString("at")));
