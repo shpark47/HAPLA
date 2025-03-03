@@ -233,6 +233,7 @@ style.textContent = `
         font-size: 12px;
         margin-top: 2px;
     }
+	.hidden { display: none !important; } /* 필터링용 CSS 추가 */
 `;
 document.head.appendChild(style);
 
@@ -284,6 +285,7 @@ const departureName = document.querySelector('input[name="departureName"]');
 const arrivalName = document.querySelector('input[name="arrivalName"]');
 const dates = document.querySelector('input[name="dates"]');
 const travelers = document.querySelector('input[name="travelers"]');
+let flightSearchResults = [];
 
 
 
@@ -298,9 +300,11 @@ researchBtn.addEventListener('click', function() {
     })
     .then(response => response.json())
     .then(data => {
+		console.log(data);
+		flightSearchResults = data;
         const resultsContainer = document.querySelector('.search-results-container');
         const flightResults = document.querySelector('.flight-results'); // 기존 검색 결과 부분
-
+		console.log("search (stringified): " + JSON.stringify(flightSearchResults, null, 2)); // JSON으로 출
         if (flightResults) {
             flightResults.remove(); // 기존 검색 결과만 삭제
         }
@@ -390,6 +394,10 @@ researchBtn.addEventListener('click', function() {
         }
 
         resultsContainer.appendChild(newResults);
+		
+		// 데이터 로드 후 필터 즉시 적용
+        applyFilter();
+
     })
     .catch(error => console.error('Error fetching flight data:', error));
 });
@@ -402,4 +410,44 @@ function formatTime(timeString) {
 	const period = hours < 12 ? '오전' : '오후';
 	const formattedHours = hours % 12 || 12; // 0시는 12로 변환
 	return `${period} ${formattedHours}:${minutes}`;
+}
+
+// 필터링 함수
+const applyFilter = () => {
+    console.log('applyFilter 함수 실행');
+    const checked = document.querySelectorAll('input[name="layover"]:checked'); // 체크되어있는 체크박스 요소
+    const selectedOptions = Array.from(checked).map(input => input.value);		// 체크박스
+    const flightContainers = document.querySelectorAll('.flight-container');
+	
+	for(const flightContainer of flightContainers) {
+		if(selectedOptions.includes('direct')) {
+			if(!selectedOptions.includes('oneStop') && !selectedOptions.includes('multiStop')) {
+				if(flightSearchResults.outboundTotalStops != 0 || flightSearchResults.inboundTotalStops != 0 ) {
+					console.log('직항만');
+					flightContainer.classList.add('hidden');
+				} else if(selectedOptions.include('oneStop') && !selectedOptions.includes('multiStop')) {
+					if(flightSearchResults.outboundTotalStops > 1 || flightSearchResults.inboundTotalStops > 1) {
+						console.log('직항 + 1회 경유');
+						flightContainer.classList.add('hidden');
+					}
+				}
+			}
+		}
+	}
+    console.log("checked : " + checked);
+	console.log("selectedOptions : " + selectedOptions);
+	console.log("flightContainers : " + flightContainers);
+	console.log(selectedOptions.includes(''))
+// 체크박스 이벤트 리스너
+const checkboxes = document.querySelectorAll('input[name="layover"]');
+checkboxes.forEach((checkbox) => {
+    checkbox.addEventListener('change', () => {
+		console.log("applyFilter 함수 실행 ");
+		const flightContainers = document.querySelectorAll('.flight-container');
+		for(const flightContainer of flightContainers) {
+			flightContainer.classList.remove('hidden');
+			}
+		applyFilter();
+		});
+	});
 }

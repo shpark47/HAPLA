@@ -212,6 +212,10 @@ h1 {
 	border-radius: 50%;
 }
 
+.hidden {
+	display:none !important;
+}
+
 .traveler-category .decrement {
 	margin-right: 8px;
 }
