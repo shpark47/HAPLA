@@ -412,10 +412,10 @@ function formatTime(timeString) {
 	return `${period} ${formattedHours}:${minutes}`;
 }
 
-const flightContainers = document.querySelectorAll('.flight-container');
 const applyFilter = () => {
     console.log('applyFilter 함수 실행');
 
+	const flightContainers = document.querySelectorAll('.flight-container');
     const checked = document.querySelectorAll('input[name="layover"]:checked');
     const selectedOptions = Array.from(checked).map(input => input.value);
     
@@ -432,8 +432,7 @@ const applyFilter = () => {
 //        flightContainer.classList.remove('hidden');
 
         // 선택된 옵션이 없으면 모든 항공편 표시
-        if (selectedOptions.length == 0 || selectedOptions.lenght == 3) return; 
-		console.log(selectedOptions);
+        
 		
         // 필터링 조건 확인
         const isDirect = selectedOptions.includes('direct');
@@ -444,36 +443,29 @@ const applyFilter = () => {
         if (isDirect && !isOneStop && !isMultiStop && (outboundStops != 0 || inboundStops != 0)) {
             flightContainer.classList.add('hidden'); // 직항만 선택 시, 경유 항공편 숨기기
         } 
-//        else if (isOneStop && !isDirect && !isMultiStop && (outboundStops > 1 || inboundStops > 1 || outboundStops == 0 || inboundStops == 0)) {
-//            flightContainer.classList.add('hidden'); // 1회 경유만 선택 시, 2회 이상 경유 항공편 숨기기
-//        } 
-//        else if (isMultiStop && !isDirect && !isOneStop && (outboundStops < 2 || inboundStops < 2)) {
-//            flightContainer.classList.add('hidden'); // 2회 이상 경유만 선택 시, 직항 또는 1회 경유 항공편 숨기기
-//        }
-
-        // 모든 조합을 고려한 추가 조건:
-//        if (isDirect && !isOneStop && !isMultiStop && (outboundStops > 0 || inboundStops > 0)) {
-//            flightContainer.classList.add('hidden'); // 직항만 선택하고, 경유가 있는 항공편 숨기기
-//        }
-//        else if (!isDirect && isOneStop && !isMultiStop && (outboundStops != 1 || inboundStops != 1)) {
-//            flightContainer.classList.add('hidden'); // 1회 경유만 선택하고, 경유가 1회 이하인 항공편 숨기기
-//        }
-//        else if (!isDirect && !isOneStop && isMultiStop && (outboundStops < 2 || inboundStops < 2)) {
-//            flightContainer.classList.add('hidden'); // 2회 이상 경유만 선택하고, 경유가 1회 이하인 항공편 숨기기
-//        }
-//        else if (!isDirect && !isOneStop && !isMultiStop) {
-//            flightContainer.classList.add('hidden'); // 필터 조건이 없으면 모든 항공편 숨기기
-//        }
+        else if (!isDirect && isOneStop && !isMultiStop && (outboundStops > 1 || inboundStops > 1 || outboundStops == 0 || inboundStops == 0)) {
+            flightContainer.classList.add('hidden'); // 1회 경유만 선택 시, 2회 이상 경유 항공편 숨기기
+        } 
+        else if (!isDirect  && !isOneStop && isMultiStop && (outboundStops < 2 || inboundStops < 2)) {
+            flightContainer.classList.add('hidden'); // 2회 이상 경유만 선택 시, 직항 또는 1회 경유 항공편 숨기기
+        } 
+		else if(isDirect && isOneStop && !isMultiStop && (outboundStops >= 2 || inboundStops >= 2)) {
+			flightContainer.classList.add('hidden');
+		}
+		else if(!isDirect && isOneStop && isMultiStop && (outboundStops == 0 || inboundStops == 0)) {
+			flightContainer.classList.add('hidden');
+		} else if(isDirect && !isOneStop && isMultiStop && (outboundStops == 1 || inboundStops == 1)) {
+			flightContainer.classList.add('hidden');
+		} else if((!isDirect && !isOneStop && !isMultiStop) || (isDirect && isOneStop && isMultiStop)){
+			flightContainer.classList.remove('hidden');
+		} 
     });
 };
 
 // 체크박스 이벤트 리스너 (한 번만 등록)
 document.querySelectorAll('input[name="layover"]').forEach(checkbox => {
     checkbox.addEventListener('change', () => {
-		for(const flightContainer of flightContainers) {
-			flightContainer.classList.remove('hidden');
-		}
-		applyFilter
+		applyFilter();
 	});
 });
 
