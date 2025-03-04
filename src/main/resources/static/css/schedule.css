@@ -69,6 +69,7 @@ body {
 .date-container {
     margin-bottom: 10%;
 	margin-top: 5%;
+	curesor: pointer;
 }
 
 
@@ -113,7 +114,17 @@ body {
     background: white;
     font-size: 16px;
     cursor: pointer;
-    border-radius: inherit;
-    
-    
+    border-radius: inherit;  
 }
+
+#side-panel {
+    display: none; /* 기본적으로 숨김 */
+    width: 300px;
+    height: auto;
+    background-color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    border-radius: 5px;
+    z-index: 1000;
+}
+
