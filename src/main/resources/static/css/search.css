@@ -37,7 +37,7 @@ h1 {
 }
 
 .active{
-	background: #0099cc;
+	/*background: #0099cc;*/
 	color: white;
 }
 
@@ -560,6 +560,6 @@ max-width
 .price-info {
 	width: 100%;
 	text-align: left;
-	display: gird;
+	display: grid;
 }
 }
