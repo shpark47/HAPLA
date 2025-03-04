@@ -16,6 +16,4 @@ public class Detail {
 	private String apiId;
 	private String type;
 	private Date tripDate;
-
-	
 }

@@ -47,6 +47,7 @@ body {
 .date-container{
 	margin-bottom: 10%;
 	margin-top: 5%;
+	cursor: pointer;
 
 
 }
