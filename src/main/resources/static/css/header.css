@@ -163,10 +163,8 @@
 /* Close button styles */
 .header-close-btn {
     position: relative;
-    top: -10px;
-    left: 125px;
-    width: 24px;
-    height: 24px;
+    top: -30px;
+    left: 50%;
     cursor: pointer;
     background: none;
     border: none;
@@ -264,25 +262,14 @@
     border-radius: 6px;
 }
 
-.citySearchModal{
-	width: 50%;
-}
-
-/* 🌍 모달 스타일 */
-.modal-trip {
-    position: fixed;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: 40%;
-    max-width: 700px;
-    min-height: 250px;
-    background: white;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-    border-radius: 10px;
+.header-modal-trip{
+    background-color: white;
     padding: 20px;
-    z-index: 1000;
-    
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 700px;
+    height: 400px;
+    margin-top: 200px;
 }
 
 /* 버튼 컨테이너 */
