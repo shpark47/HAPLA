@@ -17,6 +17,16 @@
     <section id="search-data">
         <section id="search-all-data" class="popular-destinations">
             <div class="destinations-grid">
+                <div class="destination-card" th:each="place : ${places}">
+                    <input type="hidden" name="placeId" th:value="${place.placeId}">
+                    <input type="hidden" name="type" th:value="${place.placeTypes}">
+                    <img th:src="${place.photoUrl}" th:alt="${place.name}">
+                    <div class="destination-info">
+                        <h3 th:text="${place.name}">장소 이름</h3>
+                        <p class="rating" th:text="${'⭐' + place.rating}">평점</p>
+                        <p class="review-count" th:text="${place.reviews} + ' 리뷰'">리뷰 수</p>
+                    </div>
+                </div>
             </div>
         </section>
     </section>
@@ -25,5 +35,17 @@
 
 <script src="/js/main.js"></script>
 
+<script>
+    window.onload = () => {
+        const cards = document.querySelectorAll('.destination-card');
+        for (const card of cards) {
+            card.addEventListener('click', function (){
+                let encodedPlaceId = encodeURIComponent(this.querySelector('input[name=placeId]').value); // place_id를 URL 안전하게 인코딩
+                let category = encodeURIComponent(this.querySelector('input[name=type]').value);
+                location.href = `/detail/${encodedPlaceId}/${category}`; // 상세 페이지 URL로 이동
+            });
+        }
+    }
+</script>
 </body>
 </html>

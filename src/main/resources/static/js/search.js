@@ -93,6 +93,7 @@ function displayPlaces(places) {
         let div = document.createElement("div"); // 새로운 장소 카드 요소 생성
         div.className = "destination-card"; // CSS 클래스 추가 (스타일링용)
         div.innerHTML = `
+            <input type="hidden" name="placeId" th:value="${place.place_Id}">
             <input type="hidden" name="type" value="${placeTypes}">
             <img src="${photoUrl}" alt="${name}">
             <div class="destination-info">
@@ -146,12 +147,13 @@ const otherPlace = (p, category) => {
         const div = document.createElement('div');
         div.className = 'destination-card';
         div.innerHTML = `
+            <input type="hidden" name="placeId" th:value="${attr.place_id}">
             <input type="hidden" name="type" value="${category}">
             <img src="${attr.photo_url}" alt="${attr.name}">
             <div class="destination-info">
             <h3>${attr.name}</h3> 
-            <p class="rating">${attr.rating}</p>
-            <p class="review-count">${attr.review_count}</p>
+            <p class="rating">⭐${attr.rating}</p>
+            <p class="review-count">${attr.review_count} 리뷰</p>
             </div>
         `;
 
@@ -164,7 +166,6 @@ const otherPlace = (p, category) => {
     });
     return grid;
 };
-
 
 // 항공 -----------------------------------------------------------------------------
 
