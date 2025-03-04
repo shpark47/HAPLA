@@ -63,48 +63,60 @@
             </div>
 			<div class="form-group">
 			    <label>6. 사진 첨부</label>
-			    <input type="file" id="imageUpload" multiple accept="image/*">
+                <input type="file" id="imageUp" accept="image/*" style="display: none;">
+                <button type="button" class="image-upload-btn" onclick="document.getElementById('imageUp').click()">
+                    파일 선택
+                </button>
 			    <br>
 			    <h3>미리보기</h3>
-			    <img id="uploadedImage" style="max-width:300px; display:none;">
-			    <input type="hidden" id="image-urls" name="imageUrls"> <!-- 업로드된 이미지 URL 저장 -->
+                <div id="imageSection">
+                    <!--미리보기 이미지-->
+                </div>
+			    <input type="hidden" id="image-urls" name="imageUrls" value=""> <!-- 업로드된 이미지 URL 저장 -->
 			</div>
             <button type="submit" class="submit-btn">리뷰 작성 완료</button>
         </form>
     </div>
 </main>
-<div th:replace="~{common/footer.html :: foot}"></div>
 
 <script>
-    var s3 = new AWS.S3();
-    var bucketName = "YOUR_BUCKET_NAME"; // S3 버킷 이름
+    document.getElementById('imageUp').addEventListener('change', function (e){
+        const file = e.target.files[0];
+        if (!file) return;
 
-    function uploadImage() {
-        var file = document.getElementById("imageUpload").files[0];
-        if (!file) {
-            alert("파일을 선택하세요!");
-            return;
-        }
+        const formData = new FormData();
+        formData.append('image', file);
 
-        var params = {
-            Bucket: bucketName,
-            Key: "uploads/" + file.name,
-            Body: file,
-            ACL: "public-read",
-            ContentType: file.type
-        };
+        console.log(formData)
 
-        s3.upload(params, function(err, data) {
-            if (err) {
-                alert("업로드 실패: " + err.message);
-            } else {
-                document.getElementById("uploadedImage").src = data.Location;
-                document.getElementById("uploadedImage").style.display = "block";
-                document.getElementById("image-url").value = data.Location;
-                alert("이미지 업로드 성공!");
-            }
-        });
-    }
+        fetch('/upload', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => {
+                if (!response.ok) throw new Error('업로드 실패: ' + response.status);
+                return response.json();
+            })
+            .then(data => {
+                console.log("받은 데이터:", data);
+                if (data.imagePath) {
+                    document.getElementById('imageSection').innerHTML += `<img id="uploadedImage" src="` + data.imagePath + `" style="max-width:300px;">`
+                    console.log(data.imagePath)
+                    const url = document.getElementById('image-urls');
+                    if (url.value.trim() != ''){
+                        url.value += ',' + data.imagePath
+                    }else{
+                        url.value = data.imagePath;
+                    }
+                    console.log(url)
+                }
+            })
+            .catch(error => {
+                console.error('이미지 업로드 에러:', error);
+                alert('이미지 업로드에 실패했습니다. 다시 시도해주세요.');
+            });
+    });
+
 
     function setRating(rating) {
         let stars = document.querySelectorAll('.rating span');
@@ -179,6 +191,6 @@
         });
     });
 </script>
-
+<div th:replace="~{common/footer.html :: foot}"></div>
 </body>
 </html>
