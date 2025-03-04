@@ -8,20 +8,6 @@ function closeTripPlanModal() {
     document.getElementById("tripPlanModal").classList.add("hidden");
 }
 
-// 🖱️ 여행 일정 모달 외부 클릭 시 닫기
-document.addEventListener("click", function (event) {
-    const modal = document.getElementById("tripPlanModal");
-    if (!modal.classList.contains("hidden") && !modal.contains(event.target) && event.target.innerText !== "여행 일정") {
-        closeTripPlanModal();
-    }
-
-    const modal2 = document.getElementById("citySearchModal");
-    console.log(event.target.innerText !== "일정 생성")
-    if (!modal2.classList.contains("hidden") && !modal2.contains(event.target) && event.target.innerText !== "여행 일정" && event.target.innerText !== "일정 생성") {
-        closeCitySearchModal();
-    }
-});
-
 // 🌍 도시 검색 모달 열기
 function openCitySearchModal() {
 	closeTripPlanModal();
