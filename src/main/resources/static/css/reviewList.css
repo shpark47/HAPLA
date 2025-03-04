@@ -1,77 +1,125 @@
-/* styles.css */
+/* ✅ 기본적인 스타일 유지 */
 body {
-	font-family: Arial, sans-serif;
-	margin: 0;
-	padding: 0;
-	background-color: #f5f5f5;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f5;
 }
 
+/* ✅ hero를 가장 뒤로 보내는 핵심 수정 */
 .hero {
-  position: relative; /* 가상요소 기준을 위해 추가 */
-  height: 1010px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: #6ea8ba;
-  font-size: 2rem;
-  font-weight: bold;
+    position: relative; /* ✅ 기존 absolute를 사용하지 않고 자연스럽게 뒤로 이동 */
+    height: 1010px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #6ea8ba;
+    font-size: 2rem;
+    font-weight: bold;
+    z-index: -1; /* ✅ hero를 가장 뒤로 배치 */
 }
 
+/* ✅ hero의 배경 이미지는 그대로 유지 */
 .hero::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: url('/img/review.jpg') center/cover no-repeat;
-  filter: blur(8px); /* 원하는 블러 정도 조절 */
-  z-index: -1; /* 배경으로 보내기 위해 */
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('/img/review.jpg') center/cover no-repeat;
+    filter: blur(8px);
+    z-index: -2; /* ✅ 배경 이미지는 hero보다도 더 뒤로 */
 }
 
+/* ✅ hero 내부의 h3 위치 */
 .hero h3 {
-  position: absolute;
-  top: 100px;
-  left: 30px;
+    position: relative;
+    text-align: center;
 }
 
+/* ✅ 검색창 스타일 유지 */
 .search-bar {
-	margin-top: 20px;
-	width: 60%;
-	padding: 12px;
-	border: none;
-	border-radius: 8px;
-	font-size: 16px;
-	margin-top: -650px;
-	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    margin-top: 20px;
+    width: 60%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    margin-top: -650px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
+/* ✅ container를 relative로 설정하여 reviews와 정렬 */
 .container {
-	width: 80%;
-	margin: auto;
-	background: white;
-	padding: 20px;
-	border-radius: 10px;
-	height: 400px;
-	margin-top: -700px;
-	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-/* ✅ 기본적으로 모든 ul은 block (일반 리스트 스타일 유지) */
-ul {
-    display: block;
-    list-style-type: disc;
-    margin-block-start: 1em;
-    margin-block-end: 1em;
-    margin-inline-start: 0px;
-    margin-inline-end: 0px;
-    padding-inline-start: 40px;
-    unicode-bidi: isolate;
+    width: 80%;
+    margin: auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    height: 400px;
+    margin-top: -700px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    position: relative; /* ✅ reviews를 자연스럽게 배치 */
 }
 
-/* ✅ footer 내부의 ul은 block 유지 */
-main ul {
-    display: block !important;
+/* ✅ reviews를 relative로 만들어 hero보다 위에 위치 */
+.reviews {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 2; /* ✅ hero보다 위에 오도록 설정 */
+}
+
+/* ✅ review-card를 hero보다 위로 */
+.review-card {
+    width: 22%;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    cursor: pointer;
+    position: relative;
+    z-index: 3; /* ✅ hero보다 위로 설정 */
+}
+
+/* ✅ review-card 내부 이미지 */
+.review-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+/* ✅ 리뷰 정보 스타일 */
+.review-info {
+    padding: 15px;
+}
+
+.review-info h3 {
+    font-size: 16px;
+    margin: 10px 0;
+}
+
+.review-info .author {
+    color: gray;
+    font-size: 14px;
+}
+
+/* ✅ 별점 스타일 */
+.rating {
+    color: orange;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+/* ✅ 좋아요 스타일 */
+.likes {
+    color: red;
+    font-size: 14px;
+    margin-top: 5px;
 }
 
 /* ✅ pagination을 감싸는 div를 사용하여 가로 정렬 */
@@ -141,52 +189,4 @@ ul.pagination {
     cursor: not-allowed;
     border: 1px solid #ddd;
     background-color: #f8f9fa;
-}
-
-
-.reviews {
-	display: flex;
-	justify-content: space-between;
-	flex-wrap: wrap;
-}
-
-.review-card {
-	width: 22%;
-	background: #fff;
-	border-radius: 8px;
-	overflow: hidden;
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-	margin-bottom: 20px;
-}
-
-.review-card img {
-	width: 100%;
-	height: 200px;
-	object-fit: cover;
-}
-
-.review-info {
-	padding: 15px;
-}
-
-.review-info h3 {
-	font-size: 16px;
-	margin: 10px 0;
-}
-
-.review-info .author {
-	color: gray;
-	font-size: 14px;
-}
-
-.rating {
-	color: orange;
-	font-size: 14px;
-	margin-top: 5px;
-}
-
-.likes {
-	color: red;
-	font-size: 14px;
-	margin-top: 5px;
 }

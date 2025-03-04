@@ -17,6 +17,7 @@ public class Review {
 	private int reviewNo;
 	private int userNo;
 	private String name;
+	private String profile;
 	private String title;
 	private String content;
 	private int rating;
@@ -25,4 +26,6 @@ public class Review {
 	private Date updateDate;
 	private String when;
 	private String withWhom;
+	private String thumnail;
+	private String imageUrls;
 }

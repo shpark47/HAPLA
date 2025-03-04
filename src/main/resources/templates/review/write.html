@@ -61,7 +61,14 @@
                 <label>5. 리뷰 쓰기</label>
                 <textarea id="review-content" name="content" rows="8" placeholder="경험을 공유해주세요" required></textarea>
             </div>
-
+			<div class="form-group">
+			    <label>6. 사진 첨부</label>
+			    <input type="file" id="imageUpload" multiple accept="image/*">
+			    <br>
+			    <h3>미리보기</h3>
+			    <img id="uploadedImage" style="max-width:300px; display:none;">
+			    <input type="hidden" id="image-urls" name="imageUrls"> <!-- 업로드된 이미지 URL 저장 -->
+			</div>
             <button type="submit" class="submit-btn">리뷰 작성 완료</button>
         </form>
     </div>
@@ -69,48 +76,68 @@
 <div th:replace="~{common/footer.html :: foot}"></div>
 
 <script>
-    /* ⭐ 별점 평가 선택 */
+    var s3 = new AWS.S3();
+    var bucketName = "YOUR_BUCKET_NAME"; // S3 버킷 이름
+
+    function uploadImage() {
+        var file = document.getElementById("imageUpload").files[0];
+        if (!file) {
+            alert("파일을 선택하세요!");
+            return;
+        }
+
+        var params = {
+            Bucket: bucketName,
+            Key: "uploads/" + file.name,
+            Body: file,
+            ACL: "public-read",
+            ContentType: file.type
+        };
+
+        s3.upload(params, function(err, data) {
+            if (err) {
+                alert("업로드 실패: " + err.message);
+            } else {
+                document.getElementById("uploadedImage").src = data.Location;
+                document.getElementById("uploadedImage").style.display = "block";
+                document.getElementById("image-url").value = data.Location;
+                alert("이미지 업로드 성공!");
+            }
+        });
+    }
+
     function setRating(rating) {
         let stars = document.querySelectorAll('.rating span');
         let ratingText = document.getElementById("rating-text");
         let ratingInput = document.getElementById("rating-value");
 
-        // 선택된 별 색상 변경
         stars.forEach((star, index) => {
             star.style.color = index < rating ? "gold" : "gray";
         });
 
-        // 별점 설명 업데이트
         let texts = ["나쁨", "보통", "좋음", "아주 좋음", "최고"];
         ratingText.innerText = texts[rating - 1];
-
-        // ⭐ hidden input 값 업데이트 (서버 전송용)
         ratingInput.value = rating;
     }
 
-    /* ⭐ 태그 선택 기능 */
     function toggleTag(tag) {
         let selectedTag = document.getElementById("withWhom-value");
 
-        // 기존 active 제거
         document.querySelectorAll(".tags .tag").forEach(t => t.classList.remove("active"));
-
-        // 현재 선택된 태그 활성화
         tag.classList.add("active");
 
-        // 선택된 값 hidden input에 저장
         selectedTag.value = tag.innerText;
     }
 
-    /* ⭐ 리뷰 제출 (fetch API 비동기 요청) */
     document.getElementById("review-form").addEventListener("submit", function(event) {
-        event.preventDefault(); // 기본 제출 방지
+        event.preventDefault();
 
         let title = document.getElementById("title").value.trim();
         let rating = document.getElementById("rating-value").value.trim();
         let content = document.getElementById("review-content").value.trim();
         let when = document.getElementById("when").value.trim();
         let withWhom = document.getElementById("withWhom-value").value.trim();
+        let imageUrl = document.getElementById("image-url").value.trim();
 
         if (!title) {
             alert("리뷰 제목을 입력해주세요.");
@@ -127,7 +154,8 @@
             rating: rating,
             content: content,
             when: when,
-            withWhom: withWhom
+            withWhom: withWhom,
+            imageUrl: imageUrl
         };
 
         fetch("/review/insert", {
@@ -137,13 +165,13 @@
             },
             body: JSON.stringify(reviewData)
         })
-        .then(response => response.json())  // ✅ JSON 변환
+        .then(response => response.json())
         .then(data => {
             if (data.status === "success") {
                 alert(data.message);
-                window.location.href = "/review/list";  // ✅ 성공 시 list.html 이동
+                window.location.href = "/review/list";
             } else {
-                alert("오류 발생: " + data.message);  // ✅ 실패 시 에러 메시지 출력
+                alert("오류 발생: " + data.message);
             }
         })
         .catch(error => {

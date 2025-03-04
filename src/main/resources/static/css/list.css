@@ -53,6 +53,10 @@ th {
     background-color: #f4f4f4;
 }
 
+td {
+	cursor: pointer;
+}
+
 /* ✅ 기본적으로 모든 ul은 block (일반 리스트 스타일 유지) */
 ul {
     display: block;
