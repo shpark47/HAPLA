@@ -5,6 +5,8 @@ import com.hapla.users.model.vo.Users;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+
 @Service
 @RequiredArgsConstructor
 public class UsersService {
@@ -33,5 +35,9 @@ public class UsersService {
 
     public int deleteUser(int no) {
         return mapper.deleteUser(no);
+    }
+
+    public ArrayList<String> selectPlaceId(int userNo) {
+        return mapper.selectPlaceId(userNo);
     }
 }
