@@ -14,6 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.hapla.comm.model.vo.Comm;
 import com.hapla.common.PageInfo;
 import com.hapla.common.Pagination;
+import com.hapla.exception.Exception;
 import com.hapla.review.model.service.ReviewService;
 import com.hapla.review.model.vo.Review;
 import com.hapla.users.model.vo.Users;
@@ -40,8 +41,14 @@ public class ReviewController {
 //			currentPage = Integer.parseInt(page);
 //		}
 		
+		System.out.println("현재 요청된 페이지 번호: " + currentPage);
+		
+		int boardLimit = 4;
 		int listCount = reviewService.getListCount(1);
-		PageInfo pi = Pagination.getPageInfo(currentPage, listCount, 5);
+		PageInfo pi = Pagination.getPageInfo(currentPage, listCount, boardLimit);
+		
+		System.out.println("전체 리뷰 개수: " + listCount + ", 시작 페이지: " + pi.getStartPage() + ", 마지막 페이지: " + pi.getEndPage());
+		
 		ArrayList<Review> list = reviewService.selectReviewList(pi, 1);
 		
 		model.addAttribute("list", list).addAttribute("pi", pi);
@@ -89,7 +96,7 @@ public class ReviewController {
 
 	
 	@GetMapping("/{id}/{page}")
-    public ModelAndView selectComm(@PathVariable("id") int reviewNo, 
+    public ModelAndView selectReview(@PathVariable("id") int reviewNo, 
                                    @PathVariable("page") int page, 
                                    HttpSession session, 
                                    ModelAndView mv) {
@@ -99,16 +106,13 @@ public class ReviewController {
 
         // 게시글 상세 조회
         Review r = reviewService.selectReview(reviewNo);
-//        ArrayList<Reply> list = reviewService.selectReplyList(commNo);
 
-        if (r == null) {
-            mv.addObject("message", "존재하지 않는 게시글입니다.").setViewName("error/404"); // ✅ 사용자 친화적인 에러 페이지로 이동
-            return mv;
+        if(r != null) {
+        	mv.addObject("r", r).addObject("page", page).setViewName("review/detail");
+        	return mv;
+        } else {
+        	throw new Exception("실패");
         }
-
-        mv.addObject("r", r).addObject("page", page).setViewName("review/detail"); // ✅ 게시글 상세 페이지로 이동
-//        mv.addObject("list", list);
-
-        return mv;
+        
     }
 }

@@ -8,82 +8,86 @@
 </head>
 <body>
 <div th:replace="~{common/header.html :: topbar}"></div>
+
 <main class="content">
     <div class="hero">
         <h3>리뷰 목록</h3>
-    	<input type="text" class="search-bar" placeholder="장소 또는 액티비티로 검색">
+        <input type="text" class="search-bar" placeholder="장소 또는 액티비티로 검색">
     </div>
 
     <div class="container">
-    	<form>
-        <h2>전체</h2>
-       <div class="reviews">
-		    <!-- 리뷰가 없을 경우 메시지 표시 -->
-		    <div th:if="${list == null or list.isEmpty()}">
-		        <p>등록된 리뷰가 없습니다.</p>
-		    </div>
-		
-		    <!-- 리뷰 목록 표시 -->
-		    <div th:each="r : ${list}" class="review-card">
-		        <img th:src="@{/img/watch.jpg}" alt="리뷰 이미지">
-		        <div class="review-info">
-		            <h3 th:text="${r.title != null ? r.title : '제목 없음'}"></h3>
-		            <div class="author">
-		                <span th:text="${r.name != null ? r.name : '익명'}"></span> • 
-		                <span th:text="${r.createDate != null ? #dates.format(r.createDate, 'yyyy/MM/dd') : '날짜 없음'}"></span>
-		            </div>
-		            <div class="rating">
-		                <span th:each="i : ${#numbers.sequence(1, 5)}">
-		                    <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
-		                         th:style="'fill:' + (${i} <= ${r.rating} ? 'gold' : 'gray')">
-		                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.86L12 17.77 6.82 21l1.18-6.86-5-4.87 6.91-1L12 2z"/>
-		                    </svg>
-		                </span>
-		            </div>
-		        </div>
-		    </div>
-		</div>
+        <form>
+            <h2>전체</h2>
+            <div class="reviews">
+                <!-- 리뷰가 없을 경우 메시지 표시 -->
+                <div th:if="${list == null or list.isEmpty()}">
+                    <p>등록된 리뷰가 없습니다.</p>
+                </div>
 
+                <!-- ✅ 최대 4개까지만 표시 & 클릭 시 상세보기 이동 가능 -->
+                <div th:each="r, iterStat : ${list}" th:if="${iterStat.index < 4}" class="review-card" th:data-id="${r.reviewNo}" th:data-page="${pi.currentPage}">
+					<img th:src="@{/img/watch.jpg}" alt="리뷰 이미지">
+                    <div class="review-info">
+                        <h3 th:text="${r.title != null ? r.title : '제목 없음'}"></h3>
+                        <div class="author">
+                            <span th:text="${r.name != null ? r.name : '익명'}"></span> • 
+                            <span th:text="${r.createDate != null ? #dates.format(r.createDate, 'yyyy/MM/dd') : '날짜 없음'}"></span>
+                        </div>
+                        <div class="rating">
+                            <span th:each="i : ${#numbers.sequence(1, 5)}">
+                                <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" th:style="'fill:' + (${i} <= ${r.rating} ? 'gold' : 'gray')">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.86L12 17.77 6.82 21l1.18-6.86-5-4.87 6.91-1L12 2z"/>
+                                </svg>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-        <div class="pagination-container">
-            <ul class="pagination">
-		        <li class="page-item" th:classappend="${pi.currentPage == 1} ? 'disabled'">
-		            <a class="page-link" th:href="@{${loc}(page=${pi.currentPage-1})}" aria-label="Previous">
-		                <span aria-hidden="true">&laquo;</span>
-		            </a>
-		        </li>
-		
-		        <li class="page-item"
-		            th:each="p : ${#numbers.sequence(pi.startPage, pi.endPage)}"
-		            th:classappend="${p == pi.currentPage} ? 'active'">
-		            <a class="page-link" th:href="@{${loc}(page=${p})}">[[${p}]]</a>
-		        </li>
-		
-		        <li class="page-item" th:classappend="${pi.currentPage == pi.endPage} ? 'disabled'">
-		            <a class="page-link" th:href="@{${loc}(page=${pi.currentPage+1})}" aria-label="Next">
-		                <span aria-hidden="true">&raquo;</span>
-		            </a>
-		        </li>
-		    </ul>
-        </div>
+            <!-- ✅ 페이징 처리 (버튼 정상 동작) -->
+            <div class="pagination-container">
+                <ul class="pagination">
+                    <!-- 이전 페이지 -->
+                    <li class="page-item" th:classappend="${pi.currentPage == 1} ? 'disabled'">
+                        <a class="page-link" th:href="@{/review/list(page=${pi.currentPage - 1})}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+
+                    <!-- 페이지 번호 -->
+                    <li class="page-item" th:each="p : ${#numbers.sequence(pi.startPage, pi.endPage)}" th:classappend="${p == pi.currentPage} ? 'active'">
+                        <a class="page-link" th:href="@{/review/list(page=${p})}">[[${p}]]</a>
+                    </li>
+
+                    <!-- 다음 페이지 -->
+                    <li class="page-item" th:classappend="${pi.currentPage == pi.endPage} ? 'disabled'">
+                        <a class="page-link" th:href="@{/review/list(page=${pi.currentPage + 1})}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </form>
     </div>
-</main>   
+</main>
+
 <div th:replace="~{common/footer.html :: foot}"></div>
+
 <script th:inline="javascript">
-    window.onload = () => {
-        const tbody = document.querySelector('tbody');
-        const rows = tbody.querySelectorAll('tr');
-        
-        for (const row of rows) {
-            row.addEventListener('click', function() {
-                const commNo = this.querySelector('td').innerText; // 첫 번째 `td` 값 (게시글 번호)
-                const currentPage = /*<![CDATA[*//*[[${pi.currentPage}]]*/1/*]]>*/; // 현재 페이지 번호
-                
-                location.href = `/review/` + reviewNo + `/` + currentPage; // ✅ 게시글 상세 페이지로 이동
-            });
-        }
-    }
+	window.onload = () => {
+	    const reviewCards = document.querySelectorAll('.review-card');
+	
+	    for (const card of reviewCards) {
+	        card.addEventListener('click', function() {
+	            const reviewNo = this.getAttribute('data-id'); // 리뷰 번호
+	            const currentPage = /*<![CDATA[*//*[[${pi.currentPage}]]*/1/*]]>*/; // 현재 페이지 번호
+	
+	            location.href = `/review/` + reviewNo + `/` + currentPage; // ✅ 리뷰 상세 페이지로 이동
+	        });
+	    }
+	};
 </script>
+
+
 </body>
 </html>

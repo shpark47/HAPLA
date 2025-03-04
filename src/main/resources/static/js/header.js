@@ -21,6 +21,8 @@ document.querySelectorAll('.header-close-btn').forEach((button) => {
     button.addEventListener('click', () => {
         loginModal.classList.add('hidden');
         joinModal.classList.add('hidden');
+        document.getElementById("tripPlanModal").classList.add("hidden");
+        document.getElementById('citySearchModal').classList.add('hidden');
     });
 });
 

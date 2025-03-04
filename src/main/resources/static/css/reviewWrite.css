@@ -163,8 +163,8 @@ textarea {
 }
 
 .tag.active {
-    background: #3ca04f;
-    color: white;
+    background: #E0F7FA;
+    color: gray;
 }
 
 /* ✅ 제출 버튼 */

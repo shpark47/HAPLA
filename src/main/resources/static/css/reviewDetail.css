@@ -1,22 +1,53 @@
 /* styles.css */
 body {
-	font-family: Arial, sans-serif;
-	background-color: #dff0ff;
-	margin: 0;
-	padding: 0;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f5;
 }
 
+/* ✅ 공통 hero 스타일 */
+.hero {
+    position: relative; /* ✅ 기존 absolute를 사용하지 않고 자연스럽게 뒤로 이동 */
+    height: 1010px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #6ea8ba;
+    font-size: 2rem;
+    font-weight: bold;
+    z-index: -1; /* ✅ hero를 가장 뒤로 배치 */
+}
+
+.hero::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('/img/review.jpg') center/cover no-repeat;
+    filter: blur(8px);
+    z-index: -2;
+}
+
+.hero h3 {
+    position: relative;
+    text-align: center;
+}
+
+/* ✅ 공통 컨테이너 */
 .review-container {
-	background-color: white;
-	width: 60%;
-	max-width: 600px;
-	border-radius: 10px;
-	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-	padding: 20px;
-	margin-top: 50px;
+    width: 60%;
+    margin: auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    height: 600px;
+    margin-top: -900px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    position: relative; /* ✅ reviews를 자연스럽게 배치 */
 }
 
 .review-header {
@@ -31,11 +62,44 @@ body {
 	margin-right: 10px;
 }
 
-.review-title {
+.title {
 	font-size: 18px;
 	font-weight: bold;
 	margin-bottom: 10px;
 }
+
+.when {
+	font-size: 15px;
+	font-weight: bold;
+	margin-bottom: 10px;
+}
+
+.withWhom {
+	font-size: 15px;
+	font-weight: bold;
+	margin-bottom: 10px;
+}
+
+/* ✅ 타원형 스타일 공통 */
+.tag {
+    display: inline-block;
+    background-color: #E0F7FA;
+    color: gray; /* 흰색 글씨 */
+    padding: 8px 16px;
+    border-radius: 20px; /* 타원형 효과 */
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    min-width: 120px; /* 최소 크기 */
+    max-width: fit-content;
+}
+
+/* ✅ when, withWhom 각각 스타일 지정 */
+.when p,
+.withWhom p {
+    margin: 5px 0; /* 위아래 여백 */
+}
+
 
 .review-meta {
 	font-size: 14px;
@@ -71,14 +135,4 @@ body {
 .like-count {
 	font-size: 14px;
 	color: #333;
-}
-
-.search-bar {
-	width: 50%;
-	max-width: 400px;
-	margin: 20px 0;
-	padding: 10px;
-	border: none;
-	border-radius: 20px;
-	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }

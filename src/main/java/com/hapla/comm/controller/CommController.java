@@ -21,6 +21,7 @@ import com.hapla.comm.model.vo.Comm;
 import com.hapla.comm.model.vo.Reply;
 import com.hapla.common.PageInfo;
 import com.hapla.common.Pagination;
+import com.hapla.exception.Exception;
 import com.hapla.users.model.vo.Users;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -113,8 +114,7 @@ public class CommController {
         ArrayList<Reply> list = commService.selectReplyList(commNo);
 
         if (c == null) {
-            mv.addObject("message", "존재하지 않는 게시글입니다.").setViewName("error/404"); // ✅ 사용자 친화적인 에러 페이지로 이동
-            return mv;
+        	throw new Exception("실패");
         }
 
         mv.addObject("c", c).addObject("page", page).setViewName("comm/detail"); // ✅ 게시글 상세 페이지로 이동
