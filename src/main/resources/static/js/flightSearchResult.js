@@ -2,27 +2,27 @@ let mode = "range"; // 기본값은 왕복(range)
 fpInitialized = false; // flatpickr 초기화 상태를 추적
 
 const updateDatePicker = () => {
-    // 기존 flatpickr 인스턴스가 있으면 제거
-    if (fp && fp.destroy) {
-        fp.destroy();
-    }
+	// 기존 flatpickr 인스턴스가 있으면 제거
+	if (fp && fp.destroy) {
+		fp.destroy();
+	}
 
-    fp = flatpickr(datePickerInput, {
-        mode: mode, // 왕복(range), 편도(single), 다구간(single) 설정
-        dateFormat: "Y-m-d",
-        minDate: "today",
-        defaultDate: mode === "range" ? [new Date(), new Date(new Date().setDate(new Date().getDate() + 7))] : new Date(),
-        monthSelectorType: "static",
-        showMonths: 2,
-        locale: "ko",
-        position: "below",
-        closeOnSelect: mode === "single", // 편도/다구간은 날짜 한 번 선택 시 자동 닫기, 왕복은 유지
-        onOpen: function (selectedDates, dateStr, instance) {
-            if (!fpInitialized) {
-                if (!document.querySelector(".calendar-title")) {
-                    const titleDiv = document.createElement("div");
-                    titleDiv.classList.add("calendar-title");
-                    titleDiv.style.cssText = `
+	fp = flatpickr(datePickerInput, {
+		mode: mode, // 왕복(range), 편도(single), 다구간(single) 설정
+		dateFormat: "Y-m-d",
+		minDate: "today",
+		defaultDate: mode === "range" ? [new Date(), new Date(new Date().setDate(new Date().getDate() + 7))] : new Date(),
+		monthSelectorType: "static",
+		showMonths: 2,
+		locale: "ko",
+		position: "below",
+		closeOnSelect: mode === "single", // 편도/다구간은 날짜 한 번 선택 시 자동 닫기, 왕복은 유지
+		onOpen: function(selectedDates, dateStr, instance) {
+			if (!fpInitialized) {
+				if (!document.querySelector(".calendar-title")) {
+					const titleDiv = document.createElement("div");
+					titleDiv.classList.add("calendar-title");
+					titleDiv.style.cssText = `
                         position: absolute;
                         top: 0;
                         left: 0;
@@ -35,116 +35,116 @@ const updateDatePicker = () => {
                         border-bottom: 1px solid #eee;
                         z-index: 1;
                     `;
-                    updateTitle(selectedDates, titleDiv);
-                    instance.calendarContainer.insertBefore(titleDiv, instance.calendarContainer.firstChild);
-                }
+					updateTitle(selectedDates, titleDiv);
+					instance.calendarContainer.insertBefore(titleDiv, instance.calendarContainer.firstChild);
+				}
 
-                instance.calendarContainer.style.cssText += `
+				instance.calendarContainer.style.cssText += `
                     padding-top: 70px;
                     border-radius: 8px;
                     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
                 `;
 
-                fpInitialized = true;
-            }
-            updateCalendarStyles(selectedDates, instance); // 스타일 업데이트
-        },
-        onChange: function (selectedDates, dateStr, instance) {
-            const titleDiv = instance.calendarContainer.querySelector(".calendar-title");
-            if (titleDiv) {
-                updateTitle(selectedDates, titleDiv);
-            }
+				fpInitialized = true;
+			}
+			updateCalendarStyles(selectedDates, instance); // 스타일 업데이트
+		},
+		onChange: function(selectedDates, dateStr, instance) {
+			const titleDiv = instance.calendarContainer.querySelector(".calendar-title");
+			if (titleDiv) {
+				updateTitle(selectedDates, titleDiv);
+			}
 
-            // 날짜 선택 처리 (왕복, 편도, 다구간에 따라 다름)
-            if (mode === "range" && selectedDates.length === 2) {
-                const startDate = selectedDates[0].toISOString().split('T')[0]; // YYYY-MM-DD
-                const endDate = selectedDates[1].toISOString().split('T')[0];   // YYYY-MM-DD
-                const startDateKr = selectedDates[0].toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' });
-                const endDateKr = selectedDates[1].toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' });
+			// 날짜 선택 처리 (왕복, 편도, 다구간에 따라 다름)
+			if (mode === "range" && selectedDates.length === 2) {
+				const startDate = selectedDates[0].toISOString().split('T')[0]; // YYYY-MM-DD
+				const endDate = selectedDates[1].toISOString().split('T')[0];   // YYYY-MM-DD
+				const startDateKr = selectedDates[0].toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' });
+				const endDateKr = selectedDates[1].toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' });
 
-                datePickerInput.value = `${startDate} ~ ${endDate}`; // 데이터 전송용
-                datePickerInput.dataset.displayValue = `${startDateKr} → ${endDateKr}`; // 사용자 표시용
-                instance.close(); // 두 날짜 선택 후 자동 닫기
-                updateCalendarStyles(selectedDates, instance); // 스타일 업데이트
-            } else if (mode === "single" && selectedDates.length === 1) {
-                const singleDate = selectedDates[0].toISOString().split('T')[0]; // YYYY-MM-DD
-                const singleDateKr = selectedDates[0].toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' });
+				datePickerInput.value = `${startDate} ~ ${endDate}`; // 데이터 전송용
+				datePickerInput.dataset.displayValue = `${startDateKr} → ${endDateKr}`; // 사용자 표시용
+				instance.close(); // 두 날짜 선택 후 자동 닫기
+				updateCalendarStyles(selectedDates, instance); // 스타일 업데이트
+			} else if (mode === "single" && selectedDates.length === 1) {
+				const singleDate = selectedDates[0].toISOString().split('T')[0]; // YYYY-MM-DD
+				const singleDateKr = selectedDates[0].toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' });
 
-                datePickerInput.value = singleDate; // 데이터 전송용
-                datePickerInput.dataset.displayValue = singleDateKr; // 사용자 표시용
-                instance.close(); // 날짜 한 번 선택 후 자동 닫기
-                updateCalendarStyles(selectedDates, instance); // 스타일 업데이트
-            }
-        }
-    });
+				datePickerInput.value = singleDate; // 데이터 전송용
+				datePickerInput.dataset.displayValue = singleDateKr; // 사용자 표시용
+				instance.close(); // 날짜 한 번 선택 후 자동 닫기
+				updateCalendarStyles(selectedDates, instance); // 스타일 업데이트
+			}
+		}
+	});
 };
 
 // 타이틀 업데이트 함수 (기존 유지)
 function updateTitle(selectedDates, titleDiv) {
-    if (selectedDates.length === 2) {
-        const startDate = selectedDates[0].toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' });
-        const endDate = selectedDates[1].toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' });
-        titleDiv.textContent = `${startDate} 출발 → ${endDate} 도착`;
-    } else if (selectedDates.length === 1) {
-        const singleDate = selectedDates[0].toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' });
-        titleDiv.textContent = `${singleDate} 출발`;
-    } else {
-        titleDiv.textContent = "출발일과 도착일을 선택하세요";
-    }
+	if (selectedDates.length === 2) {
+		const startDate = selectedDates[0].toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' });
+		const endDate = selectedDates[1].toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' });
+		titleDiv.textContent = `${startDate} 출발 → ${endDate} 도착`;
+	} else if (selectedDates.length === 1) {
+		const singleDate = selectedDates[0].toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' });
+		titleDiv.textContent = `${singleDate} 출발`;
+	} else {
+		titleDiv.textContent = "출발일과 도착일을 선택하세요";
+	}
 }
 
 // 날짜 범위 선택 시 스타일 변경 함수 (기존 유지)
 function updateCalendarStyles(selectedDates, instance) {
-    const days = instance.calendarContainer.querySelectorAll('.flatpickr-day');
+	const days = instance.calendarContainer.querySelectorAll('.flatpickr-day');
 
-    // 모든 날짜 초기화
-    days.forEach(day => {
-        day.classList.remove('selected-range-start', 'selected-range-end', 'selected-range-in-between');
-        day.style.backgroundColor = '';
-        day.style.borderColor = '';
-        day.style.color = '';
-    });
+	// 모든 날짜 초기화
+	days.forEach(day => {
+		day.classList.remove('selected-range-start', 'selected-range-end', 'selected-range-in-between');
+		day.style.backgroundColor = '';
+		day.style.borderColor = '';
+		day.style.color = '';
+	});
 
-    // 날짜 범위 스타일 적용 (왕복일 경우만)
-    if (mode === "range" && selectedDates.length === 2) {
-        const [startDate, endDate] = selectedDates;
-        const startUnix = startDate.getTime();
-        const endUnix = endDate.getTime();
+	// 날짜 범위 스타일 적용 (왕복일 경우만)
+	if (mode === "range" && selectedDates.length === 2) {
+		const [startDate, endDate] = selectedDates;
+		const startUnix = startDate.getTime();
+		const endUnix = endDate.getTime();
 
-        days.forEach(day => {
-            const dayDate = day.dateObj.getTime();
-            if (dayDate === startUnix) {
-                day.classList.add('selected-range-start');
-                day.style.backgroundColor = '#000';
-                day.style.borderColor = '#000';
-                day.style.color = '#fff';
-                day.style.borderRadius = '50% 0 0 50%'; // 시작 날짜 왼쪽 둥글게
-            } else if (dayDate === endUnix) {
-                day.classList.add('selected-range-end');
-                day.style.backgroundColor = '#000';
-                day.style.borderColor = '#000';
-                day.style.color = '#fff';
-                day.style.borderRadius = '0 50% 50% 0'; // 끝 날짜 오른쪽 둥글게
-            } else if (dayDate > startUnix && dayDate < endUnix) {
-                day.classList.add('selected-range-in-between');
-                day.style.backgroundColor = '#f0f0f0';
-                day.style.borderColor = '#f0f0f0';
-                day.style.color = '#333';
-            }
-        });
-    } else if (mode === "single" && selectedDates.length === 1) {
-        const singleDate = selectedDates[0].getTime();
-        days.forEach(day => {
-            const dayDate = day.dateObj.getTime();
-            if (dayDate === singleDate) {
-                day.classList.add('selected-range-start');
-                day.style.backgroundColor = '#000';
-                day.style.borderColor = '#000';
-                day.style.color = '#fff';
-                day.style.borderRadius = '50%'; // 단일 날짜는 완전 둥글게
-            }
-        });
-    }
+		days.forEach(day => {
+			const dayDate = day.dateObj.getTime();
+			if (dayDate === startUnix) {
+				day.classList.add('selected-range-start');
+				day.style.backgroundColor = '#000';
+				day.style.borderColor = '#000';
+				day.style.color = '#fff';
+				day.style.borderRadius = '50% 0 0 50%'; // 시작 날짜 왼쪽 둥글게
+			} else if (dayDate === endUnix) {
+				day.classList.add('selected-range-end');
+				day.style.backgroundColor = '#000';
+				day.style.borderColor = '#000';
+				day.style.color = '#fff';
+				day.style.borderRadius = '0 50% 50% 0'; // 끝 날짜 오른쪽 둥글게
+			} else if (dayDate > startUnix && dayDate < endUnix) {
+				day.classList.add('selected-range-in-between');
+				day.style.backgroundColor = '#f0f0f0';
+				day.style.borderColor = '#f0f0f0';
+				day.style.color = '#333';
+			}
+		});
+	} else if (mode === "single" && selectedDates.length === 1) {
+		const singleDate = selectedDates[0].getTime();
+		days.forEach(day => {
+			const dayDate = day.dateObj.getTime();
+			if (dayDate === singleDate) {
+				day.classList.add('selected-range-start');
+				day.style.backgroundColor = '#000';
+				day.style.borderColor = '#000';
+				day.style.color = '#fff';
+				day.style.borderRadius = '50%'; // 단일 날짜는 완전 둥글게
+			}
+		});
+	}
 }
 
 style = document.createElement('style');
@@ -238,28 +238,28 @@ style.textContent = `
 document.head.appendChild(style);
 
 datePickerInput.addEventListener('click', (event) => {
-    if (!fp.isOpen) {
-        fp.open();
-    }
-    event.stopPropagation();
+	if (!fp.isOpen) {
+		fp.open();
+	}
+	event.stopPropagation();
 });
 
 document.addEventListener('click', (event) => {
-    const calendar = document.querySelector('.flatpickr-calendar');
-    if (calendar && !calendar.contains(event.target) && event.target !== datePickerInput) {
-        event.stopPropagation();
-    }
+	const calendar = document.querySelector('.flatpickr-calendar');
+	if (calendar && !calendar.contains(event.target) && event.target !== datePickerInput) {
+		event.stopPropagation();
+	}
 });
 
 // 버튼 이벤트 리스너
-document.querySelector('#return').addEventListener('click',  function() {
-    mode = "range";
-    updateDatePicker();
+document.querySelector('#return').addEventListener('click', function() {
+	mode = "range";
+	updateDatePicker();
 });
 
 document.querySelector('#go').addEventListener('click', () => {
-    mode = "single";
-    updateDatePicker();
+	mode = "single";
+	updateDatePicker();
 });
 
 
@@ -273,7 +273,7 @@ const inputBtns = document.querySelectorAll('.trip-group button');
 
 
 inputBtns.forEach(array => {  // 🔴 'array'는 각 요소(버튼)
-    array.addEventListener('click', () => {
+	array.addEventListener('click', () => {
 		inputBtns.forEach(btn => btn.classList.remove('active'));
 		array.classList.add('active');
 	});
@@ -290,31 +290,31 @@ let flightSearchResults = [];
 
 
 researchBtn.addEventListener('click', function() {
-    const url = `/flight/flightSearch?departureName=${encodeURIComponent(departureName.value)}&arrivalName=${encodeURIComponent(arrivalName.value)}&dates=${encodeURIComponent(dates.value)}&travelers=${encodeURIComponent(travelers.value)}&query=${encodeURIComponent(query)}`;
+	const url = `/flight/flightSearch?departureName=${encodeURIComponent(departureName.value)}&arrivalName=${encodeURIComponent(arrivalName.value)}&dates=${encodeURIComponent(dates.value)}&travelers=${encodeURIComponent(travelers.value)}&query=${encodeURIComponent(query)}`;
 
-    fetch(url, {
-        method: 'get',
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-        },
-    })
-    .then(response => response.json())
-    .then(data => {
-		console.log(data);
-		flightSearchResults = data;
-        const resultsContainer = document.querySelector('.search-results-container');
-        const flightResults = document.querySelector('.flight-results'); // 기존 검색 결과 부분
-		console.log("search (stringified): " + JSON.stringify(flightSearchResults, null, 2)); // JSON으로 출
-        if (flightResults) {
-            flightResults.remove(); // 기존 검색 결과만 삭제
-        }
+	fetch(url, {
+		method: 'get',
+		headers: {
+			'X-Requested-With': 'XMLHttpRequest'
+		},
+	})
+		.then(response => response.json())
+		.then(data => {
+			console.log(data);
+			flightSearchResults = data;
+			const resultsContainer = document.querySelector('.search-results-container');
+			const flightResults = document.querySelector('.flight-results'); // 기존 검색 결과 부분
+			console.log("search (stringified): " + JSON.stringify(flightSearchResults, null, 2)); // JSON으로 출
+			if (flightResults) {
+				flightResults.remove(); // 기존 검색 결과만 삭제
+			}
 
-        // 새로운 검색 결과 생성
-        const newResults = document.createElement('main');
-        newResults.classList.add('flight-results');
+			// 새로운 검색 결과 생성
+			const newResults = document.createElement('main');
+			newResults.classList.add('flight-results');
 
-        if (data.length > 0) {
-            newResults.innerHTML = `
+			if (data.length > 0) {
+				newResults.innerHTML = `
                 <div class="flight-result-header">
                     <h2>${data.length}개의 항공권 검색됨</h2>
                     <div class="sort-options">
@@ -389,17 +389,17 @@ researchBtn.addEventListener('click', function() {
                     `).join('')}
                 </div>
             `;
-        } else {
-            newResults.innerHTML = `<p>검색 결과가 없습니다.</p>`;
-        }
+			} else {
+				newResults.innerHTML = `<p>검색 결과가 없습니다.</p>`;
+			}
 
-        resultsContainer.appendChild(newResults);
-		
-		// 데이터 로드 후 필터 즉시 적용
-        applyFilter();
+			resultsContainer.appendChild(newResults);
 
-    })
-    .catch(error => console.error('Error fetching flight data:', error));
+			// 데이터 로드 후 필터 즉시 적용
+			applyFilter();
+
+		})
+		.catch(error => console.error('Error fetching flight data:', error));
 });
 
 // 시간 형식 변환 함수 (HH:mm 포맷을 오전/오후로 변환)
@@ -412,42 +412,68 @@ function formatTime(timeString) {
 	return `${period} ${formattedHours}:${minutes}`;
 }
 
-// 필터링 함수
+const flightContainers = document.querySelectorAll('.flight-container');
 const applyFilter = () => {
     console.log('applyFilter 함수 실행');
-    const checked = document.querySelectorAll('input[name="layover"]:checked'); // 체크되어있는 체크박스 요소
-    const selectedOptions = Array.from(checked).map(input => input.value);		// 체크박스
-    const flightContainers = document.querySelectorAll('.flight-container');
-	
-	for(const flightContainer of flightContainers) {
-		if(selectedOptions.includes('direct')) {
-			if(!selectedOptions.includes('oneStop') && !selectedOptions.includes('multiStop')) {
-				if(flightSearchResults.outboundTotalStops != 0 || flightSearchResults.inboundTotalStops != 0 ) {
-					console.log('직항만');
-					flightContainer.classList.add('hidden');
-				} else if(selectedOptions.include('oneStop') && !selectedOptions.includes('multiStop')) {
-					if(flightSearchResults.outboundTotalStops > 1 || flightSearchResults.inboundTotalStops > 1) {
-						console.log('직항 + 1회 경유');
-						flightContainer.classList.add('hidden');
-					}
-				}
-			}
-		}
-	}
-    console.log("checked : " + checked);
-	console.log("selectedOptions : " + selectedOptions);
-	console.log("flightContainers : " + flightContainers);
-	console.log(selectedOptions.includes(''))
-// 체크박스 이벤트 리스너
-const checkboxes = document.querySelectorAll('input[name="layover"]');
-checkboxes.forEach((checkbox) => {
+
+    const checked = document.querySelectorAll('input[name="layover"]:checked');
+    const selectedOptions = Array.from(checked).map(input => input.value);
+    
+
+    flightContainers.forEach((flightContainer, index) => {
+        const flight = flightSearchResults[index]; // 각 컨테이너에 해당하는 항공편 데이터 가져오기
+//		console.log(flightSearchResults);
+        const outboundStops = flight.outboundTotalStops;
+        const inboundStops = flight.inboundTotalStops;
+		console.log('flightContainer : ' + flightContainer);
+		console.log('outboundStops : ' + outboundStops);
+		console.log('inboundStops : ' + inboundStops);
+        // 기본적으로 보이도록 설정
+//        flightContainer.classList.remove('hidden');
+
+        // 선택된 옵션이 없으면 모든 항공편 표시
+        if (selectedOptions.length == 0 || selectedOptions.lenght == 3) return; 
+		console.log(selectedOptions);
+		
+        // 필터링 조건 확인
+        const isDirect = selectedOptions.includes('direct');
+        const isOneStop = selectedOptions.includes('oneStop');
+        const isMultiStop = selectedOptions.includes('multiStop');
+		
+        // 필터링 로직
+        if (isDirect && !isOneStop && !isMultiStop && (outboundStops != 0 || inboundStops != 0)) {
+            flightContainer.classList.add('hidden'); // 직항만 선택 시, 경유 항공편 숨기기
+        } 
+//        else if (isOneStop && !isDirect && !isMultiStop && (outboundStops > 1 || inboundStops > 1 || outboundStops == 0 || inboundStops == 0)) {
+//            flightContainer.classList.add('hidden'); // 1회 경유만 선택 시, 2회 이상 경유 항공편 숨기기
+//        } 
+//        else if (isMultiStop && !isDirect && !isOneStop && (outboundStops < 2 || inboundStops < 2)) {
+//            flightContainer.classList.add('hidden'); // 2회 이상 경유만 선택 시, 직항 또는 1회 경유 항공편 숨기기
+//        }
+
+        // 모든 조합을 고려한 추가 조건:
+//        if (isDirect && !isOneStop && !isMultiStop && (outboundStops > 0 || inboundStops > 0)) {
+//            flightContainer.classList.add('hidden'); // 직항만 선택하고, 경유가 있는 항공편 숨기기
+//        }
+//        else if (!isDirect && isOneStop && !isMultiStop && (outboundStops != 1 || inboundStops != 1)) {
+//            flightContainer.classList.add('hidden'); // 1회 경유만 선택하고, 경유가 1회 이하인 항공편 숨기기
+//        }
+//        else if (!isDirect && !isOneStop && isMultiStop && (outboundStops < 2 || inboundStops < 2)) {
+//            flightContainer.classList.add('hidden'); // 2회 이상 경유만 선택하고, 경유가 1회 이하인 항공편 숨기기
+//        }
+//        else if (!isDirect && !isOneStop && !isMultiStop) {
+//            flightContainer.classList.add('hidden'); // 필터 조건이 없으면 모든 항공편 숨기기
+//        }
+    });
+};
+
+// 체크박스 이벤트 리스너 (한 번만 등록)
+document.querySelectorAll('input[name="layover"]').forEach(checkbox => {
     checkbox.addEventListener('change', () => {
-		console.log("applyFilter 함수 실행 ");
-		const flightContainers = document.querySelectorAll('.flight-container');
 		for(const flightContainer of flightContainers) {
 			flightContainer.classList.remove('hidden');
-			}
-		applyFilter();
-		});
+		}
+		applyFilter
 	});
-}
+});
+
