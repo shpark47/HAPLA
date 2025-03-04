@@ -50,12 +50,26 @@
                 dateContainer.appendChild(planDate);
                 dateContainer.appendChild(dateItem);
                 dateList.appendChild(dateContainer);
+				
+				// 각 날짜 컨테이너 클릭 시 side-pannel 표시
+				dateContainer.addEventListener("click", function(){
+					document.getElementById("side-panel").style.display = "block";
+				});
 
                 // 다음 날짜로 이동
                 startDate.setDate(startDate.getDate() + 1);
             }
         }
-
+		
+		// ✅ 패널 닫기 버튼 기능 추가
+		document.addEventListener("DOMContentLoaded", function () {
+		    const closeButton = document.querySelector(".close-btn");
+		    if (closeButton) {
+		        closeButton.addEventListener("click", function () {
+		            document.getElementById("side-panel").style.display = "none";
+		        });
+		    }
+		});
         // ✅ Google 지도 초기화 함수
         function initMap(lat = 48.8566, lng = 2.3522) {
             new google.maps.Map(document.getElementById('map'), {
