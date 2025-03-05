@@ -9,18 +9,6 @@
 		values (seq_trip.NEXTVAL, #{userNo}, default, #{startDate}, #{endDate}, sysdate, #{cityName})
 	</insert>
 
-	<!-- 
-	<insert id="saveTrip">
-		insert all
-		
-		into trip
-		values(seq_trip.NEXTVAL, #{userNo}, default, #{startDate}, #{endDate}, sysdate, #{cityName})
-	
-		into detail
-		values(seq_detail.nextval, seq_trip.CURRVAL, default, default, default, sysdate)
-		SELECT 1 FROM DUAL
-	</insert> 
-	-->
 	<select id="getMySchedule">
 		select *
 		from trip
@@ -32,12 +20,4 @@
 		from detail
 		where trip_no = #{tripNo}
 	</select>
-	
-	<select id="getTripNo">
-		select *
-		from trip
-		where trip_no = #{tripNo}
-	</select>
-	
-	
 </mapper>

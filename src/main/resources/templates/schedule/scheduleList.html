@@ -16,8 +16,7 @@
 			</span> -->
 		</div>
 		<div class="date-list">
-			<div class="date-container" th:each="trip : ${trip}" th:data-id="${trip.tripNo}">
-			<input type="hidden" th:value="${trip.tripNo}">
+			<div class="date-container" th:each="trip : ${trip}">
 				<div class="plan-title" th:text="${trip.title}"></div>
 				<div class="date-item">
 					<div id="date">

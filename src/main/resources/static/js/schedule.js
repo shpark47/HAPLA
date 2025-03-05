@@ -87,7 +87,7 @@
         	if(menuBtn){
         		menuBtn.addEventListener("click", function(){
         		console.log("일정 목록 페이지로 이동")
-        		window.location.href = "/schedule/list";
+        		window.location.href = "/schedule/scheduleList";
         	});
         }
         });
