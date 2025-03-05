@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (planListBtn) {
         planListBtn.addEventListener("click", function () {
             console.log("📋 일정 목록 페이지로 이동");
-            window.location.href = "/schedule/scheduleList"; 
+            window.location.href = "/schedule/list"; 
         });
     }
 });
@@ -163,7 +163,7 @@ function selectCity(city) {
     console.log(`📍 선택한 도시: ${city.name}, ${city.country}`);
 
     // ✅ 일정 페이지로 이동 (기본 페이지가 /schedule/scheduleCalendar 인 경우)
-    window.location.href = "/schedule/scheduleCalendar";
+    window.location.href = "/schedule/calendar";
 }
 
 // ✅ 페이지 로드 후 Google Places API 초기화 실행

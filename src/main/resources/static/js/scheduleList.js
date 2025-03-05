@@ -20,6 +20,23 @@
        }
        });
 
+	   // 일정 내용 박스 클릭시 일정 내용으로 페이지 이동
+	   document.addEventListener("DOMContentLoaded", function(){
+			const parent = document.querySelector(".date-list");	// 부모요소
+			
+			parent.addEventListener("click", function(event){
+				const target = event.target.closest(".date-container");	// 클릭된 요소가 컨테이너
+				
+				
+				if(target){
+					const tripNo = target.getAttribute("data-id");
+					if(tripNo){
+						window.location.href = '/schedule/detail/' + tripNo;	// /*<![CDATA[*//*[[${trip.tripNo}]]*/1/*]]>*/;	// 해당 no로 이동
+					}
+				}
+			});
+	   });
+	   
 // Google Maps initialization
 /*function initMap() {
     const map = new google.maps.Map(document.getElementById('map'), {
