@@ -24,4 +24,8 @@
     <delete id="deleteUser">
         delete from users where user_no = #{no}
     </delete>
+
+    <select id="selectPlaceId">
+        select api_id from place where user_no = #{userNo}
+    </select>
 </mapper>

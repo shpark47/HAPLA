@@ -99,14 +99,11 @@
     <script src="/js/join.js"></script>
 </div>
 
-<script src="/js/header.js"></script>
-<script src="/js/trip.js"></script>
-
 <!-- 여행 일정 모달 -->
-<div id="tripPlanModal" class="modal-trip hidden">
-    <div class="modal-content">
+
+<div class="header-modal hidden" role="dialog" id="tripPlanModal" align="center">
+    <div class="header-modal-trip">
         <button class="header-close-btn" aria-label="닫기"></button>
-        <!--  -->
         <div class="button-container">
             <span class="trip-button"><button id="planListBtn" class="planList">일정 목록</button></span>
             <span class="trip-button"><button id="makePlanBtn" class="makePlan"
@@ -116,11 +113,9 @@
 </div>
 
 <!-- 도시 검색 모달 -->
-<div id="citySearchModal" class="modal-trip hidden">
-    <div class="modal-content">
-
-        <!-- <span class="close" onclick="closeCitySearchModal()">&times;</span> -->
-
+<div class="header-modal hidden" role="dialog" id="citySearchModal" align="center">
+    <div class="header-modal-trip">
+        <button class="header-close-btn" aria-label="닫기"></button>
         <!-- 검색 입력창 -->
         <div class="search-container">
             <input type="text" id="searchInput" placeholder="도시 이름을 입력하세요..." oninput="filterCities()">
@@ -135,6 +130,10 @@
         <ul id="cityList"></ul>
     </div>
 </div>
+
+<script src="/js/header.js"></script>
+<script src="/js/trip.js"></script>
+
 <!-- Google Places API 스크립트 -->
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCEHjTtVqBclz07ADqbkGjqGIe94Cq-S60&libraries=places"></script>
 
@@ -171,7 +170,7 @@
         input.setAttribute("autocomplete", "off");
 
         const autocomplete = new google.maps.places.Autocomplete(input, {
-            types: ['geocode'],	// 도시 자동완성 최소화(검색창 드롭다운 비활성화)
+            types: ['geocode'],   // 도시 자동완성 최소화(검색창 드롭다운 비활성화)
             fields: ["name", "formatted_address", "geometry"],
             // types: ['(cities)'], // 도시만 검색
         });

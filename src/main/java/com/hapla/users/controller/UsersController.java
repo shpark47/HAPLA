@@ -6,7 +6,8 @@ import com.hapla.users.model.vo.Users;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import net.minidev.json.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
@@ -23,6 +25,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -169,5 +172,73 @@ public class UsersController {
             return "redirect:/users/logout";
         }
         throw new Exception("실패");
+    }
+
+    @Value("${google.api.key}") // application.properties 또는 .env에서 Google API 키를 주입
+    private String googleApiKey; // Google Places API 호출에 사용할 API 키
+
+    @GetMapping("/main")
+    public String main(Model model) {
+        Users loginUser = (Users) model.getAttribute("loginUser");
+        if (loginUser == null) {
+            return "/main"; // 로그인되지 않은 경우 바로 반환
+        }
+
+        ArrayList<String> placeIds = usersService.selectPlaceId(loginUser.getUserNo());
+        ArrayList<Map<String, Object>> placesList = new ArrayList<>();
+        RestTemplate restTemplate = new RestTemplate();
+
+        for (String placeId : placeIds) {
+            try {
+                String url = String.format(
+                        "https://maps.googleapis.com/maps/api/place/details/json?place_id=%s&language=ko&key=%s",
+                        placeId, googleApiKey);
+
+                String response = restTemplate.getForObject(url, String.class);
+
+                if (response != null && !response.trim().isEmpty()) {
+                    JSONObject jsonResponse = new JSONObject(response);
+
+                    if (jsonResponse.has("result") && !jsonResponse.isNull("result")) {
+                        JSONObject result = jsonResponse.getJSONObject("result");
+
+                        // 필요한 데이터만 추출
+                        Map<String, Object> placeData = new HashMap<>();
+                        placeData.put("placeId", placeId);
+                        placeData.put("name", result.optString("name", "이름 없음"));
+                        placeData.put("rating", result.optDouble("rating", 0.0));
+                        placeData.put("reviews", result.optInt("user_ratings_total", 0));
+
+                        // 사진 URL 설정
+                        if (result.has("photos") && result.getJSONArray("photos").length() > 0) {
+                            String photoReference = result.getJSONArray("photos").getJSONObject(0).getString("photo_reference");
+                            String photoUrl = String.format(
+                                    "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=%s&key=%s",
+                                    photoReference, googleApiKey
+                            );
+                            placeData.put("photoUrl", photoUrl);
+                        } else {
+                            placeData.put("photoUrl", "/images/default.jpg"); // 기본 이미지 설정
+                        }
+
+                        // 장소 유형 설정
+                        JSONArray typesArray = result.optJSONArray("types");
+                        if (typesArray != null && typesArray.length() > 0) {
+                            placeData.put("placeTypes", typesArray.join(", "));
+                        } else {
+                            placeData.put("placeTypes", "기타");
+                        }
+
+                        placesList.add(placeData);
+                    }
+                }
+            } catch (Exception e) {
+                System.err.println("Error fetching place details for placeId: " + placeId);
+                e.printStackTrace();
+            }
+        }
+
+        model.addAttribute("places", placesList); // 필요한 데이터만 Thymeleaf로 전달
+        return "/main";
     }
 }

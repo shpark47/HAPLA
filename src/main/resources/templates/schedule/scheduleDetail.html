@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>여행 일정</title>
+    <link rel="stylesheet" href="/css/schedule.css" type="text/css">
+</head>
+<body>
+
+    <div class="container">
+        <!-- 🌍 왼쪽 사이드바 -->
+        <div class="sidebar">
+            <div class="sidebar-head">
+                <span class="menu" id="menuBtn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                        <path d="M 3 5 A 1.0001 1.0001 0 1 0 3 7 L 21 7 A 1.0001 1.0001 0 1 0 21 5 L 3 5 z M 3 11 A 1.0001 1.0001 0 1 0 3 13 L 21 13 A 1.0001 1.0001 0 1 0 21 11 L 3 11 z M 3 17 A 1.0001 1.0001 0 1 0 3 19 L 21 19 A 1.0001 1.0001 0 1 0 21 17 L 3 17 z"></path>
+                    </svg>
+                </span>
+            </div>
+            <div class="trip_detail">
+	            <div class="sidebar-title">
+	                <span class="trip-title" id="tripTitle"></span>
+	                <span id="tripDates"></span>
+				</div>
+	            <!-- ✅ 날짜별 일정 리스트 -->
+	            <div class="date-list" id="dateList"></div>
+            </div>
+        </div>
+		<!-- 오른쪽 사이드 패널 -->
+	<div id="side-panel">
+		<div class="side-panel-header">
+			추가 정보 <span class="close-btn">&times;</span>
+		</div>
+		<div class="side-panel-content">여기에 추가 정보를 입력하세요.</div>
+	</div>
+        <!-- 🌍 Google 지도 -->
+        <div id="map"></div>
+    </div>
+
+    <script src="/js/scheduleDetail.js"></script>
+    
+    <!-- Google Maps API -->
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAUKMdSgSqvtUy4wZvUxqA6I_c0Zk4InEU&callback=initMap"></script>
+    
+
+</body>
+</html>

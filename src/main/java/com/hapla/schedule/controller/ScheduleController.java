@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.hapla.schedule.model.service.ScheduleService;
+import com.hapla.schedule.model.vo.Detail;
 import com.hapla.schedule.model.vo.Trip;
 import com.hapla.users.model.vo.Users;
 
@@ -33,7 +34,7 @@ public class ScheduleController {
 		return "/schedule/scheduleCalendar";
 	}
 	
-	// 일정 페이지로 이동
+	// 일정 페이지로 이동 / DB 저장
 	@GetMapping("/schedule")
 	public String Schedule(@ModelAttribute Trip trip, HttpSession session) {
 		
@@ -57,7 +58,7 @@ public class ScheduleController {
 //	public String ScheduleList() {
 //		return "/schedule/scheduleList";
 //	}
-	
+
 	@GetMapping("/scheduleList")
 	public String ScheduleList(@ModelAttribute Trip trip, HttpSession session, Model model) {
 		
@@ -68,4 +69,18 @@ public class ScheduleController {
 		model.addAttribute("trip", schedules);
 		return "/schedule/scheduleList";
 	}
+
+	// 일정 내용 페이지로 이동
+	@GetMapping("/scheduleDetail")
+	public String ScheduleDetail(@ModelAttribute Detail detail, HttpSession session, Model model) {
+
+		Trip trip = (Trip)session.getAttribute("tripNo");
+
+		List<Detail> tripDetail = scheduleService.getTripDetail(trip.getTripNo());
+
+		model.addAttribute("detail", tripDetail);
+		return "/schedule/scheduleDetail";
+
+	}
+
 }
