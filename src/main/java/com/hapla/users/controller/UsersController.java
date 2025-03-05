@@ -224,7 +224,7 @@ public class UsersController {
                         // 장소 유형 설정
                         JSONArray typesArray = result.optJSONArray("types");
                         if (typesArray != null && typesArray.length() > 0) {
-                            placeData.put("placeTypes", typesArray.join(", "));
+                            placeData.put("placeTypes", typesArray.get(0));
                         } else {
                             placeData.put("placeTypes", "기타");
                         }

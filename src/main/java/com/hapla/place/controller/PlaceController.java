@@ -54,6 +54,7 @@ public class PlaceController {
     public String star(Place place) {
         int check = placeService.checkPlace(place);
         String result = "fail";
+        System.out.println(place);
         if (check == 0) {
             int r = placeService.insertPlace(place);
             if (r == 1) {
