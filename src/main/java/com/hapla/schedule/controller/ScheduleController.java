@@ -76,20 +76,19 @@ public class ScheduleController {
 	}
 
 	// 일정 내용 페이지로 이동
-	@GetMapping("/detail")
+	@GetMapping("/detail/{tripNo}")
 	public String ScheduleDetail(@PathVariable("tripNo") int tripNo, @ModelAttribute Detail detail, HttpSession session, Model model) {
 		
 		// tripNo를 이용해 여행 정보를 조회
-		Trip trip = (Trip)session.getAttribute("tripNo");
+		Trip trip = scheduleService.getTripNo(tripNo);
 		
 		// 여행 상세 일정 조회
 		List<Detail> tripDetail = scheduleService.getTripDetail(trip.getTripNo());
 		
 		model.addAttribute("trip", trip);	// 여행 정보 추가
-		model.addAttribute("detail", tripDetail);	// 일정 정보 추가
+		//model.addAttribute("detail", tripDetail);	// 일정 정보 추가
 		
 		return "/schedule/detail";
-
 	}
 
 }
