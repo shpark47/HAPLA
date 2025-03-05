@@ -47,6 +47,18 @@
 		insert into reply
 		values (seq.reply.nextval, #{userNo}, #{commNo}, #{replyContent}, sysdate, sysdate)
 	</insert>
+	
+	<update id="updateComm">
+		update comm
+		set title = #{title}, comm_content = #{commContent}, update_date = sysdate
+		where comm_no = #{commNo}
+	</update>
+	
+	<update id="deleteComm">
+		update comm
+		set status = 'N'
+		where comm_no = #{commNo}
+	</update>
 </mapper>
 
 

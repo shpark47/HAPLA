@@ -15,9 +15,10 @@
                 <h1>여행의 설렘을 함께 나누는 공간에서 당신의 정보를 공유해보세요</h1>
             </div>
         </section>
-
         <section class="community">
             <form class="needs-validation" method="POST" id="detailForm">
+            	<input type="hidden" name="commNo" th:value="${c.commNo}">
+				<input type="hidden" name="page" th:value="${page}">
                 <h2>커뮤니티</h2>
                 <table>
                     <tr>
@@ -40,11 +41,91 @@
 					    <td colspan="9">[[${c.commContent}]]</td> <!-- ✅ 수정 -->
 					</tr>
                 </table>
+                
+                <th:block th:if="${session.loginUser != null && session.loginUser.userNo == c.userNo}">
+                	<button class="w-100 btn btn-success btn-lg" type="button" id="updateForm">수정</button>
+                	<button class="w-100 btn btn-secondary btn-lg" type="button" id="deleteModal">삭제</button>
+                </th:block>
+                
+                <div class="input-group">
+					<textarea class="form-control" rows="1" id="replyContent" style="resize:none;"></textarea>
+					<button class="btn btn-outline-success btn-lg" id="replySubmit" type="button" th:disabled="${session.loginUser == null}">SUBMIT</button>
+				</div>
+                <br>
+                <table class="table">
+					<thead>
+						<tr>
+							<th width="130px">작성자</th>
+							<th>작성내용</th>
+							<th width="130px">작성일자</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody>
+             			<tr th:each="r: ${list}">
+                			<td>[[${c.name}]]</td>
+                			<td th:text="${r.replyContent}"></td>
+                			<td>[[${r.createDate}]]</td>
+                			<td width="80px">
+                				<th:block th:if="${session.loginUser != null && r.name eq session.loginUser.userNo}">
+                					<input type="hidden" th:value="${r.replyNo}" name="replyNo">
+                					<span class="updel"> <!-- 수정 아이콘 (연필 모양) -->
+                						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/></svg>
+                					</span>
+                					&nbsp;
+                					<span class="updel"> <!-- 삭제 아이콘 (쓰레기통 모양) -->
+                						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16"><path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/></svg>
+                					</span>
+                					<input type="hidden" th:value="${r.replyContent}"> <!-- 댓글 수정은 안 하고 원래 댓글로 돌려놓으려고 할 때 사용 -->
+                				</th:block>
+                			</td>
+                		</tr>
+          			</tbody>
+				</table>
 			 </form>
         </section>
     </main>
     <div th:replace="~{common/footer.html :: foot}"></div>
-
+	<div class="modal fade" tabindex="-1" role="dialog" id="modalChoice">
+	      <div class="modal-dialog" role="document">
+	          <div class="modal-content rounded-3 shadow">
+	               <div class="modal-body p-4 text-center">
+	                 <h3 class="mb-0">정말 삭제하시겠습니까?</h3>
+	                 <p class="mb-0">삭제 후 게시글은 되돌릴 수 없습니다.</p>
+	               </div>
+	               <div class="modal-footer flex-nowrap p-0">
+	                 <button type="button" class="btn btn-lg btn-link fs-6 text-decoration-none col-6 m-0 rounded-0 border-end" id="delete">
+	                    <strong>네</strong>
+	                 </button>
+	                 <button type="button" class="btn btn-lg btn-link fs-6 text-decoration-none col-6 m-0 rounded-0" data-bs-dismiss="modal">아니오</button>
+	               </div>
+	          </div>
+	     </div>
+	</div>
+	<script th:inline="javascript">
+	window.onload = () => {
+		const upd = document.getElementById('updateForm');
+		const form = document.getElementById('detailForm');
+		if(upd != null){
+			upd.addEventListener('click', () => {
+				form.action = '/comm/updForm';
+				form.submit();
+			});
+		}
+		
+		const deleteModal = document.getElementById('deleteModal');
+		if(deleteModal != null) {
+			deleteModal.addEventListener('click', () => {
+				$('#modalChoice').modal('show');
+			});
+		}
+		
+		document.getElementById('delete').addEventListener('click', () => {
+			form.action = '/comm/delete';
+			form.submit();
+		});
+		}
+	</script>
 
 </body>
 </html>

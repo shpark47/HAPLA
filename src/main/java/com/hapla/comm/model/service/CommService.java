@@ -48,4 +48,12 @@ public class CommService {
 	public int insertReply(Reply r) {
 		return mapper.insertReply(r);
 	}
+
+	public int deleteComm(int commNo) {
+		return mapper.deleteComm(commNo);
+	}
+
+	public int updateComm(Comm c) {
+		return mapper.updateComm(c);
+	}
 }

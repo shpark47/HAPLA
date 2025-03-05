@@ -23,10 +23,10 @@
                 <div th:if="${list == null or list.isEmpty()}">
                     <p>등록된 리뷰가 없습니다.</p>
                 </div>
-
                 <!-- ✅ 최대 4개까지만 표시 & 클릭 시 상세보기 이동 가능 -->
-                <div th:each="r, iterStat : ${list}" th:if="${iterStat.index < 4}" class="review-card" th:data-id="${r.reviewNo}" th:data-page="${pi.currentPage}">
-					<img th:src="@{/img/watch.jpg}" alt="리뷰 이미지">
+                <div th:each="r: ${list}" class="review-card" th:data-id="${r.reviewNo}" th:data-page="${pi.currentPage}">
+					<img th:src="@{/img/noImage.jpg}" alt="리뷰 이미지">
+<!-- 					<img th:src="${r.thumbnail != null and r.thumbnail != ''} ? @{/img/} + ${r.thumbnail} : @{/img/noImage.jpg}" alt="리뷰 이미지"> -->
                     <div class="review-info">
                         <h3 th:text="${r.title != null ? r.title : '제목 없음'}"></h3>
                         <div class="author">
@@ -49,19 +49,19 @@
                 <ul class="pagination">
                     <!-- 이전 페이지 -->
                     <li class="page-item" th:classappend="${pi.currentPage == 1} ? 'disabled'">
-                        <a class="page-link" th:href="@{/review/list(page=${pi.currentPage - 1})}" aria-label="Previous">
+                        <a class="page-link" th:href="@{${loc}(page=${pi.currentPage - 1})}" aria-label="Previous">
                             <span aria-hidden="true">&laquo;</span>
                         </a>
                     </li>
 
                     <!-- 페이지 번호 -->
                     <li class="page-item" th:each="p : ${#numbers.sequence(pi.startPage, pi.endPage)}" th:classappend="${p == pi.currentPage} ? 'active'">
-                        <a class="page-link" th:href="@{/review/list(page=${p})}">[[${p}]]</a>
+                        <a class="page-link" th:href="@{${loc}(page=${p})}">[[${p}]]</a>
                     </li>
 
                     <!-- 다음 페이지 -->
                     <li class="page-item" th:classappend="${pi.currentPage == pi.endPage} ? 'disabled'">
-                        <a class="page-link" th:href="@{/review/list(page=${pi.currentPage + 1})}" aria-label="Next">
+                        <a class="page-link" th:href="@{${loc}(page=${pi.currentPage + 1})}" aria-label="Next">
                             <span aria-hidden="true">&raquo;</span>
                         </a>
                     </li>
