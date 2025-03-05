@@ -24,4 +24,8 @@ public interface CommMapper {
 	ArrayList<Reply> selectReplyList(int commNo);
 
 	int insertReply(Reply r);
+
+	int deleteComm(int commNo);
+
+	int updateComm(Comm c);
 }
