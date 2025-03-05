@@ -15,4 +15,6 @@ public interface ScheduleMapper {
 	List<Trip> getMySchedule(int userNo);
 
 	List<Detail> getTripDetail(int tripNo);
+
+	Trip getTripNo(int tripNo);
 }
