@@ -383,7 +383,7 @@ public class FlightController {
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + accessToken);
-
+        System.out.println("url : " + url);
         HttpEntity<String> request = new HttpEntity<>(headers);
         List<Map<String, Object>> results = new ArrayList<>();
 
