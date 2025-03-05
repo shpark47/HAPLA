@@ -57,7 +57,7 @@ public class ScheduleController {
 //	public String ScheduleList() {
 //		return "/schedule/scheduleList";
 //	}
-	
+
 	@GetMapping("/scheduleList")
 	public String ScheduleList(@ModelAttribute Trip trip, HttpSession session, Model model) {
 		

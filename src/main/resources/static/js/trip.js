@@ -10,7 +10,7 @@ function closeTripPlanModal() {
 
 // 🌍 도시 검색 모달 열기
 function openCitySearchModal() {
-	closeTripPlanModal();
+    closeTripPlanModal();
     document.getElementById("citySearchModal").classList.remove("hidden");
     //filterCities();
 }
@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (planListBtn) {
         planListBtn.addEventListener("click", function () {
             console.log("📋 일정 목록 페이지로 이동");
-            window.location.href = "/schedule/scheduleList"; 
+            window.location.href = "/schedule/scheduleList";
         });
     }
 });

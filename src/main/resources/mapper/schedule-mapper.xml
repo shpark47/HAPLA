@@ -13,7 +13,7 @@
 		select *
 		from trip
 		where user_no = #{userNo} 
-		
+
 	</select>
 
 </mapper>
