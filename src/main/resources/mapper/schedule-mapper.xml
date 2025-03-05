@@ -19,10 +19,12 @@
 		into detail
 		values (seq_detail.NEXTVAL, seq_trip.NEXTVAL, default, default, default, sysdate)
 	 -->
+	 
 	<select id="getMySchedule">
 		select *
 		from trip
 		where user_no = #{userNo}
+		order by CREATE_DATE desc
 	</select>
 
 	<select id="getTripDetail">

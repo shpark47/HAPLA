@@ -58,12 +58,8 @@ public class ScheduleController {
 		return "/schedule/schedule";
 	}
 	
-	// 일정 목록 페이지로 이동
-//	@GetMapping("/scheduleList")
-//	public String ScheduleList() {
-//		return "/schedule/scheduleList";
-//	}
 
+	// 일정 목록 페이지로 이동
 	@GetMapping("/list")
 	public String ScheduleList(@ModelAttribute Trip trip, HttpSession session, Model model) {
 		
