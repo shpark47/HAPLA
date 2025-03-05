@@ -41,9 +41,6 @@
         <!-- 주소 -->
         <p th:text="'주소: ' + ${placeDetails.result.formatted_address}">주소</p>
 
-        <!-- 전화번호 -->
-        <p th:text="'전화번호: ' + ${placeDetails.result.formatted_phone_number}">전화번호</p>
-
         <a th:href="'https://www.google.com/maps/place/?q=place_id:'+${placeId}">해당 장소로 이동하기</a>
         <br>
 
