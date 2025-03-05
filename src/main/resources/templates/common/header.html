@@ -170,7 +170,7 @@
         input.setAttribute("autocomplete", "off");
 
         const autocomplete = new google.maps.places.Autocomplete(input, {
-            types: ['geocode'],	// 도시 자동완성 최소화(검색창 드롭다운 비활성화)
+            types: ['geocode'],   // 도시 자동완성 최소화(검색창 드롭다운 비활성화)
             fields: ["name", "formatted_address", "geometry"],
             // types: ['(cities)'], // 도시만 검색
         });

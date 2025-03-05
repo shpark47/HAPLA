@@ -25,7 +25,6 @@ body {
 .destinations-grid {
     margin-top: 20px;
     display: flex;
-    justify-content: space-between; /* 카드 사이 여백을 균등하게 분배 */
     flex-wrap: wrap;
     gap: 1rem;
     width: 100%;

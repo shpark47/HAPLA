@@ -12,7 +12,7 @@
 	<select id="getMySchedule">
 		select *
 		from trip
-		where user_no = #{userNo} 
+		where user_no = #{userNo}
 	</select>
 
 	<select id="getTripDetail">
