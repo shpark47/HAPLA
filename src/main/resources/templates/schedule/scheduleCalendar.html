@@ -96,8 +96,7 @@
 		            if (selectedDates.length > 0) {
 		                flatpickr("#endDate", {
 		                    dateFormat: "Y-m-d",
-		                    //minDate: selectedDates[0].fp_incr(1), // 출발일 다음 날부터 선택 가능
-		                    minDate: selectedDates[0], // 당일 선택 가능
+		                    minDate: selectedDates[0].fp_incr(1), // 출발일 다음 날부터 선택 가능
 		                    static: true,
 		                    locale: "ko"
 		                });
