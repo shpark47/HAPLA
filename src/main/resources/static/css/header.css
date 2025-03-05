@@ -267,9 +267,12 @@
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    width: 700px;
-    height: 400px;
+    width:40%;
+    max-width: 700px;
+    min-height: 250px;
     margin-top: 200px;
+   	max-width: 700px;
+    min-height: 250px;
 }
 
 /* 버튼 컨테이너 */
@@ -287,35 +290,27 @@
 
 .planList, .makePlan{
 	width: 100%;
-	height: 300%;
-	padding: 15px;
-	font-size: 20px;
-	font-weight: bold;
-	border:none;
-	cursor: pointer;
-	transition: 0.3s;
-	background-color: #0099cc;
-	color: white;
-	border-radius: 10px; /* 버튼을 둥글게 */
-    box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.15); /* 그림자 효과 */
+    height: 300%;
+    padding: 15px;
+    font-size: 20px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s;
+    background-color: #ffffff;
+    color: #0099cc;
+    border-radius: 10px;
+    box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.1);
     display: flex;
     align-items: center;
     justify-content: space-around;
 }
 
-/* .makePlan{
-	width: 100%;
-	padding: 15px;
-	font-size: 18px;
-	font-weight: bold;
-	border:none;
-	cursor: pointer;
-	transition: 0.3s;
-} */
 
-
-.trip-button:hover{
-	opacity: 0.8;
+.planList:hover, .makePlan:hover{
+	 border-radius: 20px;
+	 background-color: #0099cc;
+	 color: #ffffff;
 }
 
 /* 모달 창 */
