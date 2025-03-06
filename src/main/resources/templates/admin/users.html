@@ -44,16 +44,16 @@
 	                    <td th:text = "${user.email}"></td>
 	                    <td th:text = "${user.createDate}"></td>
 	                </tr>
-	                <tr th:if = "${#lists.isEmpty(list)}"> 
+	                <tr th:if = "${#lists.isEmpty(list)}">
 	                	<td colspan = "3" class=  "no-data"> 조회된 사용자가 없습니다. </td>
 	                </tr>
                </tbody>
             </table>
-            
+
             <!-- 페이징 -->
-            <div class="pagination" th:if="${not #lists.isEmpty(list)}">            
+            <div class="pagination" th:if="${not #lists.isEmpty(list)}">
                 <!-- 이전 페이지 -->
-                <a th:if="${userPi.currentPage > 1}" 
+                <a th:if="${userPi.currentPage > 1}"
                    th:href="@{${loc}(userPage=${userPi.currentPage-1}, userkeyword=${userkeyword})}"
                    class="page-link">&lt;</a>
 
@@ -73,13 +73,13 @@
                    th:href="@{${loc}(page=${userPi.currentPage+1}, userkeyword=${userkeyword})}"
                    class="page-link">&gt;</a>
             </div>
-            
+
             <form th:action = "@{users}" class="search-form">
             	<input type="text" name="userkeyword" th:value="${userkeyword}" placeholder="닉네임을 입력하세요">
             	<button type="submit">검색</button>
             </form>
         </div>
-     
+
         <div class="card" id="users">
             <h2>사용자 활동 조회</h2>
             <div class="activity-summary">
@@ -104,42 +104,42 @@
 			                    <th>리뷰</th>
 			                </tr>
 			     </thead>
-			     <tbody>           
+			     <tbody>
 			                <tr th:each = "alist : ${alist}">
 			                <!-- 닉네임 -->
 			                    <td th:text = "${alist.nickname}"></td>
-			                <!-- 게시글 -->    
+			                <!-- 게시글 -->
 			                    <td>
 			                        <ul th:if="${not #lists.isEmpty(alist.comm)}">
 			                            <li th:each = "comm: ${alist.comm}">
 			                            <span th:text="${comm.title}"></span>
-			                            </li>  
+			                            </li>
 			                        </ul>
 			                        <span th:if="${#lists.isEmpty(alist.comm)}" class="no-data">작성한 게시글이 없습니다.</span>
-			                        
+
 			                    </td>
 			                <!-- 리뷰 -->
 			                    <td>
 			                        <ul th:if="${not #lists.isEmpty(alist.review)}">
 			                            <li th:each="review : ${alist.review}">
 			                            <span th:text="${review.title}"></span>
-			                            <span class="rating" 
+			                            <span class="rating"
                                           th:text="${'(' + #strings.repeat('★', review.rating) + #strings.repeat('☆', 5-review.rating) + ')'}">
-                                    	</span>  
-			                            </li> 
+                                    	</span>
+			                            </li>
 			                        </ul>
 			                        <span th:if="${#lists.isEmpty(alist.review)}" class ="no-data">작성한 리뷰가 없습니다.</span>
 			                    </td>
-			                    
+
 			                </tr>
 			                <tr th:if="${#lists.isEmpty(alist)}">
 					            <td colspan="3" class="no-data">조회된 사용자가 없습니다.</td>
 					        </tr>
 			                </tbody>
 			            </table>
-			            
+
 		<!-- 페이징 -->
-            <div class="pagination" th:if="${not #lists.isEmpty(alist)}">            
+            <div class="pagination" th:if="${not #lists.isEmpty(alist)}">
         <!-- 이전 페이지 -->
                <a th:if="${writePi.currentPage > 1}"
                    th:href="@{${loc}(writePage=${writePi.currentPage-1}, writekeyword=${writekeyword})}"
@@ -160,12 +160,12 @@
                    th:href="@{${loc}(writePage=${writePi.currentPage+1}, writekeyword=${writekeyword})}"
                    class="page-link">&gt;</a>
             </div>
-				<!-- 닉네임 검색  -->		
+				<!-- 닉네임 검색  -->
 					<form th:action="@{write}" class="search-form">
 		                <input type="text" name="writekeyword" th:value="${writekeyword}" placeholder="닉네임을 입력하세요">
 		                <button type="submit">검색</button>
 		            </form>
-				</div>	
-			</div>		
+				</div>
+			</div>
 </body>
 </html>

@@ -297,10 +297,10 @@
     }
 
     // ✅ 페이지 로드 후 Google Places API 초기화 실행
-    window.onload = function () {
+    window.addEventListener('load', () => {
         initCitySearch();
         displayCityList();
-    };
+    });
 </script>
 
 </body>

@@ -70,7 +70,7 @@
 </main>    
 <div th:replace="~{common/footer.html :: foot}"></div>
 <script th:inline="javascript">
-    window.onload = () => {
+	window.addEventListener('load', () => {
         const tbody = document.querySelector('tbody');
         const rows = tbody.querySelectorAll('tr');
         
@@ -82,7 +82,7 @@
                 location.href = `/comm/` + commNo + `/` + currentPage; // ✅ 게시글 상세 페이지로 이동
             });
         }
-    }
+    });
 </script>
 
 </body>

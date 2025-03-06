@@ -58,7 +58,7 @@ body {
     background: white;
     padding: 20px;
     border-radius: 10px;
-    height: 400px;
+    height: 500px;
     margin-top: -700px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     position: relative; /* ✅ reviews를 자연스럽게 배치 */
@@ -67,10 +67,11 @@ body {
 /* ✅ reviews를 relative로 만들어 hero보다 위에 위치 */
 .reviews {
     display: flex;
-    justify-content: space-between;
+    gap: 20px;
     flex-wrap: wrap;
     position: relative;
     z-index: 2; /* ✅ hero보다 위에 오도록 설정 */
+    margin-left: 100px;
 }
 
 /* ✅ review-card를 hero보다 위로 */

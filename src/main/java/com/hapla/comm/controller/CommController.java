@@ -123,26 +123,54 @@ public class CommController {
         return mv;
     }
     
-    @GetMapping("rinsert")
-    @ResponseBody
-    public String insertReply(@ModelAttribute Reply r, HttpServletResponse response) {
-    	int result = commService.insertReply(r);
-    	ArrayList<Reply> list = commService.selectReplyList(r.getCommNo());
+//    @GetMapping("rinsert")
+//    @ResponseBody
+//    public String insertReply(@ModelAttribute Reply r, HttpServletResponse response) {
+//    	int result = commService.insertReply(r);
+//    	ArrayList<Reply> list = commService.selectReplyList(r.getCommNo());
+//    	
+//    	response.setContentType("application/json; charset=UTF-8");
+//    	
+//    	ObjectMapper om = new ObjectMapper();
+//    	
+//    	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+//    	om.setDateFormat(sdf);
+//    	
+//    	String strJson = null;
+//    	
+//    	try {
+//			strJson = om.writeValueAsString(list);
+//		} catch (JsonProcessingException e) {
+//			e.printStackTrace();
+//		}
+//    	return strJson;
+//    }
+    
+    @PostMapping("/updForm")
+    public String updateForm(@RequestParam("commNo") int commNo, @RequestParam("page") int page, Model model) {
+    	Comm c = commService.selectComm(commNo, null);
+    	model.addAttribute("c", c).addAttribute("page", page);
+    	return "comm/edit";
+    }
+    
+    @PostMapping("update")
+    public String updateComm(@ModelAttribute Comm c, @RequestParam("page") int page) {
+    	int result = commService.updateComm(c);
     	
-    	response.setContentType("application/json; charset=UTF-8");
-    	
-    	ObjectMapper om = new ObjectMapper();
-    	
-    	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-    	om.setDateFormat(sdf);
-    	
-    	String strJson = null;
-    	
-    	try {
-			strJson = om.writeValueAsString(list);
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-		}
-    	return strJson;
+    	if(result > 0) {
+    		return String.format("redirect:/comm/%d/%d", c.getCommNo(), page);
+    	} else {
+    		throw new Exception("실패");
+    	}
+    }
+    
+    @PostMapping("delete")
+    public String deleteComm(@RequestParam("commNo") int commNo, HttpServletRequest request) {
+    	int result = commService.deleteComm(commNo);
+    	if(result > 0) {
+    		return "redirect:/comm/list";
+    	} else {
+    		throw new Exception("실패");
+    	}
     }
 }
