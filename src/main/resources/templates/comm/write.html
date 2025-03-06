@@ -28,14 +28,13 @@
 					<option value="4">즐길거리</option>
 					<option value="5">음식점</option>
 			    </select>
-		        <input type="text" class="form-control" id="title" name="title" placeholder="제목을 입력하세요">
+		        <input type="text" class="form-control" id="title" name="title" placeholder="제목을 입력하세요" required>
 		        <div class="editor-toolbar">
 		            <button><b>B</b></button>
 		            <button><i>I</i></button>
 		            <button>A</button>
 		        </div>
-		        <textarea class="form-control" cols="165" rows="30" id="commContent" name="commContent" style="resize: none;"></textarea>
-		        <div class="file-upload">첨부파일</div>
+		        <textarea class="form-control" cols="165" rows="30" id="commContent" name="commContent" style="resize: none; width: 99%;" required></textarea>
 		        <div class="editor-buttons">
 			        <button class="cancel-button" type="button" onclick="history.back();">취소</button>
 			        <button class="save-button" type="submit">저장</button>

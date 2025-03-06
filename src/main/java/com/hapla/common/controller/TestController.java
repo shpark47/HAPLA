@@ -10,21 +10,6 @@ public class TestController {
         return "/recommend";
     }
 
-    @GetMapping("/attraction")
-    public String attraction() {
-        return "/attraction";
-    }
-
-    @GetMapping("/restaurant")
-    public String restaurant() {
-        return "/restaurant";
-    }
-
-    @GetMapping("/accommodation")
-    public String accommodation() {
-        return "/accommodation";
-    }
-
     @GetMapping("/schedule")
     public String schedule() {
         return "/schedule";
