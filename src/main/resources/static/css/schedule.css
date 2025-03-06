@@ -118,13 +118,22 @@ body {
 }
 
 #side-panel {
-    display: none; /* 기본적으로 숨김 */
+    position: fixed;
+    right: 0;
+    top: 0;
     width: 300px;
-    height: auto;
-    background-color: white;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    padding: 15px;
-    border-radius: 5px;
-    z-index: 1000;
+    height: 100%;
+    background: white;
+    box-shadow: -2px 0px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
 }
 
+#search-container {
+    margin-top: 20px;
+}
+
+.hidden {
+    display: none;
+}
