@@ -74,7 +74,7 @@
 <div th:replace="~{common/footer.html :: foot}"></div>
 
 <script th:inline="javascript">
-	window.onload = () => {
+    window.addEventListener('load', () => {
 	    const reviewCards = document.querySelectorAll('.review-card');
 	
 	    for (const card of reviewCards) {
@@ -85,9 +85,7 @@
 	            location.href = `/review/` + reviewNo + `/` + currentPage; // ✅ 리뷰 상세 페이지로 이동
 	        });
 	    }
-	};
+	});
 </script>
-
-
 </body>
 </html>
