@@ -1,5 +1,6 @@
 package com.hapla.schedule.controller;
 
+import java.sql.Date;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
@@ -37,17 +38,14 @@ public class ScheduleController {
 	
 	// 일정 페이지로 이동 / DB 저장
 	@GetMapping("/schedule")
-	public String Schedule(@ModelAttribute Trip trip, HttpSession session) {
+	public String Schedule(@ModelAttribute Trip trip, HttpSession session, Model model) {
 		
 		Users user = (Users)session.getAttribute("loginUser");
 		
 		// Trip 객체 생성
 		trip.setUserNo(user.getUserNo());
-		trip.setStartDate(trip.getStartDate());
-		trip.setEndDate(trip.getEndDate());
-		trip.setCityName(trip.getCityName());
 		
-		// System.out.println("trip : " + trip);
+//		System.out.println("trip : " + trip);
 		
 		// 1. 서비스 호출하여 DB 저장
 		scheduleService.saveTrip(trip);
@@ -55,6 +53,9 @@ public class ScheduleController {
 		// 2. Trip이 저장된 후, 해당 tripNo를 사용하여 기본 Detail 일정 추가
 		//scheduleService.saveDefault(trip.getTripNo(), trip.getStartDate());
 		
+		
+		
+		model.addAttribute("trip", trip);
 		return "/schedule/schedule";
 	}
 	

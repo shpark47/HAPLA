@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="/css/schedule.css" type="text/css">
 </head>
 <body>
-
     <div class="container">
         <!-- 🌍 왼쪽 사이드바 -->
         <div class="sidebar">
@@ -19,25 +18,30 @@
                 </span>
             </div>
             <div class="sidebar-title">
-                <span class="trip-title" id="tripTitle"></span>
+                <span class="trip-title" id="tripTitle" th:text="${trip.cityName}"></span>
                 <span id="tripDates"></span>
 			</div>
             <!-- ✅ 날짜별 일정 리스트 -->
-            <div class="date-list" id="dateList"></div>
+            <div class="date-list" id="dateList">
+            [[${trip.endDate - trip.startDate}]]
+            	<!-- <div class="date-container" th:each="size:${trip.endDate - trip.startDate}">
+            		
+            	</div> -->
+            </div>
         </div>
 		<!-- 🌍 사이드 패널 (추가 정보 + 장소 검색) -->
-<div id="side-panel" hidden>
-    <div class="side-panel-header">
-        추가 정보 <span class="close-btn">&times;</span>
-    </div>
-    <div class="side-panel-content">
-        <div id="search-container" hidden>
-            <input type="text" id="search-input" placeholder="장소 검색...">
-            <button id="search-btn">검색</button>
-            <div id="search-results"></div>
-        </div>
-    </div>
-</div>
+		<div id="side-panel" hidden>
+		    <div class="side-panel-header">
+		        추가 정보 <span class="close-btn">&times;</span>
+		    </div>
+		    <div class="side-panel-content">
+		        <div id="search-container" hidden>
+		            <input type="text" id="search-input" placeholder="장소 검색...">
+		            <button id="search-btn">검색</button>
+		            <div id="search-results"></div>
+		        </div>
+		    </div>
+		</div>
 
         <!-- 🌍 Google 지도 -->
         <div id="map"></div>
