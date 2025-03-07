@@ -322,7 +322,7 @@ button.reset:hover, button.apply:hover {
 	cursor: pointer;
 }
 
-.search-btn {
+.search-btn{
 	padding: 1rem 2rem;
 	background: #0099cc;
 	color: white;
@@ -336,6 +336,18 @@ button.reset:hover, button.apply:hover {
 	background: #0088cc;
 }
 
+.research-btn{
+	padding: 1rem 2rem;
+	background: #0099cc;
+	color: white;
+	border: none;
+	border-radius: 100px;
+	cursor: pointer;
+	font-size: 1rem;
+}
+.research-btn:hover{
+	background: #0088cc;
+}
 .flight-results {
 	max-width: 1050px;
 	margin: 2rem auto;

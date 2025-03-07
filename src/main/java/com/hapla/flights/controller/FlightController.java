@@ -230,10 +230,9 @@ public class FlightController {
     }
     
     @GetMapping("/flightSearch")
-    public Object flightSearch(@RequestParam("departureName") String departure,
+    public String flightSearch(@RequestParam("departureName") String departure,
             @RequestParam("arrivalName") String arrival, @RequestParam("dates") String dates,
-            @RequestParam("travelers") String travelers, Model model,
-            @RequestHeader(value="X-requested-With", required = false)String requestedWith){
+            @RequestParam("travelers") String travelers, Model model){
 
         System.out.println("=== Flight Search Started ===");
         System.out.println("Input parameters:");
@@ -242,7 +241,7 @@ public class FlightController {
         System.out.println("Dates: " + dates);
         System.out.println("Travelers: " + travelers);
         
-        Map<String, Object> response = new HashMap<>();
+       
         
         try {
             String iataPattern = "\\((\\w{3})\\)";
@@ -250,17 +249,9 @@ public class FlightController {
             Matcher departureMatcher = pattern.matcher(departure);
             Matcher arrivalMatcher = pattern.matcher(arrival);
             if (!departureMatcher.find() || !arrivalMatcher.find()) {
-	            if(!"XMLHttpRequest".equals(requestedWith)) {	
-		            
 		                System.out.println("Failed to extract IATA codes");
 		                model.addAttribute("error", "출발지와 도착지에서 IATA 코드를 찾을 수 없습니다.");
 		                return "flightSearchResult";
-		            }
-	             else {
-			        	response.put("status", "error");
-			            response.put("message", "출발지와 도착지에서 IATA 코드를 찾을 수 없습니다.");
-			            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-	            }
             }
 
             String departureCode = departureMatcher.group(1);
@@ -280,14 +271,9 @@ public class FlightController {
                 LocalDate depDate = LocalDate.parse(departureDate);
             } catch (DateTimeParseException e) {
                 System.out.println("Invalid departure date format: " + departureDate);
-                if (!"XMLHttpRequest".equals(requestedWith)) {
+                
                     model.addAttribute("error", "잘못된 날짜 형식입니다.");
                     return "flightSearchResult";
-                } else {
-                    response.put("status", "error");
-                    response.put("message", "잘못된 날짜 형식입니다.");
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-                }
             }
 
             // 2. returnDate가 제공된 경우에만 파싱 및 유효성 검사
@@ -304,14 +290,10 @@ public class FlightController {
                     }
                 } catch (DateTimeParseException e) {
                     System.out.println("Invalid return date format: " + returnDate);
-                    if (!"XMLHttpRequest".equals(requestedWith)) {
+                    
                         model.addAttribute("error", "잘못된 반환 날짜 형식입니다.");
                         return "flightSearchResult";
-                    } else {
-                        response.put("status", "error");
-                        response.put("message", "잘못된 반환 날짜 형식입니다.");
-                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-                    }
+                    
                 }
             } else {
                 System.out.println("No return date provided, treating as one-way search.");
@@ -333,28 +315,20 @@ public class FlightController {
                 String accessToken = getAmadeusAccessToken();
                 if (accessToken == null) {
                     System.out.println("Failed to get Amadeus access token");
-                    if(!"XMLHttpRequest".equals(requestedWith)) {
+                    
 	                    model.addAttribute("error", "국제선 항공권 검색 실패: 인증 오류");
 	                    return "flightSearchResult";
-                    } else {
-                    	response.put("status", "error");
-    		            response.put("message", "국제선 항공권 검색 실패: 인증 오류");
-    		            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-                    }
+                    
                 }
                 flightOffers = getFlightOffers(accessToken, departureCode, arrivalCode, departureDate, returnDate, travelers);
             }
 
             if (flightOffers == null || flightOffers.isEmpty()) {
                 System.out.println("No flight offers retrieved.");
-                if(!"XMLHttpRequest".equals(requestedWith)) {
+                
 	                model.addAttribute("error", "항공편을 찾을 수 없습니다.");
 	                return "flightSearchResult";
-                } else {
-                	response.put("status", "error");
-		            response.put("message", "항공편을 찾을 수 없습니다.");
-		            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-                }
+                
             }
 
             List<String> uniqueAirlines = flightOffers.stream()
@@ -381,24 +355,17 @@ public class FlightController {
                 System.out.println("Outbound Airline: " + uniqueFlightOffers.get(0).get("outboundAirline"));
                 System.out.println("Inbound Airline: " + uniqueFlightOffers.get(0).get("inboundAirline"));
             }
-            if(!"XMLHttpRequest".equals(requestedWith)) {
+            
 	            model.addAttribute("flightOffers", uniqueFlightOffers);
+	            System.out.println("uniqueFlightOffers : " + uniqueFlightOffers);
 	            return "flightSearchResult";
-            } else {
-            	System.out.println("uniqueFlightOffers : " +uniqueFlightOffers);
-            	return ResponseEntity.ok(uniqueFlightOffers);
-            }
+            
         } catch (Exception e) {
             System.out.println("Exception in flight search: " + e.getMessage());
             e.printStackTrace();
-            if(!"XMLHttpRequest".equals(requestedWith)) {
 	            model.addAttribute("error", "항공권 검색 중 오류가 발생했습니다: " + e.getMessage());
 	            return "flightSearchResult";
-            } else {
-            	response.put("status", "error");
-	            response.put("message", "항공권 검색 중 오류가 발행했습니다 : " + e.getMessage());
-	            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-            }
+            
         }
     }
     
@@ -412,11 +379,11 @@ public class FlightController {
                 + "&departureDate=" + departureDate
                 + (returnDate != null ? "&returnDate=" + returnDate : "")
                 + "&adults=" + travelers
-                + "&max=250";
+                + "&max=200";
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + accessToken);
-
+        System.out.println("url : " + url);
         HttpEntity<String> request = new HttpEntity<>(headers);
         List<Map<String, Object>> results = new ArrayList<>();
 
