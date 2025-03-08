@@ -1,115 +1,50 @@
-/*        // ✅ 날짜별 일정 리스트 생성
-        function generateDateList(start, end) {
-            const dateList = document.getElementById("dateList");
-            dateList.innerHTML = ""; // 기존 내용 초기화
+// +추가 버튼 클릭시 control-btns 보이게 처리
+function toggleControls(addButton){
+	// 해당 .date-item을 찾기
+	const dateItem = addButton.closest('.date-item');
+	
+	// control-btns와 control-add 찾기
+	const controlBtns = dateItem.querySelector('.control-btns');
+	const controlAdd = dateItem.querySelector('.control-add');
+	
+	// control-btns 보이게하고 control-add 숨김
+	controlBtns.hidden = false;
+	controlAdd.hidden = true;
+}
 
-            let startDate = new Date(start);
-            let endDate = new Date(end);
 
-            while (startDate <= endDate) {
-                let formattedDate = startDate.toISOString().split('T')[0];
+// 사이드 패널 열기
+function openSidePanel(panelType) {
+    const sidePanel = document.getElementById('side-panel');
+    const panelBody = document.getElementById('side-panel-body');
+    
+    // 사이드 패널 내용 변경
+    if (panelType == 'memo') {
+        panelBody.innerHTML = "<p>메모를 추가할 수 있습니다.</p>";
+    } else if (panelType == 'stay') {
+        panelBody.innerHTML = "<p>숙박 정보를 추가할 수 있습니다.</p>";
+    } else if (panelType == 'marker') {
+        panelBody.innerHTML = "<p>마커를 추가할 수 있습니다.</p>";
+    }
 
-                let dateContainer = document.createElement("div");
-                dateContainer.classList.add("date-container");
+    
+	    sidePanel.style.display = 'block';  // `hidden` 대신 `display` 속성으로 보이게 설정
+	}
 
-                let planDate = document.createElement("div");
-                planDate.classList.add("plan-date");
-                planDate.textContent = formattedDate; // YYYY-MM-DD 형식으로 출력
 
-                let dateItem = document.createElement("div");
-                dateItem.classList.add("date-item");
+// Close 버튼 클릭 시, +추가 버튼으로 돌아가게 처리
+function closeControls() {
+    const dateItem = event.target.closest('.date-item');  // closest()를 이용해 해당 날짜 항목 찾기
+    const controlBtns = dateItem.querySelector('.control-btns');
+    const controlAdd = dateItem.querySelector('.control-add');
 
-                let addButton = document.createElement("button");
-                addButton.classList.add("control-add");
-                addButton.textContent = "➕ 추가";
+    // .control-btns 숨기기, .add-text 보이게 하기
+    controlBtns.hidden = true;
+    controlAdd.hidden = false;
+}
 
-                dateItem.appendChild(addButton);
-                dateContainer.appendChild(planDate);
-                dateContainer.appendChild(dateItem);
-                dateList.appendChild(dateContainer);
-            
-            // 추가 버튼 클릭 시 장소 검색 아이콘 생성
-            addButton.addEventListener("click", function (){
-               addButton.remove();	// 추가 버튼 제거
-			   
-			   // 장소마커 아이콘
-			   
-			   let markerIcon = document.createElement("span");
-			   markerIcon.classList.add("marker-icon");
-			   markerIcon.innerHTML = "📍";
-			   dateItem.appendChild(markerIcon);
-			   
-			   // 숙소 아이콘
-			   let hotelIcon = document.createElement("span");
-			   hotelIcon.classList.add("hotel-icon");
-			   hotelIcon.innerHTML = "🏠";
-			   dateItem.appendChild(hotelIcon);
-			   
-			   // 메모 아이콘
-		       let memoIcon = document.createElement("span");
-		       memoIcon.classList.add("memo-icon");
-		       memoIcon.innerHTML = "📝"; // 메모 이모지
-		       dateItem.appendChild(memoIcon);
 
-		       // X 아이콘
-		       let closeIcon = document.createElement("span");
-		       closeIcon.classList.add("close-icon");
-		       closeIcon.innerHTML = "❌"; // X 이모지
-		       dateItem.appendChild(closeIcon);
-			  
-			   // 사이드 패널 열기 및 장소 검색 기능 추가 (장소마커 아이콘 클릭 시)
-		       markerIcon.addEventListener("click", function () {
-		           openSidePanel("장소 검색");
-		       });
-
-		       // 다른 아이콘에 대한 사이드 패널 열기 (예: 숙소, 메모 등)
-		       hotelIcon.addEventListener("click", function () {
-		           openSidePanel("숙소 검색");
-		       });
-
-		       memoIcon.addEventListener("click", function () {
-		           openSidePanel("메모 작성");
-		       });
-			
-              // 아이콘 클릭시 장소 검색 기능 실행
-              searchIcon.addEventListener("click", function() {
-                 openSearchInput(dateItem);
-              });
-            });
-
-                // 다음 날짜로 이동
-                startDate.setDate(startDate.getDate() + 1);
-            }
-        }*/
-      
-      // 검색 입력 필드 추가 및 Google Place API 연동 가능
-      function openSearchInput(parentElement){
-         if(!parentElement.querySelector(".search-input")){
-            let inputField = document.createElement("input");
-            inputField.setAttribute("type", "text");
-            inputField.setAttribute("placeholder", "장소 검색...");
-            inputField.classList.add("search-input");
-            
-            let searchButton = document.createElement("button");
-            searchButton.textContent = "검색";
-            searchButton.classList.add("search-button");
-            
-            parentElement.appendChild(inputField);
-            parentElement.appendChild(searchButton);
-            
-            // Google Places API 사용 가능(추가 구현 가능)
-            searchButton.addEventListener("click", function(){
-               let query = inputField.value;
-               if(query){
-                  console.log('검색어 : ${query}');
-                  // Google Place API 연동 가능(추후 추가)
-               }
-            });
-      
-         }
-      }
-      
-      // ✅ 패널 닫기 버튼 기능 추가
+// ✅ 패널 닫기 버튼 기능 추가
       document.addEventListener("DOMContentLoaded", function () {
           const closeButton = document.querySelector(".close-btn");
           if (closeButton) {
@@ -139,15 +74,62 @@
            });
         }
         });
+/*        // ✅ 날짜별 일정 리스트 생성
+        function generateDateList(start, end) {
+            const dateList = document.getElementById("dateList");
+            dateList.innerHTML = ""; // 기존 내용 초기화
 
-// 사이드 패널 열기 / 닫기 기능
-for (const button of document.querySelectorAll('.panel-open-btn')) {
-    button.addEventListener('click', () => {
-        document.getElementById('side-panel').classList.add('active');
-    });
-}
+            let startDate = new Date(start);
+            let endDate = new Date(end);
 
+            while (startDate <= endDate) {
+                let formattedDate = startDate.toISOString().split('T')[0];
 
-document.querySelector('.close-btn').addEventListener('click', () => {
-    document.getElementById('side-panel').classList.remove('active');
-});
+                let dateContainer = document.createElement("div");
+                dateContainer.classList.add("date-container");
+
+                let planDate = document.createElement("div");
+                planDate.classList.add("plan-date");
+                planDate.textContent = formattedDate; // YYYY-MM-DD 형식으로 출력
+
+                let dateItem = document.createElement("div");
+                dateItem.classList.add("date-item");
+
+                let addButton = document.createElement("button");
+                addButton.classList.add("control-add");
+                addButton.textContent = "➕ 추가";
+
+                dateItem.appendChild(addButton);
+                dateContainer.appendChild(planDate);
+                dateContainer.appendChild(dateItem);
+                dateList.appendChild(dateContainer);
+*/
+
+      // 검색 입력 필드 추가 및 Google Place API 연동 가능
+      function openSearchInput(parentElement){
+         if(!parentElement.querySelector(".search-input")){
+            let inputField = document.createElement("input");
+            inputField.setAttribute("type", "text");
+            inputField.setAttribute("placeholder", "장소 검색...");
+            inputField.classList.add("search-input");
+            
+            let searchButton = document.createElement("button");
+            searchButton.textContent = "검색";
+            searchButton.classList.add("search-button");
+            
+            parentElement.appendChild(inputField);
+            parentElement.appendChild(searchButton);
+            
+            // Google Places API 사용 가능(추가 구현 가능)
+            searchButton.addEventListener("click", function(){
+               let query = inputField.value;
+               if(query){
+                  console.log('검색어 : ${query}');
+                  // Google Place API 연동 가능(추후 추가)
+               }
+            });
+      
+         }
+      }
+      
+      

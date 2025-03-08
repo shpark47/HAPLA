@@ -29,14 +29,18 @@
 			        </div>
 			        <div class="date-item">
 			            <div class="controls">
-			            	<div class="control-add">
+			            	<div class="control-add" onclick="toggleControls(this)">
 			            		<span class="add-text">+추가</span>
 			            	</div>
-			            	<div class="control-btn" hidden>
-			            		<span></span>
-			            		<span></span>
-			            		<span></span>
-			            		<span></span>
+			            	<div class="control-btns" hidden>
+			            		<span id="memoBtn" class="control-btn" onclick="openSidePanel('memo')"><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="24px" fill="#858585"><path d="M560-80v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q8 9 12.5 20t4.5 22q0 11-4 22.5T903-300L683-80H560Zm300-263-37-37 37 37ZM620-140h38l121-122-18-19-19-18-122 121v38ZM240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v120h-80v-80H520v-200H240v640h240v80H240Zm280-400Zm241 199-19-18 37 37-18-19Z"/></svg>
+			            							<path xmlns="http://www.w3.org/2000/svg" d="M560-80v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q8 9 12.5 20t4.5 22q0 11-4 22.5T903-300L683-80H560Zm300-263-37-37 37 37ZM620-140h38l121-122-18-19-19-18-122 121v38ZM240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v120h-80v-80H520v-200H240v640h240v80H240Zm280-400Zm241 199-19-18 37 37-18-19Z"/></span>
+			            		<span id="stayBtn" class="control-btn" onclick="openSidePanel('stay')"><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="24px" fill="#858585"><path d="M80-200v-240q0-27 11-49t29-39v-112q0-50 35-85t85-35h160q23 0 43 8.5t37 23.5q17-15 37-23.5t43-8.5h160q50 0 85 35t35 85v112q18 17 29 39t11 49v240h-80v-80H160v80H80Zm440-360h240v-80q0-17-11.5-28.5T720-680H560q-17 0-28.5 11.5T520-640v80Zm-320 0h240v-80q0-17-11.5-28.5T400-680H240q-17 0-28.5 11.5T200-640v80Zm-40 200h640v-80q0-17-11.5-28.5T760-480H200q-17 0-28.5 11.5T160-440v80Zm640 0H160h640Z"/></svg>
+			            							<path xmlns="http://www.w3.org/2000/svg" d="M80-200v-240q0-27 11-49t29-39v-112q0-50 35-85t85-35h160q23 0 43 8.5t37 23.5q17-15 37-23.5t43-8.5h160q50 0 85 35t35 85v112q18 17 29 39t11 49v240h-80v-80H160v80H80Zm440-360h240v-80q0-17-11.5-28.5T720-680H560q-17 0-28.5 11.5T520-640v80Zm-320 0h240v-80q0-17-11.5-28.5T400-680H240q-17 0-28.5 11.5T200-640v80Zm-40 200h640v-80q0-17-11.5-28.5T760-480H200q-17 0-28.5 11.5T160-440v80Zm640 0H160h640Z"/></span>
+			            		<span id="markerBtn" class="control-btn" onclick="openSidePanel('marker')"><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="24px" fill="#858585"><path d="M480-480q33 0 56.5-23.5T560-560q0-33-23.5-56.5T480-640q-33 0-56.5 23.5T400-560q0 33 23.5 56.5T480-480Zm0 294q122-112 181-203.5T720-552q0-109-69.5-178.5T480-800q-101 0-170.5 69.5T240-552q0 71 59 162.5T480-186Zm0 106Q319-217 239.5-334.5T160-552q0-150 96.5-239T480-880q127 0 223.5 89T800-552q0 100-79.5 217.5T480-80Zm0-480Z"/></svg>
+			            								<path xmlns="http://www.w3.org/2000/svg" d="M480-480q33 0 56.5-23.5T560-560q0-33-23.5-56.5T480-640q-33 0-56.5 23.5T400-560q0 33 23.5 56.5T480-480Zm0 294q122-112 181-203.5T720-552q0-109-69.5-178.5T480-800q-101 0-170.5 69.5T240-552q0 71 59 162.5T480-186Zm0 106Q319-217 239.5-334.5T160-552q0-150 96.5-239T480-880q127 0 223.5 89T800-552q0 100-79.5 217.5T480-80Zm0-480Z"/></span>
+			            		<span id="closeBtn"  class="control-btn" onclick="closeControls()"><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="24px" fill="#858585"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
+			            								<path xmlns="http://www.w3.org/2000/svg" d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></span>
 			            	</div>
 			            </div>
 			        </div>
@@ -44,7 +48,7 @@
 			</div>
         </div>
 		<!-- 🌍 사이드 패널 (추가 정보 + 장소 검색) -->
-		<div id="side-panel" hidden>
+		<!-- <div id="side-panel" class="side-panel" hidden>
 		    <div class="side-panel-header">
 		        추가 정보 <span class="close-btn">&times;</span>
 		    </div>
@@ -55,7 +59,18 @@
 		            <div id="search-results"></div>
 		        </div>
 		    </div>
-		</div>
+		</div> -->
+		<!-- 🌍 사이드 패널 (추가 정보 + 장소 검색) -->
+			<div id="side-panel" class="side-panel" hidden>
+			    <div class="side-panel-header">
+			        추가 정보 <span class="close-btn" onclick="closeSidePanel()">&times;</span>
+			    </div>
+			    <div class="side-panel-content">
+			        <div id="side-panel-body">
+			            <!-- 사이드 패널 내용이 동적으로 변경됩니다 -->
+			        </div>
+			    </div>
+			</div>
 
         <!-- 🌍 Google 지도 -->
         <div id="map"></div>
