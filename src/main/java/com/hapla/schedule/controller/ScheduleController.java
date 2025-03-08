@@ -1,6 +1,6 @@
 package com.hapla.schedule.controller;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
@@ -50,10 +50,13 @@ public class ScheduleController {
 		// 1. 서비스 호출하여 DB 저장
 		scheduleService.saveTrip(trip);
 		
+		// 날짜 범위 생성
+		List<Date> dateRange = scheduleService.getDateRange(trip.getStartDate(), trip.getEndDate());
+		model.addAttribute("dateRange", dateRange);	// 날짜 범위 추가
+		
+		
 		// 2. Trip이 저장된 후, 해당 tripNo를 사용하여 기본 Detail 일정 추가
 		//scheduleService.saveDefault(trip.getTripNo(), trip.getStartDate());
-		
-		
 		
 		model.addAttribute("trip", trip);
 		return "/schedule/schedule";

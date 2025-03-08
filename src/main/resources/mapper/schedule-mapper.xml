@@ -20,6 +20,15 @@
 		values (seq_detail.NEXTVAL, seq_trip.NEXTVAL, default, default, default, sysdate)
 	 -->
 	 
+	 <!-- 날짜 범위에 맞는 일정 조회 -->
+	 <select id="selectScheduleByDateRange" resultType="Trip">
+	 <![CDATA[
+	 	select *
+	 	from trip
+	 	where date >= #{startDate} and date <= #{endDAte}
+	 ]]>
+	 </select>
+	 
 	<select id="getMySchedule">
 		select *
 		from trip

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,11 +23,25 @@
 			</div>
             <!-- ✅ 날짜별 일정 리스트 -->
             <div class="date-list" id="dateList">
-            [[${trip.endDate - trip.startDate}]]
-            	<!-- <div class="date-container" th:each="size:${trip.endDate - trip.startDate}">
-            		
-            	</div> -->
-            </div>
+			    <div th:each="date : ${dateRange}" class="date-container">
+			        <div class="plan-title">
+			            <span th:text="${#dates.format(date, 'M월 d일')}"></span>
+			        </div>
+			        <div class="date-item">
+			            <div class="controls">
+			            	<div class="control-add">
+			            		<span class="add-text">+추가</span>
+			            	</div>
+			            	<div class="control-btn" hidden>
+			            		<span></span>
+			            		<span></span>
+			            		<span></span>
+			            		<span></span>
+			            	</div>
+			            </div>
+			        </div>
+			    </div>
+			</div>
         </div>
 		<!-- 🌍 사이드 패널 (추가 정보 + 장소 검색) -->
 		<div id="side-panel" hidden>
