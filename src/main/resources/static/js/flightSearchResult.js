@@ -285,74 +285,160 @@ const departureName = document.querySelector('input[name="departureName"]');
 const arrivalName = document.querySelector('input[name="arrivalName"]');
 const dates = document.querySelector('input[name="dates"]');
 const travelers = document.querySelector('input[name="travelers"]');
-let flightSearchResults = ''; 
+const flightContainer = document.querySelector('.flight-container');
+const flightSearchResult = window.flightSearchResult;
+//const airLine=[];
+//for(const flightSearchResults of flightSearchResult) {
+//	airLine.push(flightSearchResults.out)
+//}
+//console.log(airLine);
 
 
 
 
+
+
+	 
+
+
+
+
+
+// 시간대 확인 함수
+const getTimeSlot = (timeStr) => {
+    // timeStr 형식: "HH:mm:ss" (예: "08:00:00")
+	
+    const hours= (timeStr.split(':')[0]); // 시간 부분 추출
+	const hour = parseInt(hours.slice(0, 2));
+    if (hour >= 6 && hour < 12) return 'morning';
+    if (hour >= 12 && hour < 18) return 'afternoon';
+    if (hour >= 18 && hour < 24) return 'evening';
+    return 'night';
+};
+
+let hasInbound = null;
 
 const applyFilter = (flightData) => {
     console.log('applyFilter 함수 실행');
 
     const flightContainers = document.querySelectorAll('.flight-container');
-    const checked = document.querySelectorAll('input[name="layover"]:checked');
-    const selectedOptions = Array.from(checked).map(input => input.value);
+    
+    // 경유 필터링 체크박스
+    const checkedLayovers = document.querySelectorAll('input[name="layover"]:checked');
+    const selectedLayoverOptions = Array.from(checkedLayovers).map(input => input.value);
+
+    // 가는 날 출발 시간 필터링 체크박스
+    const outChecked = document.querySelectorAll('input[name="out-departure-time"]:checked');
+    const outSelectedOptions = Array.from(outChecked).map(input => input.value);
+	console.log(outSelectedOptions);
+    // 오는 날 출발 시간 필터링 체크박스
+    const inChecked = document.querySelectorAll('input[name="in-departure-time"]:checked');
+    const inSelectedOptions = Array.from(inChecked).map(input => input.value);
+
+	const airline = document.querySelectorAll('input[name="airline-filter"]:checked');
+	const airlineSelectedOptions = Array.from(airline).map(input => input.value);
+	
+	
 
     flightContainers.forEach((flightContainer, index) => {
-        const flight = flightSearchResults[index] || {};
+        const flight = flightData[index] || {};
+		console.log(flight);
         const outboundStops = parseInt(flightContainer.dataset.outboundStops || 0);
         const inboundStops = parseInt(flightContainer.dataset.inboundStops || 0);
-        const hasInbound = flight['inboundDepartureTime'] != null; // 귀국 구간 존재 여부
-
-        console.log('outboundStops: ' + outboundStops);
-        console.log('inboundStops: ' + inboundStops);
-        console.log('hasInbound: ' + hasInbound);
-        console.log(flight);
+        
+        // 시간 데이터에서 "HH:mm:ss" 형식으로 변환
+        const outboundTime = (flightContainer.dataset.outboundTime?.split('T')[1] || '').replace(/:/g, '');
+        const inboundTime = (flightContainer.dataset.inboundTime?.split('T')[1] || '').replace(/:/g, '');
+        
+		console.log('airlineSelectedOptions : ' + airlineSelectedOptions);
+		console.log('outboundTime : ' + typeof(outboundTime));
+		console.log('inboundTime : ' + typeof(inboundTime));
+        hasInbound = flight['inboundDepartureTime'] != null; // 귀국 구간 존재 여부
 
         // 기본적으로 보이도록 설정
         flightContainer.classList.remove('hidden');
 
-        // 선택된 옵션이 없으면 모든 항공편 표시
-        if (selectedOptions.length === 0) return;
+        let shouldHide = false; // 모든 조건을 체크하기 위한 플래그
 
-        const isDirect = selectedOptions.includes('direct');
-        const isOneStop = selectedOptions.includes('oneStop');
-        const isMultiStop = selectedOptions.includes('multiStop');
+        // 1. 경유 필터링
+        if (selectedLayoverOptions.length > 0) {
+            const isDirect = selectedLayoverOptions.includes('direct');
+            const isOneStop = selectedLayoverOptions.includes('oneStop');
+            const isMultiStop = selectedLayoverOptions.includes('multiStop');
 
-        // 필터링 조건 개선
-        if (
-            // 직항만 선택: 출발 또는 귀국이 직항이 아니면 숨김
-            (isDirect && !isOneStop && !isMultiStop && (outboundStops !== 0 || (hasInbound && inboundStops !== 0))) ||
-            // 1회 경유만 선택: 출발과 귀국(있을 경우)이 1회가 아니면 숨김
-            (isOneStop && !isDirect && !isMultiStop && 
-                (outboundStops !== 1 || (hasInbound && inboundStops !== 1))) ||
-            // 2회 이상 경유만 선택: 출발과 귀국(있을 경우)이 2회 미만이면 숨김
-            (isMultiStop && !isDirect && !isOneStop && 
-                (outboundStops < 2 && (!hasInbound || inboundStops < 2))) ||
-            // 직항 + 1회 경유: 2회 이상 경유 숨김
-            (isDirect && isOneStop && !isMultiStop && 
-                (outboundStops >= 2 || (hasInbound && inboundStops >= 2))) ||
-            // 1회 경유 + 2회 이상 경유: 직항 숨김
-            (isOneStop && isMultiStop && !isDirect && 
-                (outboundStops === 0 || (hasInbound && inboundStops === 0))) ||
-            // 직항 + 2회 이상 경유: 1회 경유 숨김
-            (isDirect && isMultiStop && !isOneStop && 
-                (outboundStops === 1 || (hasInbound && inboundStops === 1)))
-        ) {
+            if (
+                // 직항만 선택: 출발 또는 귀국이 직항이 아니면 숨김
+                (isDirect && !isOneStop && !isMultiStop && (outboundStops != 0 || (hasInbound && inboundStops != 0))) ||
+                // 1회 경유만 선택: 출발과 귀국(있을 경우)이 1회가 아니면 숨김
+                (isOneStop && !isDirect && !isMultiStop && 
+                    (outboundStops != 1 || (hasInbound && inboundStops != 1))) ||
+                // 2회 이상 경유만 선택: 출발과 귀국(있을 경우)이 2회 미만이면 숨김
+                (isMultiStop && !isDirect && !isOneStop && 
+                    (outboundStops < 2 && (!hasInbound || inboundStops < 2))) ||
+                // 직항 + 1회 경유: 2회 이상 경유 숨김
+                (isDirect && isOneStop && !isMultiStop && 
+                    (outboundStops >= 2 || (hasInbound && inboundStops >= 2))) ||
+                // 1회 경유 + 2회 이상 경유: 직항 숨김
+                (isOneStop && isMultiStop && !isDirect && 
+                    (outboundStops == 0 || (hasInbound && inboundStops == 0))) ||
+                // 직항 + 2회 이상 경유: 1회 경유 숨김
+                (isDirect && isMultiStop && !isOneStop && 
+                    (outboundStops == 1 || (hasInbound && inboundStops == 1)))
+            ) {
+                shouldHide = true; // 조건에 해당하면 숨김 플래그 설정
+            }
+        }
+
+        // 2. 가는 날 출발 시간 필터링
+        if (outSelectedOptions.length > 0 && !shouldHide) {
+            const outboundTimeSlot = getTimeSlot(outboundTime);
+			console.log('outboundTimeSlot : '+ outboundTimeSlot);
+            const timeMatch = outSelectedOptions.includes(outboundTimeSlot);
+            if (!timeMatch) {
+                shouldHide = true; // 시간대가 선택된 옵션과 맞지 않으면 숨김
+            }
+        }
+
+        // 3. 오는 날 출발 시간 필터링 (왕복일 경우에만 적용)
+        if (hasInbound && inSelectedOptions.length > 0 && !shouldHide) {
+            const inboundTimeSlot = getTimeSlot(inboundTime);
+			console.log('inboundTimeSlot : ' + inboundTimeSlot);
+            const timeMatch = inSelectedOptions.includes(inboundTimeSlot);
+            if (!timeMatch) {
+                shouldHide = true; // 시간대가 선택된 옵션과 맞지 않으면 숨김
+            }
+        }
+		
+		if(airlineSelectedOptions.length > 0 && !shouldHide) {
+			if(!airlineSelectedOptions.some(option => flight.airline.includes(option))) {
+				shouldHide = true; 			
+			}
+		}
+		
+
+        // 최종적으로 숨김 여부 결정
+        if (shouldHide) {
             flightContainer.classList.add('hidden');
         }
+
     });
 };
+
+
+// 이벤트 리스너 추가
 document.addEventListener('change', (e) => {
-    if (e.target.matches('input[name="layover"]')) {
-        applyFilter(flightSearchResults); // 데이터 전달
+    if (
+        e.target.matches('input[name="layover"]') ||
+        e.target.matches('input[name="out-departure-time"]') ||
+        e.target.matches('input[name="in-departure-time"]') ||
+		e.target.matches('input[name="airline-filter"]')
+    ) {
+        applyFilter(flightSearchResult); // 데이터 전달
     }
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('Initial flightSearchResults:', flightSearchResults);
-	flightSearchResults = /*${flightOffers}*/[];
-    applyFilter(flightSearchResults); // 데이터 전달
+    applyFilter(flightSearchResult); // 초기 필터링 적용
 });
 
 
