@@ -41,13 +41,13 @@ public class ReviewController {
 //			currentPage = Integer.parseInt(page);
 //		}
 		
-		System.out.println("현재 요청된 페이지 번호: " + currentPage);
+//		System.out.println("현재 요청된 페이지 번호: " + currentPage);
 		
 		int boardLimit = 4;
 		int listCount = reviewService.getListCount();
 		PageInfo pi = Pagination.getPageInfo(currentPage, listCount, boardLimit);
 		
-		System.out.println("전체 리뷰 개수: " + listCount + ", 시작 페이지: " + pi.getStartPage() + ", 마지막 페이지: " + pi.getEndPage() + ", 한 페이지 최대 개수 : " + boardLimit);
+//		System.out.println("전체 리뷰 개수: " + listCount + ", 시작 페이지: " + pi.getStartPage() + ", 마지막 페이지: " + pi.getEndPage() + ", 한 페이지 최대 개수 : " + boardLimit);
 		
 		ArrayList<Review> list = reviewService.selectReviewList(pi);
 		
