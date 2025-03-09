@@ -33,6 +33,23 @@ body {
     border-right: 1px solid #ddd;
     overflow-y: auto;
 }
+/* 스크롤바의 전체 영역 */
+.sidebar::-webkit-scrollbar {
+    width: 8px; /* 세로 스크롤바의 너비 */
+}
+
+/* 스크롤바의 막대 영역 */
+.sidebar::-webkit-scrollbar-thumb {
+    background-color: #ffffff; /* 스크롤바 색상 */
+    border-radius: 4px; /* 스크롤바 막대의 둥근 모서리 */
+}
+
+/* 스크롤바의 트랙(배경) 영역 */
+.sidebar::-webkit-scrollbar-track {
+    background: #ffffff; /* 스크롤바 배경 색상 */
+    /* border-radius: 10px; 스크롤바 배경의 둥근 모서리 */
+}
+
 
 /* .sidebar-head{
 	margin-bottom: 10%;
@@ -74,7 +91,7 @@ body {
 
 
 .plan-title {
-    font-weight: bold;
+    /* font-weight: bold; */
     margin-bottom: 3%;
 }
 
@@ -96,7 +113,7 @@ body {
 .controls {
     display: flex;
     gap: 5px;
-    margin-left: auto;
+    /* margin-left: auto; */
     padding: 1%;
     /* display: none; */
 }
@@ -106,25 +123,38 @@ body {
     background: none;
     font-size: 16px;
     cursor: pointer;
+    color: #CACACA;
+    cursor: pointer;
 }
 
 /* 🖱️ 버튼 스타일 */
 .control-btn {
-    border: 1px solid #e0e0e0;
+    border: 1px solid #858585;
     background: white;
-    font-size: 16px;
     cursor: pointer;
-    border-radius: inherit;  
+    border-radius: 15px;
+    display: inline-block;
+    padding: 2px;
+    margin: 3px;
 }
 
 #side-panel {
-    display: none; /* 기본적으로 숨김 */
+    position: fixed;
+    right: 0;
+    top: 0;
     width: 300px;
-    height: auto;
-    background-color: white;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    padding: 15px;
-    border-radius: 5px;
-    z-index: 1000;
+    height: 100%;
+    background: white;
+    box-shadow: -2px 0px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    display: none;
+    flex-direction: column;
 }
 
+#search-container {
+    margin-top: 20px;
+}
+
+.hidden {
+    display: none;
+}
