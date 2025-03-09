@@ -37,7 +37,7 @@
 	</update>
 	
 	<select id="selectReplyList" resultType="com.hapla.comm.model.vo.Reply">
-		select reply.*
+		select reply.*, users.name
 		from reply
 			 join users on reply.user_no = users.user_no
 		where reply.comm_no = #{commNo}
@@ -45,7 +45,7 @@
 	
 	<insert id="insertReply">
 		insert into reply
-		values (seq.reply.nextval, #{userNo}, #{commNo}, #{replyContent}, sysdate, sysdate)
+		values (seq_reply.nextval, #{userNo}, #{commNo}, #{replyContent}, sysdate, sysdate)
 	</insert>
 	
 	<update id="updateComm">
@@ -58,6 +58,17 @@
 		update comm
 		set status = 'N'
 		where comm_no = #{commNo}
+	</update>
+	
+	<delete id="deleteReply">
+		delete from reply
+		where reply_No = #{replyNo}
+	</delete>
+	
+	<update id="updateReply">
+		update reply
+		set reply_content = #{replyContent}
+		where reply_No = #{replyNo}
 	</update>
 </mapper>
 

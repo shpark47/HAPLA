@@ -59,12 +59,13 @@ public class FlightController {
             String[] values;
             while ((values = csvReader.readNext()) != null) {
                 Airport airport = new Airport();
-                airport.setIataCode(values[0]);
-                airport.setAirportsEnName(values[1]);
-                airport.setLatitude(values[2]);
-                airport.setLongitude(values[3]);
-                airport.setCityCode(values[4]);
-                airport.setAirportsKoName(values[5]);
+                airport.setAirportsEnName(values[0]);
+                airport.setAirportsKoName(values[1]);
+                airport.setIataCode(values[2]);
+                airport.setCountryEnName(values[3]);
+                airport.setCountryKoName(values[4]);
+                airport.setCityEnName(values[5]);
+                airport.setCityKoName(values[6]);
                 airports.add(airport);
             }
         } catch (FileNotFoundException e) {
@@ -81,10 +82,20 @@ public class FlightController {
     @ResponseBody
     public List<Airport> searchAirports(@RequestParam("query") String query) {
         return airports.stream()
-                .filter(airport -> airport.getAirportsKoName().toLowerCase().contains(query.toLowerCase()))
-                .limit(5)
+                .filter(airport -> {
+                    // 공항명, 국가명, 도시명 (영문, 한글 모두)에서 query를 검색
+                    boolean matchesAirport = (airport.getAirportsEnName().toLowerCase()).trim().contains(query.toLowerCase()) || 
+                                             (airport.getAirportsKoName().toLowerCase()).trim().contains(query.toLowerCase());
+                    boolean matchesCountry = (airport.getCountryEnName().toLowerCase()).trim().contains(query.toLowerCase()) || 
+                                             (airport.getCountryKoName().toLowerCase()).trim().contains(query.toLowerCase());
+                    boolean matchesCity = (airport.getCityEnName().toLowerCase()).trim().contains(query.toLowerCase()) || 
+                                          (airport.getCityKoName().toLowerCase()).trim().contains(query.toLowerCase());
+                    return matchesAirport || matchesCountry || matchesCity;  // 3개 필드 중 하나라도 일치하면 반환
+                })
+                .limit(5)  // 최대 5개만 반환
                 .collect(Collectors.toList());
     }
+
 
     
 

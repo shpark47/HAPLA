@@ -120,30 +120,36 @@
             </div>
             <hr>
             <div class="filter-group">
-                <h4>출발 시간</h4>
-                <label><input type="checkbox" name="departure-time" value="morning"> 오전 (06:00 - 11:59)</label>
-                <label><input type="checkbox" name="departure-time" value="afternoon"> 오후 (12:00 - 17:59)</label>
-                <label><input type="checkbox" name="departure-time" value="evening"> 저녁 (18:00 - 23:59)</label>
-                <label><input type="checkbox" name="departure-time" value="night"> 심야 (00:00 - 05:59)</label>
+                <h4>가는 날 출발 시간</h4>
+                <label><input type="checkbox" name="out-departure-time" value="morning"> 오전 (06:00 - 11:59)</label>
+                <label><input type="checkbox" name="out-departure-time" value="afternoon"> 오후 (12:00 - 17:59)</label>
+                <label><input type="checkbox" name="out-departure-time" value="evening"> 저녁 (18:00 - 23:59)</label>
+                <label><input type="checkbox" name="out-departure-time" value="night"> 심야 (00:00 - 05:59)</label>
             </div>
             <hr>
             <div class="filter-group">
-                <h4>도착 시간</h4>
-                <label><input type="checkbox" name="departure-time" value="morning"> 오전 (06:00 - 11:59)</label>
-                <label><input type="checkbox" name="departure-time" value="afternoon"> 오후 (12:00 - 17:59)</label>
-                <label><input type="checkbox" name="departure-time" value="evening"> 저녁 (18:00 - 23:59)</label>
-                <label><input type="checkbox" name="departure-time" value="night"> 심야 (00:00 - 05:59)</label>
+                <h4>오는 날 출발 시간</h4>
+                <label><input type="checkbox" name="in-departure-time" value="morning"> 오전 (06:00 - 11:59)</label>
+                <label><input type="checkbox" name="in-departure-time" value="afternoon"> 오후 (12:00 - 17:59)</label>
+                <label><input type="checkbox" name="in-departure-time" value="evening"> 저녁 (18:00 - 23:59)</label>
+                <label><input type="checkbox" name="in-departure-time" value="night"> 심야 (00:00 - 05:59)</label>
             </div>
             <hr>
             <div class="filter-group">
                 <h4>항공사</h4>
                 <div id="airline-filters">
-                    <div th:each="flight, stat : ${flightOffers}">
-                        <div class="flight-item" th:class="${stat.count > 5} ? 'hidden' : ''">
-                            <!-- 수정: HashMap 키 접근 -->
-                            <label><input type="checkbox" name="airline-filter" th:value="${flight['outboundAirline']}" th:text="${flight['outboundAirline']}"></label>
-                        </div>
-                    </div>
+                  <div th:each="flight, stat : ${flightOffers}">
+					    <div class="flight-item">
+					        <!-- 중복 제거 후 체크박스 생성 -->
+					        <th:block th:with="airlineList=${flight['outboundAirline'] != flight['inboundAirline'] ? {flight['outboundAirline'], flight['inboundAirline']} : {flight['outboundAirline']}}">
+					            <th:block th:each="airline : ${airlineList}">
+					                <label>
+					                    <input type="checkbox" name="airline-filter" th:value="${airline}" th:text="${airline}">
+					                </label>
+					            </th:block>
+					        </th:block>
+					    </div>
+					</div>
                 </div>
                 <button type="button" id="more">더보기 ↓</button>
             </div>
@@ -163,16 +169,22 @@
                     <span>정렬순서: </span>
                     <select id="sort-select">
                         <option value="best">가성비 최고</option>
-                        <option value="price">최저가</option>
-                        <option value="duration">최단시간</option>
+                        <option value="price">가격</option>
+                        <option value="duration">비행시간</option>
                     </select>
                 </div>
             </div>
             <div id="flight-list">
                 <!-- 수정: flight가 HashMap이므로 모든 접근을 대괄호 표기법으로 변경 -->
                 <div class="flight-container" 
-                     th:each="flight : ${flightOffers}" 
-                     th:attr="data-outbound-stops=${flight['outboundTotalStops']}, data-inbound-stops=${flight['inboundTotalStops'] != null ? flight['inboundTotalStops'] : 0}">
+				     th:each="flight : ${flightOffers}" 
+				     th:attr="data-outbound-stops=${flight['outboundTotalStops']}, 
+				              data-inbound-stops=${flight['inboundTotalStops'] != null ? flight['inboundTotalStops'] : 0}, 
+				              data-inbound-time=${flight['inboundDepartureTime']},  
+				              data-outbound-time=${flight['outboundDepartureTime']}">
+				
+			
+
                     <div class="flight-info">
                         <div class="airline-info">
                             <span th:text="${flight['outboundAirline']}"></span>
@@ -199,6 +211,7 @@
                                     (<span th:text="${flight['outboundHasConnections'] == 'true' ? '경유 ' + flight['outboundTotalStops'] + '회' : '직항'}"></span>)
                                 </div>
                             </div>
+                            
 
                             <!-- 귀국 구간 (존재하면) -->
                             <!-- 수정: 오류 발생 위치 (249번째 줄) - HashMap 키 접근 방식 변경 -->
@@ -237,7 +250,14 @@
             </div>
         </main>
     </div>
+    
     <div th:replace="~{common/footer.html :: foot}"></div>
+    <script th:inline="javascript">
+    /*<![CDATA[*/
+    	window.flightSearchResult = /*[[${flightOffers}]]*/;
+//     	console.log("window.flightSearchResult : " + window.flightSearchResult);
+    /*]]>*/
+    </script>
     <script th:inline="javascript" src="/js/search.js"></script>
     <script th:inline="javascript" src="/js/flightSearchResult.js"></script>
 </body>

@@ -28,4 +28,8 @@ public interface CommMapper {
 	int deleteComm(int commNo);
 
 	int updateComm(Comm c);
+
+	int deleteReply(int replyNo);
+
+	int updateReply(Reply r);
 }
