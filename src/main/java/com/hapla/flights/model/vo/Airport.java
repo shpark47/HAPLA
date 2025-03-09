@@ -10,8 +10,10 @@ import lombok.NoArgsConstructor;
 public class Airport {
     private String iataCode;
     private String airportsEnName;
-    private String latitude;
-    private String longitude;
-    private String cityCode;
     private String airportsKoName;
+    private String countryEnName;
+    private String countryKoName;
+    private String cityEnName;
+    private String cityKoName;
+    
 }

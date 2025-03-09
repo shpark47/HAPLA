@@ -555,7 +555,9 @@ function searchAirports(query, dropdownId) {
             if (data.length > 0) {
                 data.forEach(airport => {
                     const li = document.createElement('li');
-                    li.textContent = `${airport.airportsKoName} (${airport.iataCode})`; // 표시할 값
+//                    li.textContent = `${airport.countryKoName}, ${airport.cityKoName}`; // 표시할 값
+//					li.textContent += `${airport.airportsKoName} (${airport.iataCode})`;
+					li.innerHTML = `${airport.countryKoName}, ${airport.cityKoName}<br>${airport.airportsKoName} (${airport.iataCode})`;
                     li.dataset.airportsKoName = airport.airportsKoName + '(' + airport.iataCode + ')'; // 클릭 시 사용
                     li.addEventListener('click', function () {
                         const input = document.getElementsByName(dropdownId.includes('departure') ? 'departureName' : 'arrivalName')[0];
