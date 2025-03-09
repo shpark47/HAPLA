@@ -48,7 +48,6 @@ async function searchPlaces() {
         // fetch를 사용해 서버에 GET 요청을 보내고, 도시 이름과 카테고리를 쿼리 파라미터로 전달
         // encodeURIComponent로 특수 문자를 URL에 맞게 인코딩
         let data = await response.json(); // 서버 응답을 JSON 형식으로 변환
-        console.log(data); // 응답 데이터 콘솔에 출력 (디버깅용)
 
         // 서버 응답이 성공적이면 장소 표시
         if (data.status === "OK") { // 응답 상태가 "OK"인 경우
@@ -57,6 +56,18 @@ async function searchPlaces() {
             alert("검색 결과가 없습니다."); // 사용자에게 검색 실패 메시지 표시
         }
     }
+
+    fetch(`https://api.weatherapi.com/v1/current.json?key=b7639a3b840040e1abc73111250703&q=${city}&lang=ko`)
+        .then(response => response.json())
+        .then(data => {
+            console.log('도시:', data.location.name);
+            console.log('현재 기온:', data.current.temp_c, '°C');
+            console.log('날씨:', data.current.condition.text);
+            console.log('습도:', data.current.humidity, '%');
+            console.log('체감 기온:', data.current.feelslike_c, '°C');
+            console.log('바람 속도:', data.current.wind_kph, 'km/h');
+        })
+        .catch(error => console.error('오류:', error));
 }
 
 // ✅ 검색된 장소를 화면에 표시하는 함수
@@ -72,8 +83,6 @@ function displayPlaces(places) {
     container.appendChild(inDiv);
 
     places.forEach(place => { // 검색된 장소 목록을 하나씩 순회
-        console.log(place.photos ? place.photos[0].photo_reference : 'No photo available');
-        // 장소에 사진이 있으면 첫 번째 사진의 참조를 출력, 없으면 "No photo available" 출력 (디버깅용)
 
         let name = place.name || "이름 없음"; // 장소 이름이 없으면 "이름 없음"으로 기본값 설정
         let rating = place.rating ? `⭐ ${place.rating}` : "⭐ 없음"; // 평점이 있으면 별표와 함께 표시, 없으면 "없음"
@@ -150,8 +159,8 @@ const otherPlace = (p, category) => {
             <img src="${attr.photo_url}" alt="${attr.name}">
             <div class="destination-info">
             <h3>${attr.name}</h3> 
-            <p class="rating">${attr.rating}</p>
-            <p class="review-count">${attr.review_count}</p>
+            <p class="rating">⭐ ${attr.rating}</p>
+            <p class="review-count">${attr.review_count} 리뷰</p>
             </div>
         `;
 
