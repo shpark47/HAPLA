@@ -411,6 +411,7 @@ const applyFilter = (flightData) => {
 		
 		if(airlineSelectedOptions.length > 0 && !shouldHide) {
 			if(!airlineSelectedOptions.some(option => flight.airline.includes(option))) {
+				// .some -> 일치하는게 하나라도 있으면 true 반환(배열을 돌다가 한번이라도 true면 true 반환 후 탈출)
 				shouldHide = true; 			
 			}
 		}
@@ -441,5 +442,147 @@ document.addEventListener('DOMContentLoaded', () => {
     applyFilter(flightSearchResult); // 초기 필터링 적용
 });
 
+// 페이지 로드 시 실행
+document.addEventListener('DOMContentLoaded', function () {
+    const flightList = document.getElementById('flight-list');
+    const sortSelect = document.getElementById('sort-select');
+    let flightData = window.flightSearchResult || []; // Thymeleaf에서 전달된 데이터
+
+    // 날짜 문자열을 Date 객체로 변환하고 시간 차이를 계산하는 함수
+    function getDurationInHours(startTime, endTime) {
+        const start = new Date(startTime);
+        const end = new Date(endTime);
+        const diffMs = end - start;
+        return diffMs / (1000 * 60 * 60); // 밀리초를 시간 단위로 변환
+    }
+
+    // 총 소요 시간 계산 (outbound + inbound)
+    function getTotalDuration(flight) {
+        const outboundDuration = getDurationInHours(flight.outboundDepartureTime, flight.outboundArrivalTime);
+        const inboundDuration = flight.inboundDepartureTime && flight.inboundArrivalTime
+            ? getDurationInHours(flight.inboundDepartureTime, flight.inboundArrivalTime)
+            : 0;
+        return outboundDuration + inboundDuration;
+    }
+
+    // 가격에서 숫자만 추출 (예: "1658.50 EUR" -> 1658.50)
+    function parsePrice(priceStr) {
+        return parseFloat(priceStr.split(' ')[0]);
+    }
+
+    // 가성비 점수 계산 (낮을수록 가성비 좋음: 가격/시간)
+    function getValueScore(flight) {
+        const price = parsePrice(flight.price);
+        const totalDuration = getTotalDuration(flight);
+        return totalDuration > 0 ? price / totalDuration : Infinity; // 시간이 0이면 Infinity 반환
+    }
+
+    // 항공편 렌더링 함수
+    function renderFlights(flights) {
+        flightList.innerHTML = ''; // 기존 목록 초기화
+        flights.forEach(flight => {
+            const flightDiv = document.createElement('div');
+            flightDiv.className = 'flight-container';
+            flightDiv.setAttribute('data-outbound-stops', flight.outboundTotalStops);
+            flightDiv.setAttribute('data-inbound-stops', flight.inboundTotalStops || 0);
+            flightDiv.setAttribute('data-inbound-time', flight.inboundDepartureTime || '');
+            flightDiv.setAttribute('data-outbound-time', flight.outboundDepartureTime);
+
+            // 시간 포맷팅 함수
+            const formatTime = (dateStr) => {
+                const date = new Date(dateStr);
+                return date.toLocaleTimeString('ko-KR', { hour: 'numeric', minute: '2-digit', hour12: true });
+            };
+
+            flightDiv.innerHTML = `
+                <div class="flight-info">
+                    <div class="airline-info">
+                        <span>${flight.outboundAirline}</span>
+                        ${flight.inboundAirline && flight.inboundAirline !== flight.outboundAirline 
+                            ? `<span>${flight.inboundAirline}</span>` : ''}
+                    </div>
+                    <div class="flight-details">
+                        <div class="departure">
+                            <div class="flight-title">
+                                <div class="time-info outbound">
+                                    <div class="airport-code">${flight.outboundDepartureAirport}</div>
+                                    <div class="flight-time">${formatTime(flight.outboundDepartureTime)}</div>
+                                </div>
+                                <div class="flight-path"></div>
+                                <div class="time-info outbound">
+                                    <div class="airport-code">${flight.outboundArrivalAirport}</div>
+                                    <div class="flight-time">${formatTime(flight.outboundArrivalTime)}</div>
+                                </div>
+                            </div>
+                            <div class="duration">
+                                <span>${formatTime(flight.outboundDepartureTime)}</span> → 
+                                <span>${formatTime(flight.outboundArrivalTime)}</span>
+                                (<span>${flight.outboundHasConnections === 'true' ? '경유 ' + flight.outboundTotalStops + '회' : '직항'}</span>)
+                            </div>
+                        </div>
+                        ${flight.inboundDepartureTime ? `
+                            <div class="return-section">
+                                <hr style="border: 1px dashed #ccc; margin: 10px 0;">
+                                <div class="return">
+                                    <div class="flight-title">
+                                        <div class="time-info inbound">
+                                            <div class="airport-code">${flight.inboundDepartureAirport}</div>
+                                            <div class="flight-time">${formatTime(flight.inboundDepartureTime)}</div>
+                                        </div>
+                                        <div class="flight-path"></div>
+                                        <div class="time-info inbound">
+                                            <div class="airport-code">${flight.inboundArrivalAirport}</div>
+                                            <div class="flight-time">${formatTime(flight.inboundArrivalTime)}</div>
+                                        </div>
+                                    </div>
+                                    <div class="duration">
+                                        <span>${formatTime(flight.inboundDepartureTime)}</span> → 
+                                        <span>${formatTime(flight.inboundArrivalTime)}</span>
+                                        (<span>${flight.inboundHasConnections === 'true' ? '경유 ' + flight.inboundTotalStops + '회' : '직항'}</span>)
+                                    </div>
+                                </div>
+                            </div>` : ''}
+                    </div>
+                </div>
+                <div class="flight-price">
+                    <div class="price-info">
+                        <div class="price-title">
+                            <strong>가격 : </strong> <span>${flight.price}</span>
+                        </div>
+                        <button class="view-deal">예약하기</button>
+                    </div>
+                </div>
+            `;
+            flightList.appendChild(flightDiv);
+        });
+    }
+
+    // 정렬 함수
+    function sortFlights(criterion) {
+        let sortedFlights = [...flightData]; // 원본 데이터 복사
+        switch (criterion) {
+            case 'best': // 가성비 최고
+                sortedFlights.sort((a, b) => getValueScore(a) - getValueScore(b));
+                break;
+            case 'price': // 최저가
+                sortedFlights.sort((a, b) => parsePrice(a.price) - parsePrice(b.price));
+                break;
+            case 'duration': // 최단시간
+                sortedFlights.sort((a, b) => getTotalDuration(a) - getTotalDuration(b));
+                break;
+            default:
+                break;
+        }
+        renderFlights(sortedFlights); // 정렬된 데이터로 화면 갱신
+    }
+
+    // 초기 렌더링
+    renderFlights(flightData);
+
+    // 정렬 선택 이벤트 리스너
+    sortSelect.addEventListener('change', function () {
+        sortFlights(this.value);
+    });
+});
 
 
