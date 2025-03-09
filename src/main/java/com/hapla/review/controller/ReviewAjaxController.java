@@ -1,29 +1,37 @@
 package com.hapla.review.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import com.hapla.comm.model.service.CommService;
+import com.hapla.comm.model.vo.Reply;
 import com.hapla.review.model.service.ReviewService;
 import com.hapla.review.model.vo.Review;
 import com.hapla.users.model.vo.Users;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/review")
+@RequestMapping({"/review", "/comm"})
 @RequiredArgsConstructor
 @SessionAttributes("loginUser")
 public class ReviewAjaxController {
 	
 	private final ReviewService reviewService;
+	private final CommService commService;
 	
 	@PostMapping("insert")
     public Map<String, Object> insertReview(@RequestBody HashMap<String, String> map, 
@@ -69,4 +77,24 @@ public class ReviewAjaxController {
 
         return response;
     }
+	
+	@PostMapping("reply")
+	public ArrayList<Reply> insertReply(@ModelAttribute Reply r, HttpServletResponse response){
+		System.out.println(r);
+		int result = commService.insertReply(r);
+		ArrayList<Reply> list = commService.selectReplyList(r.getCommNo());
+		return list;
+	}
+	
+	@DeleteMapping("reply")
+	public int deleteReply(@RequestParam("replyNo") int replyNo) {
+		return commService.deleteReply(replyNo);
+
+	}
+
+	@PutMapping("reply")
+	public int updateReply(@ModelAttribute Reply r) {
+		int result = commService.updateReply(r);
+		return result;
+	}
 }

@@ -56,4 +56,12 @@ public class CommService {
 	public int updateComm(Comm c) {
 		return mapper.updateComm(c);
 	}
+
+	public int deleteReply(int replyNo) {
+		return mapper.deleteReply(replyNo);
+	}
+
+	public int updateReply(Reply r) {
+		return mapper.updateReply(r);
+	}
 }
