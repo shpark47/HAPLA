@@ -18,9 +18,14 @@
     </section>
     <section class="community">
         <form class="needs-validation" method="POST" id="detailForm">
+        	<!-- 로그인한 사용자의 userNo를 hidden input으로 추가 -->
+			<input type="hidden" id="userNo" th:value="${session.loginUser != null ? session.loginUser.userNo : ''}">
             <input type="hidden" name="commNo" th:value="${c.commNo}">
             <input type="hidden" name="page" th:value="${page}">
-            <h2>커뮤니티</h2>
+            <h2 style="display: inline-block;">커뮤니티</h2>
+			<button id="likeBtn" class="btn btn-outline-danger btn-sm" style="margin-left: 10px;">
+			    ❤️ <span id="likeCount" th:text="${c != null ? c.likes : 0}"></span>
+			</button>
             <table>
                 <tr>
                     <th>제목</th>
@@ -54,12 +59,12 @@
                 </button>
             </div>
             <br>
-            <table class="table">
+			<table class="table">
                 <thead>
                 <tr>
                     <th width="130px">작성자</th>
                     <th>작성내용</th>
-                    <th width="130px">작성일자</th>
+                    <th width="90px">작성일자</th>
                     <th></th>
                     <th></th>
                 </tr>
@@ -67,7 +72,13 @@
                 <tbody>
                 <tr th:each="r: ${list}">
                     <td>[[${r.name}]]</td>
-                    <td th:text="${r.replyContent}"></td>
+                    <td>
+					    <span th:text="${r.replyContent}"></span>
+<!-- 					    <th:block th:if="${session.loginUser != null && r.name != session.loginUser.name}"> -->
+<!-- 					        <input type="hidden" th:value="${r.replyNo}" name="replyNo"> -->
+<!-- 					        <button type="button" class="btn btn-sm btn-outline-primary reply-btn" id="rereply">답글쓰기</button> -->
+<!-- 					    </th:block> -->
+					</td>
                     <td>[[${r.createDate}]]</td>
                     <td width="50px">
                         <th:block th:if="${session.loginUser ne null && r.name ne session.loginUser.name}">
@@ -95,7 +106,8 @@
                 </tr>
                 </tbody>
             </table>
-        </form>
+
+		</form>
     </section>
 </main>
 <div th:replace="~{common/footer.html :: foot}"></div>
@@ -297,6 +309,43 @@
                 } 
                    
              });
+	
+	
+	
+	
+	document.addEventListener("DOMContentLoaded", function() {
+	    const likeBtn = document.getElementById("likeBtn");
+	    const likeCount = document.getElementById("likeCount");
+	    const userNo = document.getElementById("userNo").value;
+
+	    likeBtn.addEventListener("click", function(event) {
+	        if (!userNo) { // ✅ 로그인 여부 확인
+	            alert("좋아요를 누르려면 로그인이 필요합니다.");
+	            return;
+	        }
+
+	        $.ajax({
+	            url: "/comm/like", 
+	            type: "POST",
+	            data: { 
+	                commNo: /*[[${c.commNo}]]*/ 1, 
+	                userNo: /*[[${session.loginUser.userNo}]]*/1
+	            },
+	            success: function(response) {
+	                $("#likeCount").text(response.likes);
+	            },
+	            error: function(xhr) {
+	                console.log("에러 상태 코드:", xhr.status);
+	                console.log("서버 응답:", xhr.responseText);
+	                alert("좋아요 처리 중 오류가 발생했습니다.\n" + xhr.responseText);
+	            }
+	        });
+	        
+	        event.preventDefault();
+	    });
+	});
+
+	
 </script>
 
 
