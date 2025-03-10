@@ -52,22 +52,11 @@ async function searchPlaces() {
         // 서버 응답이 성공적이면 장소 표시
         if (data.status === "OK") { // 응답 상태가 "OK"인 경우
             displayPlaces(data.results); // 검색 결과를 화면에 표시하는 함수 호출
+            enCity = data.enCity;
         } else { // 응답 상태가 "OK"가 아닌 경우 (검색 실패)
             alert("검색 결과가 없습니다."); // 사용자에게 검색 실패 메시지 표시
         }
     }
-
-    fetch(`https://api.weatherapi.com/v1/current.json?key=b7639a3b840040e1abc73111250703&q=${city}&lang=ko`)
-        .then(response => response.json())
-        .then(data => {
-            console.log('도시:', data.location.name);
-            console.log('현재 기온:', data.current.temp_c, '°C');
-            console.log('날씨:', data.current.condition.text);
-            console.log('습도:', data.current.humidity, '%');
-            console.log('체감 기온:', data.current.feelslike_c, '°C');
-            console.log('바람 속도:', data.current.wind_kph, 'km/h');
-        })
-        .catch(error => console.error('오류:', error));
 }
 
 // ✅ 검색된 장소를 화면에 표시하는 함수
@@ -126,26 +115,31 @@ const displayAllPlace = places => {
     let div = document.createElement("div");
     container.innerHTML = "";
 
-    div.innerHTML = `
-        <h2>${places.main_info.name}</h2>
-        <img src="${places.main_info.photo_url}" alt="${places.main_info.name}">
-        <p>${places.main_info.description}</p>
-        `;
-    container.innerHTML = div.innerHTML;
+    fetch(`https://api.weatherapi.com/v1/current.json?key=b7639a3b840040e1abc73111250703&q=` + places.main_info.enCity + `&lang=ko`)
+        .then(response => response.json())
+        .then(data => {
+            div.innerHTML = `
+                <h2>${places.main_info.name} | 현재 기온 : ${data.current.temp_c}°C | 날씨 : ${data.current.condition.text} | 습도 : ${data.current.humidity}%</h2><br>
+                <img src="${places.main_info.photo_url}" alt="${places.main_info.name}">
+                <p>${places.main_info.description}</p>
+                `;
+            container.innerHTML = div.innerHTML;
 
-    const categories = [
-        { title: '여행지', data: places.tourist_attraction, type: 'tourist_attraction' },
-        { title: '관광명소', data: places.landmark, type: 'landmark' },
-        { title: '숙박', data: places.lodging, type: 'lodging' },
-        { title: '음식점', data: places.restaurant, type: 'restaurant' }
-    ];
+            const categories = [
+                { title: '여행지', data: places.tourist_attraction, type: 'tourist_attraction' },
+                { title: '관광명소', data: places.landmark, type: 'landmark' },
+                { title: '숙박', data: places.lodging, type: 'lodging' },
+                { title: '음식점', data: places.restaurant, type: 'restaurant' }
+            ];
 
-    categories.forEach(category => {
-        const h2 = document.createElement('h2');
-        h2.innerText = category.title;
-        container.appendChild(h2);
-        container.appendChild(otherPlace(category.data, category.type));
-    });
+            categories.forEach(category => {
+                const h2 = document.createElement('h2');
+                h2.innerText = category.title;
+                container.appendChild(h2);
+                container.appendChild(otherPlace(category.data, category.type));
+            });
+        })
+        .catch(error => console.error('오류:', error));
 }
 
 const otherPlace = (p, category) => {

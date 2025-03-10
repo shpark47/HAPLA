@@ -64,6 +64,7 @@ public class GoogleSearchController {
     @GetMapping("/searchAll")
     public ResponseEntity<String> searchAllPlaces(@RequestParam("city") String city) {
         try {
+            // 응답을 담을 객체 생성
             JSONObject filteredResponse = new JSONObject();
             filteredResponse.put("status", "OK");
 
@@ -74,15 +75,18 @@ public class GoogleSearchController {
 
             RestTemplate restTemplate = new RestTemplate();
 
-            // main_info 가져오기 (기존 쿼리)
+            // 1️⃣ 도시 이름을 영어로 변환하는 API 호출
+            String enCity = getCityInEnglish(city, restTemplate);
+
+            // 2️⃣ main_info 가져오기 (기존 쿼리)
             String mainUrl = String.format("https://maps.googleapis.com/maps/api/place/textsearch/json?query=%s&language=ko&key=%s",
-                    city, googleApiKey);
+                    city, googleApiKey);  // 한글로 검색
             String mainResponse = restTemplate.getForObject(mainUrl, String.class);
             JSONObject mainJsonResponse = new JSONObject(mainResponse);
             JSONArray mainResults = mainJsonResponse.getJSONArray("results");
 
             if (mainResults.length() > 0) {
-                JSONObject mainPlace = (JSONObject) mainResults.get(0);
+                JSONObject mainPlace = mainResults.getJSONObject(0);
                 String photoUrl = "";
                 if (mainPlace.has("photos")) {
                     JSONArray photos = mainPlace.getJSONArray("photos");
@@ -98,6 +102,7 @@ public class GoogleSearchController {
                 mainInfo.put("description", mainPlace.has("formatted_address") ? mainPlace.getString("formatted_address") : "설명 없음");
                 mainInfo.put("place_id", mainPlace.getString("place_id"));
                 mainInfo.put("review_count", mainPlace.has("user_ratings_total") ? mainPlace.getInt("user_ratings_total") : 0);
+                mainInfo.put("enCity", enCity);
                 filteredResponse.put("main_info", mainInfo);
             }
 
@@ -106,9 +111,9 @@ public class GoogleSearchController {
                 categoryResults.put(category, new JSONArray());
             }
 
-            // 카테고리별 API 호출
+            // 3️⃣ 카테고리별 API 호출 최적화
             for (int i = 0; i < categories.length; i++) {
-                String categoryQuery = city + queryPrefixes[i];
+                String categoryQuery = enCity + queryPrefixes[i];  // 영어로 된 도시 이름 사용
                 String url = String.format("https://maps.googleapis.com/maps/api/place/textsearch/json?query=%s&language=ko&key=%s",
                         categoryQuery, googleApiKey);
                 String response = restTemplate.getForObject(url, String.class);
@@ -116,7 +121,7 @@ public class GoogleSearchController {
                 JSONArray results = jsonResponse.getJSONArray("results");
 
                 for (int j = 0; j < results.length() && categoryResults.get(categories[i]).length() < 4; j++) {
-                    JSONObject place = (JSONObject) results.get(j);
+                    JSONObject place = results.getJSONObject(j);
                     JSONObject simplifiedPlace = new JSONObject();
                     simplifiedPlace.put("name", place.getString("name"));
                     simplifiedPlace.put("rating", place.has("rating") ? place.getDouble("rating") : 0);
@@ -142,6 +147,7 @@ public class GoogleSearchController {
                 filteredResponse.put(category, categoryResults.get(category));
             }
 
+            // 최종적으로 필터링된 JSON 응답 반환
             return ResponseEntity.ok()
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(filteredResponse.toString());
@@ -152,4 +158,38 @@ public class GoogleSearchController {
                     .body("{\"status\":\"ERROR\", \"message\":\"서버 오류\"}");
         }
     }
+
+    /**
+     * Google Places API를 사용하여 도시 이름을 영어로 변환하는 메서드
+     */
+    private String getCityInEnglish(String city, RestTemplate restTemplate) {
+        try {
+            // 영어로 도시 이름을 검색하여 변환
+            String urlEn = String.format(
+                    "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=%s&inputtype=textquery&language=ko&key=%s",  // 검색 언어를 한국어로 설정
+                    city, googleApiKey);
+
+            String responseEn = restTemplate.getForObject(urlEn, String.class);
+            JSONObject jsonResponseEn = new JSONObject(responseEn);
+
+            if (jsonResponseEn.has("candidates") && jsonResponseEn.getJSONArray("candidates").length() > 0) {
+                // place_id 가져오기
+                String placeId = jsonResponseEn.getJSONArray("candidates").getJSONObject(0).getString("place_id");
+
+                // place details API를 통해 영어 이름 받기
+                String detailsUrl = String.format(
+                        "https://maps.googleapis.com/maps/api/place/details/json?place_id=%s&language=en&key=%s", placeId, googleApiKey);
+                String detailsResponse = restTemplate.getForObject(detailsUrl, String.class);
+                JSONObject detailsJsonResponse = new JSONObject(detailsResponse);
+
+                if (detailsJsonResponse.has("result")) {
+                    return detailsJsonResponse.getJSONObject("result").getString("name");  // 영어 이름 반환
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return city; // 오류 발생 시 원래 입력값 반환
+    }
+
 }
