@@ -1,3 +1,30 @@
+// ✅ 일정 페이지가 로드될 때 실행되는 함수
+    function initMap() {
+        // ✅ localStorage에서 선택한 도시 정보 가져오기
+        const storedCity = localStorage.getItem("selectedCity");
+
+        // 기본 지도 위치 설정 (초기값: 파리)
+        let mapOptions = {
+            center: { lat: 37.5665, lng: 126.9780 }, // 서울 기본 위치
+            zoom: 10
+        };
+
+        // ✅ 저장된 도시 정보가 있으면 지도 위치 변경
+        if (storedCity) {
+            const city = JSON.parse(storedCity);
+            mapOptions.center = { lat: city.lat, lng: city.lng }; // 선택한 도시 좌표로 이동
+            console.log(`📍 지도 위치 변경: ${city.name}, ${city.country}`);
+        }
+
+        // ✅ Google 지도 생성
+        new google.maps.Map(document.getElementById('map'), mapOptions);
+    }
+	
+	// ✅ 페이지 로드 시 `initMap()` 실행
+	document.addEventListener("DOMContentLoaded", function () {
+	    initMap();
+	});
+
 // +추가 버튼 클릭시 control-btns 보이게 처리
 function toggleControls(addButton){
 	// 해당 .date-item을 찾기
@@ -53,13 +80,6 @@ function closeControls() {
               });
           }
       });
-        // ✅ Google 지도 초기화 함수
-        function initMap(lat = 48.8566, lng = 2.3522) {
-            new google.maps.Map(document.getElementById('map'), {
-                center: { lat: lat, lng: lng },
-                zoom: 10 
-            });
-        }
         
         // 메뉴바 선택시 일정 목록으로 페이지 이동
         document.addEventListener("DOMContentLoaded", function(){
