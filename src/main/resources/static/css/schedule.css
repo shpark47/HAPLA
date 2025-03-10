@@ -26,12 +26,24 @@ body {
     height: 100vh;
 }
 /* 🌍 왼쪽 사이드바 */
-.sidebar {
+/* .sidebar {
     width: 20%;
     background: white;
     padding: 15px;
     border-right: 1px solid #ddd;
     overflow-y: auto;
+} */
+.sidebar {
+    position: fixed; /* 사이드바를 왼쪽 고정 */
+    left: 0;
+    top: 0;
+    width: 20%; /* 사이드바 너비 */
+    height: 100%;
+    background: white;
+    padding: 15px;
+    border-right: 1px solid #ddd;
+    overflow-y: auto;
+    z-index: 1000; /* 사이드바가 위에 오도록 설정 */
 }
 /* 스크롤바의 전체 영역 */
 .sidebar::-webkit-scrollbar {
@@ -137,8 +149,8 @@ body {
     padding: 2px;
     margin: 3px;
 }
-
-#side-panel {
+/* 
+.side-panel {
     position: fixed;
     right: 0;
     top: 0;
@@ -147,10 +159,24 @@ body {
     background: white;
     box-shadow: -2px 0px 10px rgba(0, 0, 0, 0.1);
     padding: 20px;
-    display: none;
+    display: hidden;
     flex-direction: column;
+    z-index: 1000;
 }
-
+ */
+ .side-panel {
+    position: fixed;
+    left: 21.8%; /* 👈 사이드바 옆에 붙이기 */
+    top: 0;
+    width: 300px;
+    height: 100%;
+    background: white;
+    box-shadow: -2px 0px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    flex-direction: column;
+    z-index: 1000; /* 사이드바보다 위로 설정 */
+    display: none; /* 처음에는 숨김 */
+}
 #search-container {
     margin-top: 20px;
 }

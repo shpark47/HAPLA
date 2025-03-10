@@ -40,23 +40,45 @@ function toggleControls(addButton){
 }
 
 
-// 사이드 패널 열기
+// ✅ 사이드 패널 열기 (숙박 & 장소 검색)
 function openSidePanel(panelType) {
     const sidePanel = document.getElementById('side-panel');
     const panelBody = document.getElementById('side-panel-body');
-    
-    // 사이드 패널 내용 변경
-    if (panelType == 'memo') {
-        panelBody.innerHTML = "<p>메모를 추가할 수 있습니다.</p>";
-    } else if (panelType == 'stay') {
-        panelBody.innerHTML = "<p>숙박 정보를 추가할 수 있습니다.</p>";
-    } else if (panelType == 'marker') {
-        panelBody.innerHTML = "<p>마커를 추가할 수 있습니다.</p>";
+    const searchContainer = document.getElementById("search-container"); // 검색 컨테이너
+
+    if (!sidePanel) {
+        console.error("❌ 사이드 패널 요소를 찾을 수 없습니다.");
+        return;
     }
 
-    
-	    sidePanel.style.display = 'block';  // `hidden` 대신 `display` 속성으로 보이게 설정
-	}
+    console.log(`🔵 사이드 패널 열기: ${panelType}`);
+
+    // 패널 내용 변경
+    if (panelType === 'stay') {
+        panelBody.innerHTML = "<p>숙박 정보를 검색하세요.</p>";
+    } else if (panelType === 'marker') {
+        panelBody.innerHTML = "<p>장소를 검색하세요.</p>";
+    }
+
+    // ✅ `hidden` 대신 `display = 'block'`으로 변경
+    sidePanel.style.display = 'block';
+
+    // 검색 컨테이너 보이기
+    if (searchContainer) {
+        searchContainer.style.display = 'block';
+    } else {
+        console.warn("⚠️ search-container를 찾을 수 없습니다.");
+    }
+}
+
+// ✅ 사이드 패널 닫기
+function closeSidePanel() {
+    const sidePanel = document.getElementById("side-panel");
+    if (sidePanel) {
+        console.log("🔴 사이드 패널 닫기");
+        sidePanel.style.display = "none"; // `hidden`이 아닌 `none`으로 변경
+    }
+}
 
 
 // Close 버튼 클릭 시, +추가 버튼으로 돌아가게 처리
@@ -64,23 +86,78 @@ function closeControls() {
     const dateItem = event.target.closest('.date-item');  // closest()를 이용해 해당 날짜 항목 찾기
     const controlBtns = dateItem.querySelector('.control-btns');
     const controlAdd = dateItem.querySelector('.control-add');
+	const sidePanel = document.getElementById("side-panel");
 
     // .control-btns 숨기기, .add-text 보이게 하기
     controlBtns.hidden = true;
     controlAdd.hidden = false;
+	sidePanel.style.display = "none";	// 사이드 패널 닫기
+	
 }
 
 
-// ✅ 패널 닫기 버튼 기능 추가
-      document.addEventListener("DOMContentLoaded", function () {
-          const closeButton = document.querySelector(".close-btn");
-          if (closeButton) {
-              closeButton.addEventListener("click", function () {
-                  document.getElementById("side-panel").style.display = "none";
-              });
-          }
-      });
-        
+
+// Google Places API로 장소 검색(자동 검색)
+function searchPlaces(){
+	const searchInput = document.getElementById("search-input").value;
+	const resultsContainer = document.getElementById("search-results");
+	
+	if(!searchInput.trim()){
+		resultsContainer.innerHTML = "<p>검색어를 입력하세요.</p>";
+		return;
+	}
+	
+	console.log(`🔎 검색 실행: ${searchInput}`);
+	
+	const service = new google.maps.places.PlacesService(document.createElement("div"));
+
+    service.textSearch({ query: searchInput }, function (results, status) {
+        resultsContainer.innerHTML = ""; // 기존 결과 초기화
+
+        if (status !== google.maps.places.PlacesServiceStatus.OK || !results.length) {
+            resultsContainer.innerHTML = "<p>검색 결과가 없습니다.</p>";
+            return;
+        }
+
+        results.forEach(place => {
+            const placeItem = document.createElement("div");
+            placeItem.classList.add("search-result-item");
+            placeItem.textContent = place.name;
+            placeItem.onclick = function () {
+                addPlaceToSchedule(place);
+            };
+            resultsContainer.appendChild(placeItem);
+        });
+    });
+}
+
+// ✅ 장소를 일정에 추가
+function addPlaceToSchedule(place) {
+    console.log("선택한 장소:", place.name);
+    alert(`선택한 장소: ${place.name}이 일정에 추가되었습니다.`);
+}
+
+// ✅ 검색 입력 시 자동으로 검색 실행
+document.addEventListener("DOMContentLoaded", function () {
+    const searchInputField = document.getElementById("search-input");
+    if (searchInputField) {
+        searchInputField.addEventListener("input", searchPlaces);
+        console.log("✅ 검색 이벤트 리스너 추가됨");
+    } else {
+        console.error("❌ 검색 입력 필드를 찾을 수 없습니다.");
+    }
+
+    // 버튼 이벤트 확인
+    document.getElementById("stayBtn")?.addEventListener("click", function () {
+        openSidePanel('stay');
+    });
+
+    document.getElementById("markerBtn")?.addEventListener("click", function () {
+        openSidePanel('marker');
+    });
+});
+
+
         // 메뉴바 선택시 일정 목록으로 페이지 이동
         document.addEventListener("DOMContentLoaded", function(){
            const menuBtn = document.getElementById("menuBtn");
