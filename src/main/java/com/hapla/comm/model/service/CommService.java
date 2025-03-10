@@ -64,4 +64,22 @@ public class CommService {
 	public int updateReply(Reply r) {
 		return mapper.updateReply(r);
 	}
+
+	public int checkUserLike(int userNo, int commNo) {
+		return mapper.checkUserLike(userNo, commNo);
+	}
+
+	public void addLike(int userNo, int commNo) {
+        mapper.insertLike(userNo, commNo);
+//        mapper.incrementLikeCount(commNo);
+    }
+
+    public void removeLike(int userNo, int commNo) {
+        mapper.deleteLike(userNo, commNo);
+//        mapper.decrementLikeCount(commNo);
+    }
+
+    public int getLikeCount(int commNo) {
+        return mapper.countLikes(commNo);
+    }
 }

@@ -142,14 +142,14 @@
     }
 
     document.getElementById("review-form").addEventListener("submit", function(event) {
-        event.preventDefault();
+        event.preventDefault(); // 기본 제출 동작 방지
 
         let title = document.getElementById("title").value.trim();
         let rating = document.getElementById("rating-value").value.trim();
         let content = document.getElementById("review-content").value.trim();
         let when = document.getElementById("when").value.trim();
         let withWhom = document.getElementById("withWhom-value").value.trim();
-        let imageUrl = document.getElementById("image-url").value.trim();
+        let imageUrls = document.getElementById("image-urls").value.trim(); // 올바른 ID 사용
 
         if (!title) {
             alert("리뷰 제목을 입력해주세요.");
@@ -167,7 +167,7 @@
             content: content,
             when: when,
             withWhom: withWhom,
-            imageUrl: imageUrl
+            imageUrls: imageUrls // 올바른 필드 사용
         };
 
         fetch("/review/insert", {
@@ -179,15 +179,17 @@
         .then(data => {
             if (data.status === "success") {
                 alert(data.message);
-                window.location.href = "/review/list";
+                window.location.href = "/review/list"; // 성공 시 이동
             } else {
                 alert("오류 발생: " + data.message);
             }
         })
         .catch(error => {
-            alert("서버 오류: " + error.message);
+            console.error("서버 오류:", error);
+            alert("서버 오류가 발생했습니다. 다시 시도해주세요.");
         });
     });
+
 </script>
 <div th:replace="~{common/footer.html :: foot}"></div>
 </body>
