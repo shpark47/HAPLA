@@ -3,6 +3,7 @@ package com.hapla.comm.model.mapper;
 import java.util.ArrayList;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.session.RowBounds;
 
 import com.hapla.comm.model.vo.Comm;
@@ -32,4 +33,18 @@ public interface CommMapper {
 	int deleteReply(int replyNo);
 
 	int updateReply(Reply r);
+
+	int checkUserLike(@Param("userNo") int userNo, @Param("commNo") int commNo);
+
+	Object removeLike(@Param("userNo") int userNo, @Param("commNo") int commNo);
+
+	void insertLike(@Param("userNo") int userNo, @Param("commNo") int commNo);
+
+//	void incrementLikeCount(int commNo);
+
+	void deleteLike(@Param("userNo") int userNo, @Param("commNo") int commNo);
+
+//	void decrementLikeCount(int commNo);
+
+	int countLikes(int commNo);
 }
