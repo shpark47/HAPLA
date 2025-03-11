@@ -91,6 +91,7 @@ function displayPlaces(places) {
         let div = document.createElement("div"); // 새로운 장소 카드 요소 생성
         div.className = "destination-card"; // CSS 클래스 추가 (스타일링용)
         div.innerHTML = `
+            <input type="hidden" name="placeId" value="${place.place_id}">
             <input type="hidden" name="type" value="${placeTypes}">
             <img src="${photoUrl}" alt="${name}">
             <div class="destination-info">
@@ -110,7 +111,7 @@ function displayPlaces(places) {
     });
 }
 
-const displayAllPlace = places => {
+const displayAllPlace = (places) => {
     let container = document.getElementById('search-all-data');
     let div = document.createElement("div");
     container.innerHTML = "";

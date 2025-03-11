@@ -1,14 +1,13 @@
 package com.hapla.review.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.hapla.comm.model.vo.Comm;
@@ -61,40 +60,6 @@ public class ReviewController {
 		return "review/write";
 	}
 
-//	@PostMapping("insert")
-//	@ResponseBody
-//	public String insertReview(@RequestParam(value = "rating", required = false) Integer rating, 
-//	                           @RequestParam(value = "content", required = false, defaultValue = "내용 없음") String content, 
-//	                           @ModelAttribute Review r, 
-//	                           HttpSession session) {
-//	    Users loginUser = (Users) session.getAttribute("loginUser");
-//
-//	    if (loginUser == null) {
-//	        throw new RuntimeException("로그인이 필요합니다.");
-//	    }
-//
-//	    // 로그인한 사용자의 userNo 설정
-//	    r.setUserNo(loginUser.getUserNo());
-//
-//	    // ⭐️ rating이 null이면 기본값(3) 설정
-//	    r.setRating(rating != null ? rating : 3);
-//
-//	    // ⭐️ content가 비어 있으면 기본값 설정
-//	    if (content.trim().isEmpty()) {
-//	        content = "내용 없음"; // ✅ 기본값 설정
-//	    }
-//	    r.setContent(content);
-//
-//	    int result = reviewService.insertReview(r);
-//	    
-//	    if (result > 0) {
-//	        return "redirect:/review/list";
-//	    } else {
-//	        throw new RuntimeException("게시글 작성을 실패하였습니다.");
-//	    }
-//	}
-
-	
 	@GetMapping("/{id}/{page}")
     public ModelAndView selectReview(@PathVariable("id") int reviewNo, 
                                    @PathVariable("page") int page, 
@@ -115,4 +80,30 @@ public class ReviewController {
         }
         
     }
+
+	@PostMapping("insert")
+	public String insertReview(@ModelAttribute Review r) {
+
+		System.out.println(r);
+
+		if (r.getImageUrls() != null) {
+			String img = r.getImageUrls();
+			if (img.contains(",")){
+				String tumbnail = img.split(",")[0];
+				img = img.split(",")[1];
+				r.setThumnail(tumbnail);
+				r.setImageUrls(img);
+			}else{
+				r.setThumnail(r.getImageUrls());
+				r.setImageUrls(null);
+			}
+		}
+
+		// 데이터 저장
+		int result = reviewService.insertReview(r);
+		if (result == 1) {
+			return "redirect:/review/main";
+		}
+		throw new Exception("실패");
+	}
 }

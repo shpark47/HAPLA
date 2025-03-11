@@ -17,6 +17,7 @@
     <section id="search-data">
         <section id="search-all-data" class="popular-destinations">
             <div class="destinations-grid">
+                <h2 th:text="${places == null ? '' : '즐겨찾기'}"></h2>
                 <div class="destination-card" th:each="place : ${places}">
                     <input type="hidden" name="placeId" th:value="${place.placeId}">
                     <input type="hidden" name="type" th:value="${place.placeTypes}">
