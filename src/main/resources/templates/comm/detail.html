@@ -26,6 +26,7 @@
 			<button id="likeBtn" class="btn btn-outline-danger btn-sm" style="margin-left: 10px;">
 			    ❤️ <span id="likeCount" th:text="${c != null ? c.likes : 0}"></span>
 			</button>
+			<button class="cancel-button" type="button" onclick="history.back();">목록</button>
             <table>
                 <tr>
                     <th>제목</th>
