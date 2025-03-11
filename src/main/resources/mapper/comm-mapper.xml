@@ -7,12 +7,19 @@
     
    	<select id="selectCommList" resultType="com.hapla.comm.model.vo.Comm">
 	    SELECT comm.comm_no, comm.category_no, comm.user_no, comm.title, comm.comm_content, comm.views,
-	           comm.create_date, comm.update_date, comm.status, category.category_name, users.name
+	           comm.create_date, comm.update_date, comm.status,
+	           category.category_name, users.name,
+	           NVL(like_table.like_count, 0) AS likes  -- ✅ 좋아요 수 추가 (NVL 사용)
 	    FROM comm
-	    	 JOIN users ON comm.user_no = users.user_no
-	    	 JOIN category ON comm.category_no = category.category_no
+	    JOIN users ON comm.user_no = users.user_no
+	    JOIN category ON comm.category_no = category.category_no
+	    LEFT JOIN (SELECT comm_no, COUNT(*) AS like_count FROM clike GROUP BY comm_no) like_table
+	           ON comm.comm_no = like_table.comm_no
 	    WHERE comm.status = 'Y'
+	    order by comm.create_date desc
 	</select>
+
+
 	
 	<insert id="insertComm">
 	    <selectKey order="BEFORE" resultType="int" keyProperty="commNo">
@@ -41,6 +48,7 @@
 		from reply
 			 join users on reply.user_no = users.user_no
 		where reply.comm_no = #{commNo}
+		order by reply_no asc
 	</select>
 	
 	<insert id="insertReply">
@@ -70,9 +78,34 @@
 		set reply_content = #{replyContent}
 		where reply_No = #{replyNo}
 	</update>
+
+	<select id="checkUserLike" resultType="int">
+	    SELECT COUNT(*) FROM clike WHERE user_no = #{userNo} AND comm_no = #{commNo}
+	</select>
+	
+	<insert id="insertLike" parameterType="map">
+	    INSERT INTO clike VALUES (seq_clike.nextval, #{userNo}, #{commNo})
+	</insert>
+	
+	<delete id="deleteLike" parameterType="map">
+	    DELETE FROM clike WHERE user_no = #{userNo} AND comm_no = #{commNo}
+	</delete>
+	
+<!-- 	<update id="incrementLikeCount" parameterType="map"> -->
+<!-- 	    UPDATE comm SET likes = likes + 1 WHERE comm_no = #{commNo} -->
+<!-- 	</update> -->
+	
+<!-- 	<update id="decrementLikeCount" parameterType="map"> -->
+<!-- 	    UPDATE comm SET likes = likes - 1 WHERE comm_no = #{commNo} -->
+<!-- 	</update> -->
+	
+	<select id="countLikes" parameterType="map" resultType="int">
+	    SELECT count(*) FROM clike WHERE comm_no = #{commNo}
+	</select>
+
+
+
 </mapper>
-
-
 
 
 

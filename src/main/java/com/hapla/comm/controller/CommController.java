@@ -112,6 +112,9 @@ public class CommController {
         // 게시글 상세 조회
         Comm c = commService.selectComm(commNo, name);
         ArrayList<Reply> list = commService.selectReplyList(commNo);
+        
+        int updatedLikeCount = commService.getLikeCount(commNo);
+        c.setLikes(updatedLikeCount);
 
         if (c == null) {
         	throw new Exception("실패");
