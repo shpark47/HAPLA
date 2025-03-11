@@ -1,8 +1,5 @@
 package com.hapla.flights.controller;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -31,69 +28,61 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 
+import com.hapla.flights.model.service.FlightService;
 import com.hapla.flights.model.vo.Airport;
-import com.opencsv.CSVReader;
-import com.opencsv.exceptions.CsvValidationException;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 @Controller
 @RequestMapping("/flight")
 public class FlightController {
 
-    private List<Airport> airports = loadCSV();
+
     @Value("${AMADEUS.API.ID}")
     private String AMADEUS_API_ID;
     @Value("${AMADEUS.API.KEY}")
     private String AMADEUS_API_KEY;
     @Value("${TAGO.API.KEY}")
     private String TAGO_API_KEY;
-
-    public List<Airport> loadCSV() {
-        List<Airport> airports = new ArrayList<>();
-        try (CSVReader csvReader = new CSVReader(new FileReader("src/main/resources/static/csv/airports.csv"))) {
-            String[] values;
-            while ((values = csvReader.readNext()) != null) {
-                Airport airport = new Airport();
-                airport.setAirportsEnName(values[0]);
-                airport.setAirportsKoName(values[1]);
-                airport.setIataCode(values[2]);
-                airport.setCountryEnName(values[3]);
-                airport.setCountryKoName(values[4]);
-                airport.setCityEnName(values[5]);
-                airport.setCityKoName(values[6]);
-                airports.add(airport);
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (CsvValidationException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return airports;
-    }
+    
+    private final FlightService fService;
+//    public List<Airport> loadCSV() {
+//        List<Airport> airports = new ArrayList<>();
+//        try (CSVReader csvReader = new CSVReader(new FileReader("src/main/resources/static/csv/airports.csv"))) {
+//            String[] values;
+//            while ((values = csvReader.readNext()) != null) {
+//                Airport airport = new Airport();
+//                airport.setIataCode(values[0]);
+//                airport.setEngAirportName(values[1]);
+//                airport.setKorAirportName(values[2]);
+//                airport.setEngCityName(values[3]);
+//                airport.setKorCityName(values[4]);
+//                airport.setKorCountryName(values[5]);
+//                airport.setEngCountryName(values[6]);
+//                airports.add(airport);
+//            }
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (CsvValidationException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        return airports;
+//    }
+    
 
     @GetMapping(value = "/search", produces = "application/json;charset=UTF-8")
     @ResponseBody
     public List<Airport> searchAirports(@RequestParam("query") String query) {
-        return airports.stream()
-                .filter(airport -> {
-                    // 공항명, 국가명, 도시명 (영문, 한글 모두)에서 query를 검색
-                    boolean matchesAirport = (airport.getAirportsEnName().toLowerCase()).trim().contains(query.toLowerCase()) || 
-                                             (airport.getAirportsKoName().toLowerCase()).trim().contains(query.toLowerCase());
-                    boolean matchesCountry = (airport.getCountryEnName().toLowerCase()).trim().contains(query.toLowerCase()) || 
-                                             (airport.getCountryKoName().toLowerCase()).trim().contains(query.toLowerCase());
-                    boolean matchesCity = (airport.getCityEnName().toLowerCase()).trim().contains(query.toLowerCase()) || 
-                                          (airport.getCityKoName().toLowerCase()).trim().contains(query.toLowerCase());
-                    return matchesAirport || matchesCountry || matchesCity;  // 3개 필드 중 하나라도 일치하면 반환
-                })
-                .limit(5)  // 최대 5개만 반환
-                .collect(Collectors.toList());
+    	List<Airport> searchList = fService.searchList(query);
+        return searchList;
     }
 
 
@@ -253,21 +242,24 @@ public class FlightController {
         System.out.println("Travelers: " + travelers);
         
        
+        String iataPattern = "\\((\\w{3})\\)";
+        Pattern pattern = Pattern.compile(iataPattern);
+        Matcher departureMatcher = pattern.matcher(departure);
+        Matcher arrivalMatcher = pattern.matcher(arrival);
+        if (!departureMatcher.find() || !arrivalMatcher.find()) {
+	                System.out.println("Failed to extract IATA codes");
+	                model.addAttribute("error", "출발지와 도착지에서 IATA 코드를 찾을 수 없습니다.");
+	                return "flightSearchResult";
+        }
+        
+        String departureCode = departureMatcher.group(1);
+        String arrivalCode = arrivalMatcher.group(1);
+        HashMap<String, String> iataMap = new HashMap<String, String>();
+        iataMap.put("departureCode", departureCode);
+        iataMap.put("arrivalCode", arrivalCode);
+        
         
         try {
-            String iataPattern = "\\((\\w{3})\\)";
-            Pattern pattern = Pattern.compile(iataPattern);
-            Matcher departureMatcher = pattern.matcher(departure);
-            Matcher arrivalMatcher = pattern.matcher(arrival);
-            if (!departureMatcher.find() || !arrivalMatcher.find()) {
-		                System.out.println("Failed to extract IATA codes");
-		                model.addAttribute("error", "출발지와 도착지에서 IATA 코드를 찾을 수 없습니다.");
-		                return "flightSearchResult";
-            }
-
-            String departureCode = departureMatcher.group(1);
-            String arrivalCode = arrivalMatcher.group(1);
-
             System.out.println("Extracted IATA codes - Departure: " + departureCode + ", Arrival: " + arrivalCode);
 
             String[] dateSplit = dates.split(" ~ ");
@@ -366,7 +358,7 @@ public class FlightController {
                 System.out.println("Outbound Airline: " + uniqueFlightOffers.get(0).get("outboundAirline"));
                 System.out.println("Inbound Airline: " + uniqueFlightOffers.get(0).get("inboundAirline"));
             }
-            
+            	fService.countPlus(iataMap);
 	            model.addAttribute("flightOffers", uniqueFlightOffers);
 	            System.out.println("uniqueFlightOffers : " + uniqueFlightOffers);
 	            return "flightSearchResult";
