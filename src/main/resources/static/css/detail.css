@@ -208,3 +208,29 @@ header {
     padding-left: 10px;
 }
 }
+
+/* ✅ 목록 버튼 스타일 */
+.cancel-button {
+    position: absolute; /* 📌 section 내부에서 위치 조정 */
+    top: 20px; /* 상단에서 20px */
+    right: 20px; /* 우측에서 20px */
+    padding: 10px 20px;
+    background: linear-gradient(to right, #ff7e5f, #f76c6c);
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.cancel-button:hover {
+    background: linear-gradient(to right, #f76c6c, #ff5e62);
+    box-shadow: 0 4px 8px rgba(247, 108, 108, 0.3);
+}
+
+/* ✅ community 섹션을 상대 위치로 설정 */
+.community {
+    position: relative; /* 📌 버튼의 절대 위치 지정이 이 태그를 기준으로 작동 */
+}

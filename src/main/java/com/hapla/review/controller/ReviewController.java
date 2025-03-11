@@ -1,7 +1,9 @@
 package com.hapla.review.controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -62,9 +64,10 @@ public class ReviewController {
 
 	@GetMapping("/{id}/{page}")
     public ModelAndView selectReview(@PathVariable("id") int reviewNo, 
-                                   @PathVariable("page") int page, 
-                                   HttpSession session, 
-                                   ModelAndView mv) {
+                                     @PathVariable("page") int page,
+                                     HttpSession session) throws Exception {
+        ModelAndView mv = new ModelAndView();
+
         // 현재 로그인한 사용자 정보 가져오기
         Users loginUser = (Users) session.getAttribute("loginUser");
         String name = (loginUser != null) ? loginUser.getName() : null;
@@ -73,12 +76,30 @@ public class ReviewController {
         Review r = reviewService.selectReview(reviewNo);
 
         if(r != null) {
-        	mv.addObject("r", r).addObject("page", page).setViewName("review/detail");
-        	return mv;
-        } else {
-        	throw new Exception("실패");
-        }
-        
+	    	List<String> imageUrls = null;
+	        String thumbnail = null;
+	
+	        if (r.getImageUrls() != null && !r.getImageUrls().isEmpty()) {
+	            String[] imageUrlsArray = r.getImageUrls().split(",");
+	            System.out.println("imageUrlsArray : " + Arrays.toString(imageUrlsArray));
+	
+	            if (imageUrlsArray.length > 0) {
+	                thumbnail = imageUrlsArray[0]; // 첫 번째 이미지를 썸네일로 사용
+	                imageUrls = Arrays.asList(imageUrlsArray).subList(1, imageUrlsArray.length); // 나머지 상세 이미지
+	            }
+	        }
+	
+	        // ModelAndView에 데이터 추가
+	        mv.addObject("r", r)
+	          .addObject("page", page)
+	          .addObject("thumbnail", thumbnail)
+	          .addObject("imageUrls", imageUrls)
+	          .setViewName("review/detail");
+	
+	        return mv;
+	    } else {
+	    	throw new Exception("리뷰 조회 실패");
+	    }
     }
 
 	@PostMapping("insert")
@@ -90,7 +111,6 @@ public class ReviewController {
 			String img = r.getImageUrls();
 			if (img.contains(",")){
 				String tumbnail = img.split(",")[0];
-				img = img.split(",")[1];
 				r.setThumnail(tumbnail);
 				r.setImageUrls(img);
 			}else{

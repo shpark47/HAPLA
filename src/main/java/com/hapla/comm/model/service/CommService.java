@@ -9,6 +9,7 @@ import com.hapla.comm.model.mapper.CommMapper;
 import com.hapla.comm.model.vo.Comm;
 import com.hapla.comm.model.vo.Reply;
 import com.hapla.common.PageInfo;
+import com.hapla.users.model.vo.Users;
 
 import lombok.RequiredArgsConstructor;
 
@@ -33,7 +34,7 @@ public class CommService {
 
 	public Comm selectComm(int commNo, String name) {
 		Comm c = mapper.selectComm(commNo);
-		if(c != null && name != null && c.getName().equals(name)) {
+		if(c != null && name != null && !(c.getName().equals(name))) {
 			int result = mapper.updateCount(commNo);
 			if(result > 0) {
 				c.setViews(c.getViews() + 1);
