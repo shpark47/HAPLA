@@ -9,11 +9,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Airport {
     private String iataCode;
-    private String airportsEnName;
-    private String airportsKoName;
-    private String countryEnName;
-    private String countryKoName;
-    private String cityEnName;
-    private String cityKoName;
+    private String engAirportName;
+    private String korAirportName;
+    private String engCountryName;
+    private String korCountryName;
+    private String engCityName;
+    private String korCityName;
+    private int viewCount;
     
 }

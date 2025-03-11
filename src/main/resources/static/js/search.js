@@ -566,12 +566,12 @@ function searchAirports(query, dropdownId) {
                     const li = document.createElement('li');
 //                    li.textContent = `${airport.countryKoName}, ${airport.cityKoName}`; // 표시할 값
 //					li.textContent += `${airport.airportsKoName} (${airport.iataCode})`;
-					li.innerHTML = `${airport.countryKoName}, ${airport.cityKoName}<br>${airport.airportsKoName} (${airport.iataCode})`;
-                    li.dataset.airportsKoName = airport.airportsKoName + '(' + airport.iataCode + ')'; // 클릭 시 사용
+					li.innerHTML = `${airport.korCountryName}, ${airport.korCityName}<br>${airport.korAirportName} (${airport.iataCode})`;
+                    li.dataset.korAirportName = airport.korAirportName + '(' + airport.iataCode + ')'; // 클릭 시 사용
                     li.addEventListener('click', function () {
                         const input = document.getElementsByName(dropdownId.includes('departure') ? 'departureName' : 'arrivalName')[0];
-                        input.innerText = airport.airportsKoName + '(' + airport.iataCode + ')';
-                        input.value = airport.airportsKoName + '(' + airport.iataCode + ')'; // 공항 이름 + IATA 코드 입력
+                        input.innerText = airport.korAirportName + '(' + airport.iataCode + ')';
+                        input.value = airport.korAirportName + '(' + airport.iataCode + ')'; // 공항 이름 + IATA 코드 입력
                         dropdown.style.display = 'none';
                     });
                     dropdown.appendChild(li);
@@ -588,7 +588,9 @@ function searchAirports(query, dropdownId) {
 document.getElementsByName('departureName')[0].addEventListener('input', function () {
     query = this.value;
     if (query.length >= 1) {
-        searchAirports(query, 'departure-dropdown');
+		setTimeout(() => {
+        	searchAirports(query, 'departure-dropdown');
+		}, 1000);
     } else {
         document.getElementById('departure-dropdown').style.display = 'none';
     }
@@ -597,7 +599,9 @@ document.getElementsByName('departureName')[0].addEventListener('input', functio
 document.getElementsByName('arrivalName')[0].addEventListener('input', function () {
     query = this.value;
     if (query.length >= 1) {
-        searchAirports(query, 'arrival-dropdown');
+		setTimeout(()=>{
+        	searchAirports(query, 'arrival-dropdown');
+		}, 1000);
     } else {
         document.getElementById('arrival-dropdown').style.display = 'none';
     }
