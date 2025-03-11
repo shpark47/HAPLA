@@ -25,8 +25,7 @@
                 </div>
                 <!-- ✅ 최대 4개까지만 표시 & 클릭 시 상세보기 이동 가능 -->
                 <div th:each="r: ${list}" class="review-card" th:data-id="${r.reviewNo}" th:data-page="${pi.currentPage}">
-					<img th:src="@{/img/noImage.jpg}" alt="리뷰 이미지">
-<!-- 					<img th:src="${r.thumbnail != null and r.thumbnail != ''} ? @{/img/} + ${r.thumbnail} : @{/img/noImage.jpg}" alt="리뷰 이미지"> -->
+ 					<img th:src="@{${r.thumnail != null ? r.thumnail : '/img/noImage.jpg'}}" alt="리뷰 이미지">
                     <div class="review-info">
                         <h3 th:text="${r.title != null ? r.title : '제목 없음'}"></h3>
                         <div class="author">
