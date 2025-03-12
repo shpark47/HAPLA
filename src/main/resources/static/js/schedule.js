@@ -139,7 +139,7 @@
 	        }
 	        selectPlace({
 	            name: place.name,
-//	            address: place.formatted_address,
+				placeId: place.place_id,
 	            lat: place.geometry.location.lat(),
 	            lng: place.geometry.location.lng(),
 	        });
@@ -148,7 +148,7 @@
 	
 	// 검색어 입력 이벤트 (인기 장소 리스트 또는 검색 결과 변경)
 	    input.addEventListener("input", function () {
-			console.log("121111111111111111111");
+			
 	        const searchTerm = input.value.trim();
 	        if (searchTerm == "") {
 	            displayPlaceList(); // 검색어가 없으면 인기 장소 출력
@@ -254,6 +254,7 @@
 	                }
 	                selectPlace({
 	                    name: place.name,
+						placeId: place.place_id,
 	                    lat: place.geometry.location.lat(),
 	                    lng: place.geometry.location.lng(),
 	                });
