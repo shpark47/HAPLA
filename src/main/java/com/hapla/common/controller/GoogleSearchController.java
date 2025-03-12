@@ -1,195 +1,228 @@
 package com.hapla.common.controller;
 
+import com.hapla.users.model.service.UsersService;
+import com.hapla.users.model.vo.Users;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-@RestController
+@Controller
 @RequiredArgsConstructor
+@Slf4j
+@SessionAttributes("loginUser")
 public class GoogleSearchController {
 
-    @Value("${google.api.key}") // application.properties 또는 .env에서 Google API 키를 주입
-    private String googleApiKey; // Google Places API 호출에 사용할 API 키
+    private final UsersService usersService;
 
-    @GetMapping("/search")
-    public ResponseEntity<String> searchPlaces(
-            @RequestParam("city") String city,
-            @RequestParam("category") String category) {
+    @Value("${google.api.key}")
+    private String googleApiKey;
+
+    @GetMapping("/main")
+    public String main(Model model) {
+        Users loginUser = (Users) model.getAttribute("loginUser");
+        if (loginUser == null) {
+            return "/main";
+        }
+
+        List<Map<String, Object>> placesList = fetchFavoritePlaces(loginUser.getUserNo());
+        model.addAttribute("places", placesList);
+        model.addAttribute("set", "즐겨찾기");
+        return "/main";
+    }
+
+    @GetMapping("/search/{city}/{category}/{select}")
+    public String searchPlaces(@PathVariable("city") String city, @PathVariable("category") String category, @PathVariable("select") String select, Model model) {
         try {
-            // 구글 Places API URL 설정 (language=ko 추가)
-            String url = String.format("https://maps.googleapis.com/maps/api/place/textsearch/json?query=%s+%s&language=ko&key=%s",
-                    city, category, googleApiKey); // 도시와 카테고리를 쿼리로 사용해 URL 생성
-
-            System.out.println(url); // 디버깅용으로 생성된 URL 출력
-
-            // RestTemplate을 이용한 API 호출
-            RestTemplate restTemplate = new RestTemplate(); // HTTP 요청을 보내기 위한 RestTemplate 객체 생성
-            String response = restTemplate.getForObject(url, String.class); // API 호출 후 응답을 문자열로 받음
-
-            // 응답을 JSON으로 파싱하여 결과에서 최대 20개 항목만 필터링
-            JSONObject jsonResponse = new JSONObject(response); // 응답 문자열을 JSON 객체로 변환
-            JSONArray results = jsonResponse.getJSONArray("results"); // "results" 배열 추출
-
-            // 20개까지만 자르기
-            int maxResults = Math.min(results.length(), 20); // 결과 개수를 최대 20개로 제한
-            JSONArray limitedResults = new JSONArray(); // 제한된 결과를 담을 새로운 배열 생성
-            for (int i = 0; i < maxResults; i++) {
-                limitedResults.put(results.get(i)); // 최대 20개 항목을 새 배열에 추가
-            }
-
-            // 제한된 20개 결과를 새로운 JSON 객체에 담기
-            jsonResponse.put("results", limitedResults); // 원래 JSON 객체의 "results"를 갱신
-
-            // 응답이 성공적이면 UTF-8로 응답을 반환
-            return ResponseEntity.ok() // HTTP 200 상태로 응답 객체 생성
-                    .contentType(MediaType.APPLICATION_JSON) // 응답 타입을 JSON으로 설정
-                    .body(jsonResponse.toString()); // JSON 문자열로 응답 본문 설정
-
+            List<Map<String, Object>> places = getPlacesFromApi(null, city, category);
+            model.addAttribute("places", places);
+            model.addAttribute("apiKey", googleApiKey);
+            model.addAttribute("set", select);
+            return "/main";
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("{\"status\":\"ERROR\", \"message\":\"서버 오류\"}");
+            log.error("Error during searchPlaces", e);
+            model.addAttribute("errorMessage", "서버 오류가 발생했습니다.");
+            return "error";
         }
     }
 
-    @GetMapping("/searchAll")
-    public ResponseEntity<String> searchAllPlaces(@RequestParam("city") String city) {
+    @GetMapping("/searchAll/{city}")
+    public String searchAllPlaces(@PathVariable("city") String city, Model model) {
         try {
-            // 응답을 담을 객체 생성
-            JSONObject filteredResponse = new JSONObject();
-            filteredResponse.put("status", "OK");
+            Map<String, Object> filteredResponse = getAllPlacesData(city);
+            model.addAttribute("filteredResponse", filteredResponse);
+            model.addAttribute("main_info", filteredResponse.get("main_info"));
+            model.addAttribute("apiKey", googleApiKey);
+            model.addAttribute("set", "전체");
+            model.addAttribute("categories", List.of("tourist_attraction", "landmark", "lodging", "restaurant"));
+            return "/main";
+        } catch (Exception e) {
+            log.error("Error during searchAllPlaces", e);
+            model.addAttribute("errorMessage", "서버 오류가 발생했습니다.");
+            return "error";
+        }
+    }
 
-            // 카테고리별 쿼리
-            String[] categories = {"tourist_attraction", "landmark", "lodging", "restaurant"};
-            String[] queryPrefixes = {" 관광지", " 랜드마크", " 호텔", " 레스토랑"};
-            HashMap<String, JSONArray> categoryResults = new HashMap<>();
+    private List<Map<String, Object>> fetchFavoritePlaces(int userNo) {
+        List<String> placeIds = usersService.selectPlaceId(userNo);
+        List<Map<String, Object>> placesList = new ArrayList<>();
 
-            RestTemplate restTemplate = new RestTemplate();
-
-            // 1️⃣ 도시 이름을 영어로 변환하는 API 호출
-            String enCity = getCityInEnglish(city, restTemplate);
-
-            // 2️⃣ main_info 가져오기 (기존 쿼리)
-            String mainUrl = String.format("https://maps.googleapis.com/maps/api/place/textsearch/json?query=%s&language=ko&key=%s",
-                    city, googleApiKey);  // 한글로 검색
-            String mainResponse = restTemplate.getForObject(mainUrl, String.class);
-            JSONObject mainJsonResponse = new JSONObject(mainResponse);
-            JSONArray mainResults = mainJsonResponse.getJSONArray("results");
-
-            if (mainResults.length() > 0) {
-                JSONObject mainPlace = mainResults.getJSONObject(0);
-                String photoUrl = "";
-                if (mainPlace.has("photos")) {
-                    JSONArray photos = mainPlace.getJSONArray("photos");
-                    if (photos.length() > 0) {
-                        String photoReference = photos.getJSONObject(0).getString("photo_reference");
-                        photoUrl = String.format("https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=%s&key=%s",
-                                photoReference, googleApiKey);
-                    }
-                }
-                JSONObject mainInfo = new JSONObject();
-                mainInfo.put("name", mainPlace.getString("name"));
-                mainInfo.put("photo_url", photoUrl);
-                mainInfo.put("description", mainPlace.has("formatted_address") ? mainPlace.getString("formatted_address") : "설명 없음");
-                mainInfo.put("place_id", mainPlace.getString("place_id"));
-                mainInfo.put("review_count", mainPlace.has("user_ratings_total") ? mainPlace.getInt("user_ratings_total") : 0);
-                mainInfo.put("enCity", enCity);
-                filteredResponse.put("main_info", mainInfo);
+        for (String placeId : placeIds) {
+            List<Map<String, Object>> placeDetails = getPlacesFromApi(placeId, null, null);
+            if (placeDetails != null && !placeDetails.isEmpty()) {
+                placesList.add(placeDetails.get(0));
             }
+        }
+        return placesList;
+    }
 
-            // 카테고리별 결과 초기화
-            for (String category : categories) {
-                categoryResults.put(category, new JSONArray());
-            }
+    private List<Map<String, Object>> getPlacesFromApi(String placeId, String city, String category) {
+        RestTemplate restTemplate = new RestTemplate();
+        List<Map<String, Object>> places = new ArrayList<>();
 
-            // 3️⃣ 카테고리별 API 호출 최적화
-            for (int i = 0; i < categories.length; i++) {
-                String categoryQuery = enCity + queryPrefixes[i];  // 영어로 된 도시 이름 사용
-                String url = String.format("https://maps.googleapis.com/maps/api/place/textsearch/json?query=%s&language=ko&key=%s",
-                        categoryQuery, googleApiKey);
+        try {
+            String url;
+            JSONObject jsonResponse;
+
+            if (placeId != null && !placeId.isEmpty()) {
+                url = String.format("https://maps.googleapis.com/maps/api/place/details/json?place_id=%s&language=ko&key=%s", placeId, googleApiKey);
                 String response = restTemplate.getForObject(url, String.class);
-                JSONObject jsonResponse = new JSONObject(response);
-                JSONArray results = jsonResponse.getJSONArray("results");
 
-                for (int j = 0; j < results.length() && categoryResults.get(categories[i]).length() < 4; j++) {
-                    JSONObject place = results.getJSONObject(j);
-                    JSONObject simplifiedPlace = new JSONObject();
-                    simplifiedPlace.put("name", place.getString("name"));
-                    simplifiedPlace.put("rating", place.has("rating") ? place.getDouble("rating") : 0);
-                    simplifiedPlace.put("address", place.has("formatted_address") ? place.getString("formatted_address") : "");
-                    String placePhotoUrl = "";
-                    if (place.has("photos")) {
-                        JSONArray photos = place.getJSONArray("photos");
-                        if (photos.length() > 0) {
-                            String photoReference = photos.getJSONObject(0).getString("photo_reference");
-                            placePhotoUrl = String.format("https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=%s&key=%s",
-                                    photoReference, googleApiKey);
-                        }
+                if (response != null && !response.trim().isEmpty()) {
+                    jsonResponse = new JSONObject(response);
+                    if (jsonResponse.has("result") && !jsonResponse.isNull("result")) {JSONObject result = jsonResponse.getJSONObject("result");
+                        Map<String, Object> placeData = new HashMap<>();
+                        placeData.put("place_id", placeId);
+                        placeData.put("name", result.optString("name", "이름 없음"));
+                        placeData.put("rating", result.optDouble("rating", 0.0));
+                        placeData.put("reviews", result.optInt("user_ratings_total", 0));
+                        placeData.put("photo_url", getPhotoUrl(result.toMap()));
+                        placeData.put("types", result.optJSONArray("types") != null && result.optJSONArray("types").length() > 0 ? result.optJSONArray("types").get(0) : "기타");
+                        places.add(placeData);
                     }
-                    simplifiedPlace.put("photo_url", placePhotoUrl);
-                    simplifiedPlace.put("place_id", place.getString("place_id"));
-                    simplifiedPlace.put("review_count", place.has("user_ratings_total") ? place.getInt("user_ratings_total") : 0);
-                    categoryResults.get(categories[i]).put(simplifiedPlace);
+                }
+            } else if (city != null && !city.isEmpty() && category != null && !category.isEmpty()) {
+                url = String.format("https://maps.googleapis.com/maps/api/place/textsearch/json?query=%s+%s&language=ko&key=%s", city, category, googleApiKey);
+                String response = restTemplate.getForObject(url, String.class);
+
+                if (response != null && !response.trim().isEmpty()) {
+                    jsonResponse = new JSONObject(response);
+                    JSONArray results = jsonResponse.getJSONArray("results");
+                    int maxResults = Math.min(results.length(), 20);
+                    JSONArray limitedResults = new JSONArray();
+                    for (int i = 0; i < maxResults; i++) {
+                        limitedResults.put(results.get(i));
+                    }
+
+                    for (int i = 0; i < limitedResults.length(); i++) {
+                        JSONObject placeJson = limitedResults.getJSONObject(i);
+                        Map<String, Object> placeMap = jsonToMap(placeJson);
+                        placeMap.put("types", category);
+                        placeMap.put("photo_url", getPhotoUrl(placeJson.toMap()));
+                        places.add(placeMap);
+                    }
                 }
             }
-
-            // 카테고리별 결과 추가
-            for (String category : categories) {
-                filteredResponse.put(category, categoryResults.get(category));
-            }
-
-            // 최종적으로 필터링된 JSON 응답 반환
-            return ResponseEntity.ok()
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(filteredResponse.toString());
-
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("{\"status\":\"ERROR\", \"message\":\"서버 오류\"}");
+            log.error("Error fetching places from API", e);
         }
+        return places;
     }
 
-    /**
-     * Google Places API를 사용하여 도시 이름을 영어로 변환하는 메서드
-     */
+    private Map<String, Object> getAllPlacesData(String city) {
+        Map<String, Object> filteredResponse = new HashMap<>();
+        String[] categories = {"tourist_attraction", "landmark", "lodging", "restaurant"};
+        String[] queryPrefixes = {" 관광지", " 관광명소", " 숙박 ", " 음식점 "};
+        Map<String, List<Map<String, Object>>> categoryResults = new HashMap<>();
+        RestTemplate restTemplate = new RestTemplate();
+
+        List<Map<String, Object>> mainInfo = getPlacesFromApi(null, city, "");
+        filteredResponse.put("main_info", mainInfo != null && !mainInfo.isEmpty() ? mainInfo.get(0) : new HashMap<>());
+
+        for (String category : categories) {
+            List<Map<String, Object>> categoryPlaces = getPlacesFromApi(null, city, category);
+            categoryResults.put(category, categoryPlaces);
+        }
+
+        for (String category : categories) {
+            filteredResponse.put(category, categoryResults.get(category) != null ? categoryResults.get(category) : new ArrayList<>());
+        }
+        return filteredResponse;
+    }
+
+    private List<Map<String, Object>> getCategoryResults(String enCity, String category, String queryPrefix, RestTemplate restTemplate) {
+        String city = enCity + queryPrefix;
+        return getPlacesFromApi(null, city, category);
+    }
+
+    private String getPhotoUrl(Map<String, Object> place) {
+        List<Map<String, Object>> photos = (List<Map<String, Object>>) place.get("photos");
+        if (photos != null && !photos.isEmpty()) {
+            String photoReference = (String) photos.get(0).get("photo_reference");
+            return String.format("https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=%s&key=%s", photoReference, googleApiKey);
+        }
+        return "/img/시나모롤.jpg";
+    }
+
     private String getCityInEnglish(String city, RestTemplate restTemplate) {
         try {
-            // 영어로 도시 이름을 검색하여 변환
-            String urlEn = String.format(
-                    "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=%s&inputtype=textquery&language=ko&key=%s",  // 검색 언어를 한국어로 설정
-                    city, googleApiKey);
-
-            String responseEn = restTemplate.getForObject(urlEn, String.class);
-            JSONObject jsonResponseEn = new JSONObject(responseEn);
-
-            if (jsonResponseEn.has("candidates") && jsonResponseEn.getJSONArray("candidates").length() > 0) {
-                // place_id 가져오기
-                String placeId = jsonResponseEn.getJSONArray("candidates").getJSONObject(0).getString("place_id");
-
-                // place details API를 통해 영어 이름 받기
-                String detailsUrl = String.format(
-                        "https://maps.googleapis.com/maps/api/place/details/json?place_id=%s&language=en&key=%s", placeId, googleApiKey);
-                String detailsResponse = restTemplate.getForObject(detailsUrl, String.class);
-                JSONObject detailsJsonResponse = new JSONObject(detailsResponse);
-
-                if (detailsJsonResponse.has("result")) {
-                    return detailsJsonResponse.getJSONObject("result").getString("name");  // 영어 이름 반환
+            String urlEn = String.format("https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=%s&inputtype=textquery&language=ko&key=%s", city, googleApiKey);
+            Map<String, Object> jsonResponseEn = restTemplate.getForObject(urlEn, Map.class);
+            List<Map<String, Object>> candidates = (List<Map<String, Object>>) jsonResponseEn.get("candidates");
+            if (candidates != null && !candidates.isEmpty()) {
+                String placeId = (String) candidates.get(0).get("place_id");
+                String detailsUrl = String.format("https://maps.googleapis.com/maps/api/place/details/json?place_id=%s&language=en&key=%s", placeId, googleApiKey);
+                Map<String, Object> detailsJsonResponse = restTemplate.getForObject(detailsUrl, Map.class);
+                if (detailsJsonResponse.containsKey("result")) {
+                    Map<String, Object> result = (Map<String, Object>) detailsJsonResponse.get("result");
+                    return (String) result.get("name");
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error getting city in English for city: {}", city, e);
         }
-        return city; // 오류 발생 시 원래 입력값 반환
+        return city;
     }
 
+    private HashMap<String, Object> jsonToMap(JSONObject json) {
+        HashMap<String, Object> map = new HashMap<>();
+        for (String key : json.keySet()) {
+            Object value = json.get(key);
+            if (value instanceof JSONObject) {
+                map.put(key, jsonToMap((JSONObject) value));
+            } else if (value instanceof JSONArray) {
+                map.put(key, jsonToList((JSONArray) value));
+            } else {
+                map.put(key, value);
+            }
+        }
+        return map;
+    }
+
+    private ArrayList<Object> jsonToList(JSONArray jsonArray) {
+        ArrayList<Object> list = new ArrayList<>();
+        for (int i = 0; i < jsonArray.length(); i++) {
+            Object value = jsonArray.get(i);
+            if (value instanceof JSONObject) {
+                list.add(jsonToMap((JSONObject) value));
+            } else if (value instanceof JSONArray) {
+                list.add(jsonToList((JSONArray) value));
+            } else {
+                list.add(value);
+            }
+        }
+        return list;
+    }
 }

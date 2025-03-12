@@ -16,19 +16,36 @@
     <section th:replace="~{common/search.html :: search}"></section>
     <section id="search-data">
         <section id="search-all-data" class="popular-destinations">
-            <div class="destinations-grid">
-                <h2 th:text="${places == null ? '' : '즐겨찾기'}"></h2>
-                <div class="destination-card" th:each="place : ${places}">
-                    <input type="hidden" name="placeId" th:value="${place.placeId}">
-                    <input type="hidden" name="type" th:value="${place.placeTypes}">
-                    <img th:src="${place.photoUrl}" th:alt="${place.name}">
-                    <div class="destination-info">
-                        <h3 th:text="${place.name}">장소 이름</h3>
-                        <p class="rating" th:text="${'⭐' + place.rating}">평점</p>
-                        <p class="review-count" th:text="${place.reviews} + ' 리뷰'">리뷰 수</p>
+            <th:block th:if="${set != '전체'}">
+                <div class="destinations-grid">
+                    <h2 th:text="${set}"></h2>
+                    <div class="destination-card" th:each="place : ${places}"
+                         th:attr="data-place-id=${place.place_id}, data-types=${place.types}">
+                        <img th:src="${place.photo_url}" th:alt="${place.name}">
+                        <div class="destination-info">
+                            <h3 th:text="${place.name}"></h3>
+                            <p class="rating" th:text="${place.rating != null ? '⭐' + place.rating : '⭐ 없음'}"></p>
+                            <p class="review-count" th:text="${set == '즐겨찾기' ? place.reviews + ' 리뷰' : place.user_ratings_total + ' 리뷰'}"></p>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </th:block>
+            <th:block th:if="${set == '전체'}">
+                <h2 th:text="${main_info.name}"></h2>
+                <img th:src="${main_info.photo_url}" th:alt="${main_info.name}">
+                <p th:text="${main_info.description}"></p>
+                <th:block th:each="category : ${categories}">
+                    <h2 th:text="${category == 'tourist_attraction' ? '여행지' : category == 'landmark' ? '관광명소' : category == 'lodging' ? '숙박' : '음식점'}"></h2>
+                    <div th:each="place : ${filteredResponse[category]}" class="destination-card" th:attr="data-place-id=${place.place_id}, data-type=${category}">
+                        <img th:src="${place.photo_url != null ? place.photo_url : '/img/시나모롤.jpg'}" th:alt="${place.name}">
+                        <div class="destination-info">
+                            <h3 th:text="${place.name}"></h3>
+                            <p class="rating" th:text="${place.rating != null ? '⭐ ' + place.rating : '⭐ 없음'}"></p>
+                            <p class="review-count" th:text="${place.review_count != null ? place.review_count + ' 리뷰' : '리뷰 없음'}"></p>
+                        </div>
+                    </div>
+                </th:block>
+            </th:block>
         </section>
     </section>
 </main>
@@ -37,14 +54,22 @@
 <script src="/js/main.js"></script>
 
 <script>
-    const cards = document.querySelectorAll('.destination-card');
-    for (const card of cards) {
-        card.addEventListener('click', function (){
-            let encodedPlaceId = encodeURIComponent(this.querySelector('input[name=placeId]').value); // place_id를 URL 안전하게 인코딩
-            let category = encodeURIComponent(this.querySelector('input[name=type]').value);
-            location.href = `/detail/${encodedPlaceId}/${category}`; // 상세 페이지 URL로 이동
+    document.addEventListener('DOMContentLoaded', function() {
+        const destinationCards = document.querySelectorAll('.destination-card');
+        destinationCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const placeId = card.getAttribute('data-place-id');
+                const type = card.getAttribute('data-type');
+                if (placeId && type) {
+                    const encodedPlaceId = encodeURIComponent(placeId);
+                    const encodedType = encodeURIComponent(type);
+                    window.location.href = `/detail/${encodedPlaceId}/${encodedType}`;
+                } else {
+                    console.error('Place ID or type is missing.');
+                }
+            });
         });
-    }
+    });
 </script>
 </body>
 </html>
