@@ -116,14 +116,21 @@ body {
     background: white;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); /* ✅ 부드러운 그림자 */
     max-width: 100%; /* ✅ 최대 너비 제한 */
-    justify-content: center;
-    display: flex;
+    display: grid;
     flex-direction: row;
     margin-top: 3%;
 }
 
+.addDetail{
+	display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .controls {
     display: flex;
+    justify-content: center;
+    align-items: center;
     gap: 5px;
     /* margin-left: auto; */
     padding: 1%;
@@ -207,14 +214,14 @@ body {
 }
 
 /* 검색 결과 리스트 (공통) */
-ul#place-results {
+ul#search-results {
     list-style: none;
     margin: 0;
     padding: 16px;  /* 좌우 패딩 */
 }
 
 /* 검색 결과 아이템 (이미지, 텍스트, 버튼 등) */
-ul#place-results li {
+ul#search-results li {
     display: flex;
     align-items: center;
     margin-bottom: 12px;
@@ -226,7 +233,7 @@ ul#place-results li {
 }
 
 /* 썸네일 이미지 (있다면) */
-ul#place-results li img {
+ul#search-results li img {
     width: 60px;
     height: 60px;
     border-radius: 6px;
@@ -235,7 +242,7 @@ ul#place-results li img {
 }
 
 /* 장소 정보 영역 */
-ul#place-results li .place-info {
+ul#search-results li .place-info {
     flex: 1;               /* 나머지 공간 차지 */
     display: flex;
     flex-direction: column;
@@ -243,19 +250,19 @@ ul#place-results li .place-info {
 }
 
 /* 장소 이름 */
-ul#place-results li .place-info .place-title {
+ul#search-results li .place-info .place-title {
     font-weight: bold;
     font-size: 16px;
 }
 
 /* 장소 주소, 평점 등 부가 정보 */
-ul#place-results li .place-info .place-sub {
+ul#search-results li .place-info .place-sub {
     font-size: 14px;
     color: #666;
 }
 
 /* 추가(+) 버튼 */
-ul#place-results li button.add-button {
+ul#search-results li button.add-button {
     background-color: #007BFF;
     border: none;
     color: #fff;

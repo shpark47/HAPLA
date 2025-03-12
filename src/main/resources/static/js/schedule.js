@@ -1,3 +1,5 @@
+	let map; // 전역 변수로 설정
+	
 	// ✅ 일정 페이지가 로드될 때 실행되는 함수
 	function initMap() {
 		// ✅ localStorage에서 선택한 도시 정보 가져오기
@@ -117,32 +119,32 @@
 	
 	const input = document.getElementById("searchInput");
 	// 🌍 Google Places API 자동완성 장소 검색 적용
-//	function initPlaceSearch() {
-//		console.log("initPlaceSearch 실행됨!");
-//
-//	    // 브라우저 자동완성 끄기
-//	    input.setAttribute("autocomplete", "off");
-//
-//	    const autocomplete = new google.maps.places.Autocomplete(input, {
-//	        // 도시 제한 대신 모든 장소 검색 (필요 시 types 옵션 추가 가능)
-//	        fields: ["name", "formatted_address", "geometry", "types"],
-//	    });
-//
-//	    // ✅ 장소 선택 시 이벤트
-//	    autocomplete.addEventListener("place_changed", function () {
-//	        const place = autocomplete.getPlace();
-//	        if (!place.geometry || !place.formatted_address) {
-//	            console.error("장소 정보를 찾을 수 없습니다.");
-//	            return;
-//	        }
-//	        selectPlace({
-//	            name: place.name,
+	function initPlaceSearch() {
+		console.log("initPlaceSearch 실행됨!");
+
+	    // 브라우저 자동완성 끄기
+	    input.setAttribute("autocomplete", "off");
+
+	    const autocomplete = new google.maps.places.Autocomplete(input, {
+			types: ['establishment'] // 장소(업체)만 검색, 지역(주소) 정보는 제외
+		});
+
+	    // ✅ 장소 선택 시 이벤트
+	    autocomplete.addEventListener("place_changed", function () {
+	        const place = autocomplete.getPlace();
+	        if (!place.geometry) {
+/*	        if (!place.geometry || !place.formatted_address) {*/
+	            console.error("장소 정보를 찾을 수 없습니다.");
+	            return;
+	        }
+	        selectPlace({
+	            name: place.name,
 //	            address: place.formatted_address,
-//	            lat: place.geometry.location.lat(),
-//	            lng: place.geometry.location.lng(),
-//	        });
-//	    }); 
-//	}
+	            lat: place.geometry.location.lat(),
+	            lng: place.geometry.location.lng(),
+	        });
+	    }); 
+	}
 	
 	// 검색어 입력 이벤트 (인기 장소 리스트 또는 검색 결과 변경)
 	    input.addEventListener("input", function () {
@@ -156,21 +158,46 @@
 	    });
 		
 	// ✅ 인기 장소 리스트 (예시)
-	const popularPlaces = [
-	    { name: "롯데월드타워", address: "서울, 대한민국", lat: 37.512, lng: 127.102 },
-	    { name: "에펠탑", address: "파리, 프랑스", lat: 48.8584, lng: 2.2945 },
-	];
+//	const popularPlaces = [
+//	    { name: "롯데월드타워", address: "서울, 대한민국", lat: 37.512, lng: 127.102 },
+//	    { name: "에펠탑", address: "파리, 프랑스", lat: 48.8584, lng: 2.2945 },
+//	];
 
 	// 🌆 기본 장소 리스트 출력
-	function displayPlaceList() {
+	function displayPlaceList(location) {
 	    const resultsList = document.getElementById("search-results");
 	    resultsList.innerHTML = ""; // 기존 리스트 초기화
 
+		// Google Places 서비스 초기화
+		const service = new google.maps.places.PlacesService(map);
+		
+		// ✅ 'Nearby Search' 요청 (현재 위치 기반 인기 장소 검색)
+		    service.nearbySearch({
+		        location: location,	// 지도 중심 좌표 사용
+		        radius: 10000, // 검색 반경 (10km 내 인기 장소 검색)
+		        type: ['tourist_attraction'] // 관광 명소 검색 (필요에 따라 변경 가능)
+		    }, function (results, status) {
+		        if (status == google.maps.places.PlacesServiceStatus.OK) {
+		            results.forEach(place => {
+		                const li = createPlaceListItem({
+		                    name: place.name,
+		                    lat: place.geometry.location.lat(),
+		                    lng: place.geometry.location.lng()
+		                });
+		                resultsList.appendChild(li);
+		            });
+		        } else {
+		            console.error("인기 장소를 가져오지 못했습니다.");
+		        }
+		    });
+		}
+		
+		/*
 	    popularPlaces.forEach((place) => {
 	        const li = createPlaceListItem(place);
 	        resultsList.appendChild(li);
 	    });
-	}
+	}*/
 
 	// 🔍 장소 검색 기능 (검색 예측 결과 출력)
 	function filterPlaces(searchTerm) {
@@ -178,7 +205,7 @@
 
 	    autocompleteService.getPlacePredictions({
 	        input: searchTerm,
-	        // 모든 장소 검색: types 옵션 생략 또는 필요에 따라 추가
+	        types:['establishment'] // 장소만 검색
 	    }, function (predictions, status) {
 	        const resultsList = document.getElementById("search-results");
 	        resultsList.innerHTML = ""; // 기존 리스트 초기화
@@ -219,7 +246,7 @@
 	            const service = new google.maps.places.PlacesService(document.createElement("div"));
 	            service.getDetails({
 	                placeId: item.place_id,
-	                fields: ["name", "formatted_address", "geometry"]
+	                fields: ["name","geometry"] //vicinity : 짧은 주소
 	            }, function (place, status) {
 	                if (status !== google.maps.places.PlacesServiceStatus.OK || !place.geometry) {
 	                    console.error("장소 상세 정보를 가져오지 못했습니다.");
@@ -227,7 +254,6 @@
 	                }
 	                selectPlace({
 	                    name: place.name,
-	                    address: place.formatted_address,
 	                    lat: place.geometry.location.lat(),
 	                    lng: place.geometry.location.lng(),
 	                });
@@ -246,13 +272,52 @@
 	    return li;
 	}
 
-	// 선택한 장소 처리 함수
+	// 선택한 장소 사이드바 일정('addDetail)에 추가하기
 	function selectPlace(place) {
-	    // 예시: 선택한 장소 정보를 콘솔에 출력하거나, 지도 업데이트 등 원하는 동작을 수행합니다.
 	    console.log("선택한 장소:", place);
-	    // 추가 동작을 여기에 구현하세요.
+		
+		// 현재 선택된 날짜('.date-item')찾기
+		const activeDateItem = document.querySelector(".date-item.active"); // 현재 활성화된 날짜
+		
+		if(!activeDateItem){
+			alert("날짜를 먼저 선택하세요!");
+			return;
+		}
+		
+		// ✅ 선택한 날짜의 `addDetail` 요소 찾기 (없으면 생성)
+		    let addDetail = activeDateItem.querySelector(".addDetail");
+		    if (!addDetail) {
+		        addDetail = document.createElement("div");
+		        addDetail.classList.add("addDetail");
+		        activeDateItem.appendChild(addDetail); // `.date-item`에 추가
+		    }
+		
+		// ✅ 장소 정보 추가 (HTML 요소 생성)
+	    const placeItem = document.createElement("div");
+	    placeItem.classList.add("place-item");
+	    placeItem.innerHTML = `
+	        <span class="place-name">${place.name}</span>
+	        <button class="remove-btn" onclick="removePlace(this)">X</button>
+	    `;
+
+	    // `addDetail`에 장소 추가
+	    addDetail.appendChild(placeItem);
+		}
+	
+	// 장소 삭제 기능 추가
+	function removePlace(button){
+		button.parentElement.remove();	// 부모 요소 (`place-item`) 삭제
 	}
 	
+	document.querySelectorAll(".date-item").forEach(item => {
+		item.addEventListener("click", function(){
+			// 기존 'active'제거
+			document.querySelectorAll(".date-item").forEach(el => el.classList.remove("active"));
+			
+			// 클릭한 `date-item`에 `active` 추가
+		    this.classList.add("active");
+		});
+	});
 	
 	// 메뉴바 선택시 일정 목록으로 페이지 이동
 	document.addEventListener("DOMContentLoaded", function() {
