@@ -6,11 +6,13 @@
     <link href="/css/search.css" rel="stylesheet" type="text/css">
     <link href="/css/header.css" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://npmcdn.com/flatpickr/dist/l10n/ko.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
+	
     <div th:replace="~{common/header.html :: topbar}"></div>
     <section class="main-search">
         <h1>어디로 가시나요?</h1>
@@ -188,9 +190,9 @@
 
                     <div class="flight-info">
                         <div class="airline-info">
-                            <span th:text="${flight['outboundAirline']}"></span>
+                            <span th:text="${flight['outboundKorAirlineName']}"></span>
                             <span th:if="${flight['inboundAirline'] != null and flight['inboundAirline'] != flight['outboundAirline']}"
-                                  th:text="${flight['inboundAirline']}"></span>
+                                  th:text="${flight['inboundKorAirlineName']}"></span>
                         </div>
                         <div class="flight-details">
                             <!-- 출발 구간 -->

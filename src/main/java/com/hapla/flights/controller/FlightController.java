@@ -1,5 +1,8 @@
 package com.hapla.flights.controller;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -35,7 +38,10 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.hapla.flights.model.service.FlightService;
+import com.hapla.flights.model.vo.AirlineInfo;
 import com.hapla.flights.model.vo.Airport;
+import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvValidationException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -79,6 +85,27 @@ public class FlightController {
 //        }
 //        return airports;
 //    }
+    
+	  public List<AirlineInfo> loadCSV() {
+	  List<AirlineInfo> airlineList = new ArrayList<>();
+	  try (CSVReader csvReader = new CSVReader(new FileReader("src/main/resources/static/csv/airlineNames.csv"))) {
+	      String[] values;
+	      while ((values = csvReader.readNext()) != null) {
+	          AirlineInfo airline = new AirlineInfo();
+	          airline.setKorAirline(values[1]);
+	          airline.setCarrierCode(values[2]);
+	        
+	          airlineList.add(airline);
+	      }
+	  } catch (FileNotFoundException e) {
+	      e.printStackTrace();
+	  } catch (CsvValidationException e) {
+	      e.printStackTrace();
+	  } catch (IOException e) {
+	      e.printStackTrace();
+	  }
+	  return airlineList;
+	}
     
     private static final String API_URL = "https://api.exchangerate-api.com/v4/latest/EUR";
 
@@ -375,7 +402,8 @@ public class FlightController {
                 System.out.println("Inbound Airline: " + uniqueFlightOffers.get(0).get("inboundAirline"));
             }
             	fService.countPlus(iataMap);
-	            model.addAttribute("flightOffers", uniqueFlightOffers);
+            	List<AirlineInfo> airlineList = loadCSV();
+	            model.addAttribute("flightOffers", uniqueFlightOffers).addAttribute("airline", airlineList);
 	            System.out.println("uniqueFlightOffers : " + uniqueFlightOffers);
 	            return "flightSearchResult";
             
@@ -450,19 +478,32 @@ public class FlightController {
                     // carrierCode 추가
                     String outboundCarrierCode = outboundFirstSegment.getString("carrierCode");
                     String outboundAirline = carriersDict.optString(outboundCarrierCode, outboundCarrierCode);
-
+                    String outboundKorAirlineName = null;
+                    String inboundKorAirlineName = null;
+                    List<AirlineInfo> airlineList = loadCSV();
+                    for(AirlineInfo airline : airlineList) {
+                    	if(airline.getCarrierCode().equals(outboundCarrierCode)) {
+                    		outboundKorAirlineName = airline.getKorAirline();
+                    	}
+                    }
                     flightData.put("carrierCode", outboundCarrierCode);  // ✅ 추가
                     flightData.put("airline", outboundAirline);
                     flightData.put("outboundAirline", outboundAirline);
                     flightData.put("outboundCarrierCode", outboundCarrierCode); // ✅ 추가
                     flightData.put("inboundSegment", inboundSegments);
+                    flightData.put("outboundKorAirlineName", outboundKorAirlineName);
 
                     if (inboundFirstSegment != null) {
                         String inboundCarrierCode = inboundFirstSegment.getString("carrierCode");
                         String inboundAirline = carriersDict.optString(inboundCarrierCode, inboundCarrierCode);
-
+                        for(AirlineInfo airline : airlineList) {
+                        	if(airline.getCarrierCode().equals(inboundCarrierCode)) {
+                        		inboundKorAirlineName = airline.getKorAirline();
+                        	}
+                        }
                         flightData.put("inboundCarrierCode", inboundCarrierCode); // ✅ 추가
                         flightData.put("inboundAirline", inboundAirline);
+                        flightData.put("inboundKorAirlineName", inboundKorAirlineName);
                     } else {
                         flightData.put("inboundAirline", outboundAirline);
                         flightData.put("inboundCarrierCode", outboundCarrierCode); // ✅ 추가

@@ -497,9 +497,9 @@ document.addEventListener('DOMContentLoaded', function () {
             flightDiv.innerHTML = `
                 <div class="flight-info">
                     <div class="airline-info">
-                        <span>${flight.outboundAirline}</span>
+                        <span>${flight.outboundKorAirlineName}</span>
                         ${flight.inboundAirline && flight.inboundAirline !== flight.outboundAirline 
-                            ? `<span>${flight.inboundAirline}</span>` : ''}
+                            ? `<span>${flight.inboundKorAirlineName}</span>` : ''}
                     </div>
                     <div class="flight-details">
                         <div class="departure">
@@ -585,8 +585,10 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
+
 window.onload = () => {
     let airline = [];
+	let korAirline=[];
     let seenAirlines = new Set();
 	// set -> es6에서부터 사용 가능한 데이터 구조 배열과 유사하지만 중복된값저장 불가능
     let flightSearchResult = window.flightSearchResult;
@@ -597,14 +599,19 @@ window.onload = () => {
         for (let flightSearchResults of flightSearchResult) {
             let outboundAirline = flightSearchResults['outboundAirline'];
             let inboundAirline = flightSearchResults['inboundAirline'];
+			let outboundKorAirline = flightSearchResults['outboundKorAirlineName'];
+			let inboundKorAirline = flightSearchResults['inboundKorAirlineName'];
 
             if (outboundAirline && !seenAirlines.has(outboundAirline)) {
                 airline.push(outboundAirline);
+				korAirline.push(outboundKorAirline);
                 seenAirlines.add(outboundAirline);
+				
             }
 
             if (inboundAirline && !seenAirlines.has(inboundAirline)) {
                 airline.push(inboundAirline);
+				korAirline.push(inboundKorAirline);
                 seenAirlines.add(inboundAirline);
             }
         }
@@ -620,6 +627,7 @@ window.onload = () => {
 
             for (let i = 0; i < airline.length; i++) {
                 let airlines = airline[i];
+				let korAirlines = korAirline[i];
                 let label = document.createElement("label");
                 let checkbox = document.createElement("input");
                 checkbox.type = "checkbox";
@@ -627,7 +635,7 @@ window.onload = () => {
                 checkbox.value = airlines;
 
                 label.appendChild(checkbox);
-                label.appendChild(document.createTextNode(airlines));
+                label.appendChild(document.createTextNode(korAirlines));
 
                 if (i < visibleCount) {
                     container.appendChild(label);
