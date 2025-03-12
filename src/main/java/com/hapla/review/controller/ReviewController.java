@@ -1,14 +1,15 @@
 package com.hapla.review.controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.hapla.comm.model.vo.Comm;
@@ -61,45 +62,12 @@ public class ReviewController {
 		return "review/write";
 	}
 
-//	@PostMapping("insert")
-//	@ResponseBody
-//	public String insertReview(@RequestParam(value = "rating", required = false) Integer rating, 
-//	                           @RequestParam(value = "content", required = false, defaultValue = "내용 없음") String content, 
-//	                           @ModelAttribute Review r, 
-//	                           HttpSession session) {
-//	    Users loginUser = (Users) session.getAttribute("loginUser");
-//
-//	    if (loginUser == null) {
-//	        throw new RuntimeException("로그인이 필요합니다.");
-//	    }
-//
-//	    // 로그인한 사용자의 userNo 설정
-//	    r.setUserNo(loginUser.getUserNo());
-//
-//	    // ⭐️ rating이 null이면 기본값(3) 설정
-//	    r.setRating(rating != null ? rating : 3);
-//
-//	    // ⭐️ content가 비어 있으면 기본값 설정
-//	    if (content.trim().isEmpty()) {
-//	        content = "내용 없음"; // ✅ 기본값 설정
-//	    }
-//	    r.setContent(content);
-//
-//	    int result = reviewService.insertReview(r);
-//	    
-//	    if (result > 0) {
-//	        return "redirect:/review/list";
-//	    } else {
-//	        throw new RuntimeException("게시글 작성을 실패하였습니다.");
-//	    }
-//	}
-
-	
 	@GetMapping("/{id}/{page}")
     public ModelAndView selectReview(@PathVariable("id") int reviewNo, 
-                                   @PathVariable("page") int page, 
-                                   HttpSession session, 
-                                   ModelAndView mv) {
+                                     @PathVariable("page") int page,
+                                     HttpSession session) throws Exception {
+        ModelAndView mv = new ModelAndView();
+
         // 현재 로그인한 사용자 정보 가져오기
         Users loginUser = (Users) session.getAttribute("loginUser");
         String name = (loginUser != null) ? loginUser.getName() : null;
@@ -108,11 +76,54 @@ public class ReviewController {
         Review r = reviewService.selectReview(reviewNo);
 
         if(r != null) {
-        	mv.addObject("r", r).addObject("page", page).setViewName("review/detail");
-        	return mv;
-        } else {
-        	throw new Exception("실패");
-        }
-        
+	    	List<String> imageUrls = null;
+	        String thumbnail = null;
+	
+	        if (r.getImageUrls() != null && !r.getImageUrls().isEmpty()) {
+	            String[] imageUrlsArray = r.getImageUrls().split(",");
+	            System.out.println("imageUrlsArray : " + Arrays.toString(imageUrlsArray));
+	
+	            if (imageUrlsArray.length > 0) {
+	                thumbnail = imageUrlsArray[0]; // 첫 번째 이미지를 썸네일로 사용
+	                imageUrls = Arrays.asList(imageUrlsArray).subList(1, imageUrlsArray.length); // 나머지 상세 이미지
+	            }
+	        }
+	
+	        // ModelAndView에 데이터 추가
+	        mv.addObject("r", r)
+	          .addObject("page", page)
+	          .addObject("thumbnail", thumbnail)
+	          .addObject("imageUrls", imageUrls)
+	          .setViewName("review/detail");
+	
+	        return mv;
+	    } else {
+	    	throw new Exception("리뷰 조회 실패");
+	    }
     }
+
+	@PostMapping("insert")
+	public String insertReview(@ModelAttribute Review r) {
+
+		System.out.println(r);
+
+		if (r.getImageUrls() != null) {
+			String img = r.getImageUrls();
+			if (img.contains(",")){
+				String tumbnail = img.split(",")[0];
+				r.setThumnail(tumbnail);
+				r.setImageUrls(img);
+			}else{
+				r.setThumnail(r.getImageUrls());
+				r.setImageUrls(null);
+			}
+		}
+
+		// 데이터 저장
+		int result = reviewService.insertReview(r);
+		if (result == 1) {
+			return "redirect:/review/main";
+		}
+		throw new Exception("실패");
+	}
 }
