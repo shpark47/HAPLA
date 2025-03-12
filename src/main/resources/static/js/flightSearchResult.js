@@ -549,7 +549,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         <div class="price-title">
                             <strong>가격 : </strong> <span>${flight.price}</span>
                         </div>
-                        <button class="view-deal">예약하기</button>
+                        <button class="view-deal">예약가능</button>
                     </div>
                 </div>
             `;
@@ -585,4 +585,76 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
+window.onload = () => {
+    let airline = [];
+    let seenAirlines = new Set();
+	// set -> es6에서부터 사용 가능한 데이터 구조 배열과 유사하지만 중복된값저장 불가능
+    let flightSearchResult = window.flightSearchResult;
 
+    console.log("flightSearchResult:", flightSearchResult);
+
+    if (flightSearchResult) {
+        for (let flightSearchResults of flightSearchResult) {
+            let outboundAirline = flightSearchResults['outboundAirline'];
+            let inboundAirline = flightSearchResults['inboundAirline'];
+
+            if (outboundAirline && !seenAirlines.has(outboundAirline)) {
+                airline.push(outboundAirline);
+                seenAirlines.add(outboundAirline);
+            }
+
+            if (inboundAirline && !seenAirlines.has(inboundAirline)) {
+                airline.push(inboundAirline);
+                seenAirlines.add(inboundAirline);
+            }
+        }
+
+        let container = document.getElementsByClassName("filter-group")[3];
+
+        console.log("container:", container);
+
+        if (container) {
+            let visibleCount = 5;
+            let hiddenCheckboxes = [];
+            let showMoreButton;
+
+            for (let i = 0; i < airline.length; i++) {
+                let airlines = airline[i];
+                let label = document.createElement("label");
+                let checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.name = "airline-filter";
+                checkbox.value = airlines;
+
+                label.appendChild(checkbox);
+                label.appendChild(document.createTextNode(airlines));
+
+                if (i < visibleCount) {
+                    container.appendChild(label);
+                } else {
+                    hiddenCheckboxes.push(label);
+                }
+
+                console.log("checkbox.value:", checkbox.value, "label.textContent:", label.textContent);
+            }
+
+            if (hiddenCheckboxes.length > 0) {
+                showMoreButton = document.createElement("button");
+                showMoreButton.textContent = "더보기";
+                container.appendChild(showMoreButton);
+
+                showMoreButton.addEventListener("click", () => {
+                    if (showMoreButton.textContent === "더보기") {
+                        // 숨겨진 체크박스를 더보기 버튼 위에 추가
+                        hiddenCheckboxes.forEach(label => container.insertBefore(label, showMoreButton));
+                        showMoreButton.textContent = "숨기기";
+                    } else {
+                        // 숨겨진 체크박스를 제거
+                        hiddenCheckboxes.forEach(label => container.removeChild(label));
+                        showMoreButton.textContent = "더보기";
+                    }
+                });
+            }
+        }
+    }
+};

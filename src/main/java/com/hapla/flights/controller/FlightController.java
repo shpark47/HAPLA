@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.hapla.flights.model.service.FlightService;
@@ -50,6 +51,8 @@ public class FlightController {
     private String AMADEUS_API_KEY;
     @Value("${TAGO.API.KEY}")
     private String TAGO_API_KEY;
+    
+    
     
     private final FlightService fService;
 //    public List<Airport> loadCSV() {
@@ -77,16 +80,28 @@ public class FlightController {
 //        return airports;
 //    }
     
+    private static final String API_URL = "https://api.exchangerate-api.com/v4/latest/EUR";
+
+    public double getExchangeRate() {
+        RestTemplate restTemplate = new RestTemplate();
+        try {
+            // API에서 데이터를 가져오기
+            String response = restTemplate.getForObject(API_URL, String.class);
+            JSONObject json = new JSONObject(response);
+            JSONObject rates = json.getJSONObject("rates");
+            return rates.getDouble("KRW");
+        } catch (HttpClientErrorException e) {
+            throw new RuntimeException("Error while fetching exchange rates", e);
+        }
+    }
+    
 
     @GetMapping(value = "/search", produces = "application/json;charset=UTF-8")
     @ResponseBody
     public List<Airport> searchAirports(@RequestParam("query") String query) {
     	List<Airport> searchList = fService.searchList(query);
         return searchList;
-    }
-
-
-    
+    } 
 
     public List<Map<String, Object>> removeDuplicates(List<Map<String, Object>> flightOffers) {
         if (flightOffers == null || flightOffers.isEmpty()) {
@@ -340,16 +355,17 @@ public class FlightController {
                     .distinct()
                     .collect(Collectors.toList());
 
+            Set<String> uniqueFlightNumbers = new HashSet<>();
             List<Map<String, Object>> uniqueFlightOffers = new ArrayList<>();
-            for (String airline : uniqueAirlines) {
-                Map<String, Object> firstOffer = flightOffers.stream()
-                        .filter(offer -> airline.equals(offer.get("airline")))
-                        .findFirst()
-                        .orElse(null);
-                if (firstOffer != null) {
-                    uniqueFlightOffers.add(firstOffer);
+
+            for (Map<String, Object> offer : flightOffers) {
+                String flightNumber = (String) offer.get("flightNumber");
+                if (!uniqueFlightNumbers.contains(flightNumber)) {
+                    uniqueFlightNumbers.add(flightNumber);
+                    uniqueFlightOffers.add(offer);
                 }
             }
+
 
             System.out.println("<<<<<<<<<" + uniqueFlightOffers);
             System.out.println("Flight offers found: " + uniqueFlightOffers.size());
@@ -423,7 +439,13 @@ public class FlightController {
                     }
 
                     Map<String, Object> flightData = new HashMap<>();
-                    flightData.put("price", flight.getJSONObject("price").getString("total") + " EUR");
+                    double exchangeRate = getExchangeRate();
+                    double totalPrice = Double.parseDouble(flight.getJSONObject("price").getString("total"));
+                    int numberOfPassengers = Integer.parseInt(travelers);
+                    double pricePerPerson = totalPrice / numberOfPassengers; // 1인 기준 가격 계산
+                    int result = (int) Math.ceil(exchangeRate * pricePerPerson);
+                    
+                    flightData.put("price",  result + "원");
 
                     // carrierCode 추가
                     String outboundCarrierCode = outboundFirstSegment.getString("carrierCode");
