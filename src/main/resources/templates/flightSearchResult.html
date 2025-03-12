@@ -141,17 +141,18 @@
                   <div th:each="flight, stat : ${flightOffers}">
 					    <div class="flight-item">
 					        <!-- 중복 제거 후 체크박스 생성 -->
-					        <th:block th:with="airlineList=${flight['outboundAirline'] != flight['inboundAirline'] ? {flight['outboundAirline'], flight['inboundAirline']} : {flight['outboundAirline']}}">
-					            <th:block th:each="airline : ${airlineList}">
-					                <label>
-					                    <input type="checkbox" name="airline-filter" th:value="${airline}" th:text="${airline}">
-					                </label>
-					            </th:block>
-					        </th:block>
-					    </div>
+<!-- 					        <th:block th:with="airlineList=${flight['outboundAirline'].toUpperCase() != flight['inboundAirline'].toUpperCase() ? {flight['outboundAirline'].toUpperCase(), flight['inboundAirline'].toUpperCase()} : {flight['outboundAirline'].toUpperCase()}}"> -->
+<!-- 					            <th:block th:each="airline : ${airlineList}"> -->
+<!-- 					                <label> -->
+<!-- 					                    <input type="checkbox" name="airline-filter" th:value="${airline}" th:text="${airline}"> -->
+<!-- 					                </label> -->
+<!-- 					            </th:block> -->
+<!-- 					        </th:block> -->
+<!-- 					    </div> -->
+						</div>
+<!-- 						<input type="checkbox" name="airline-filter"> -->
 					</div>
                 </div>
-                <button type="button" id="more">더보기 ↓</button>
             </div>
             <hr>
             <div id="price">
