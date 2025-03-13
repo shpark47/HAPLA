@@ -155,7 +155,8 @@ public class GoogleSearchController {
                 mainInfo.put("photo_url", photoUrl);
                 mainInfo.put("description", mainPlace.containsKey("formatted_address") ? mainPlace.get("formatted_address") : "설명 없음");
                 mainInfo.put("place_id", mainPlace.get("place_id"));
-                mainInfo.put("enCity", getCityInEnglish((String) mainPlace.get("place_id"), restTemplate));
+                mainInfo.put("weather", getWeather((String) mainPlace.get("place_id"), restTemplate));
+                System.out.println(mainInfo.get("weather"));
                 return mainInfo;
             }
         } catch (Exception e) {
@@ -164,12 +165,13 @@ public class GoogleSearchController {
         return new HashMap<>();
     }
 
-    private String getCityInEnglish(String placeId, RestTemplate restTemplate) {
+    private Map<String, Object> getWeather(String placeId, RestTemplate restTemplate) {
         try {
             String detailsUrl = String.format("https://maps.googleapis.com/maps/api/place/details/json?place_id=%s&language=en&key=%s", placeId, googleApiKey);
             Map<String, Object> detailsResponse = restTemplate.getForObject(detailsUrl, Map.class);
-            Map<String, Object> result = (Map<String, Object>) detailsResponse.get("result");
-            return (String) result.get("name");
+            String enCity = (String) ((Map<String, Object>) detailsResponse.get("result")).get("name");
+            String url = "https://api.weatherapi.com/v1/current.json?key=b7639a3b840040e1abc73111250703&q=" + enCity + "&lang=ko";
+            return restTemplate.getForObject(url, Map.class);
         } catch (Exception e) {
             log.error("Error getting city in English for city: {}", placeId, e);
         }
