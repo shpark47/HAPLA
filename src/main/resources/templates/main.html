@@ -19,13 +19,12 @@
             <th:block th:if="${set != '전체'}">
                 <div class="destinations-grid">
                     <h2 th:text="${set}"></h2>
-                    <div class="destination-card" th:each="place : ${places}"
-                         th:attr="data-place-id=${place.place_id}, data-types=${place.types}">
+                    <div class="destination-card" th:each="place : ${places}" th:attr="data-place-id=${place.place_id}, data-types=${place.types}">
                         <img th:src="${place.photo_url}" th:alt="${place.name}">
                         <div class="destination-info">
                             <h3 th:text="${place.name}"></h3>
                             <p class="rating" th:text="${place.rating != null ? '⭐' + place.rating : '⭐ 없음'}"></p>
-                            <p class="review-count" th:text="${set == '즐겨찾기' ? place.reviews + ' 리뷰' : place.user_ratings_total + ' 리뷰'}"></p>
+                            <p class="review-count" th:text="${place.reviews + ' 리뷰'}"></p>
                         </div>
                     </div>
                 </div>
@@ -34,17 +33,17 @@
                 <h2 th:text="${main_info.name}"></h2>
                 <img th:src="${main_info.photo_url}" th:alt="${main_info.name}">
                 <p th:text="${main_info.description}"></p>
-                <th:block th:each="category : ${categories}">
+                <div class="destinations-grid" th:each="category : ${categories}">
                     <h2 th:text="${category == 'tourist_attraction' ? '여행지' : category == 'landmark' ? '관광명소' : category == 'lodging' ? '숙박' : '음식점'}"></h2>
-                    <div th:each="place : ${filteredResponse[category]}" class="destination-card" th:attr="data-place-id=${place.place_id}, data-type=${category}">
+                    <div th:each="place : ${categoryResults[category]}" class="destination-card" th:attr="data-place-id=${place.place_id}, data-type=${category}">
                         <img th:src="${place.photo_url != null ? place.photo_url : '/img/시나모롤.jpg'}" th:alt="${place.name}">
                         <div class="destination-info">
                             <h3 th:text="${place.name}"></h3>
                             <p class="rating" th:text="${place.rating != null ? '⭐ ' + place.rating : '⭐ 없음'}"></p>
-                            <p class="review-count" th:text="${place.review_count != null ? place.review_count + ' 리뷰' : '리뷰 없음'}"></p>
+                            <p class="review-count" th:text="${place.reviews != null ? place.reviews + ' 리뷰' : '리뷰 없음'}"></p>
                         </div>
                     </div>
-                </th:block>
+                </div>
             </th:block>
         </section>
     </section>
@@ -59,7 +58,7 @@
         destinationCards.forEach(card => {
             card.addEventListener('click', () => {
                 const placeId = card.getAttribute('data-place-id');
-                const type = card.getAttribute('data-type');
+                const type = card.getAttribute('data-types');
                 if (placeId && type) {
                     const encodedPlaceId = encodeURIComponent(placeId);
                     const encodedType = encodeURIComponent(type);
