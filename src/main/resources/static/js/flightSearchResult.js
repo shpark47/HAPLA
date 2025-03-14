@@ -264,7 +264,7 @@ document.querySelector('#go').addEventListener('click', () => {
 
 
 document.querySelector('.research-btn').addEventListener('click', () => {
-    const form = document.querySelector('.search-form');
+    const form = document.querySelector('.research-form');
     form.action = '/flight/flightSearch';
     form.submit();
 });
@@ -292,17 +292,6 @@ const flightSearchResult = window.flightSearchResult;
 //	airLine.push(flightSearchResults.out)
 //}
 //console.log(airLine);
-
-
-
-
-
-
-	 
-
-
-
-
 
 // 시간대 확인 함수
 const getTimeSlot = (timeStr) => {
@@ -587,6 +576,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 window.onload = () => {
+	
+   	
+	   
     let airline = [];
 	let korAirline=[];
     let seenAirlines = new Set();
@@ -666,3 +658,14 @@ window.onload = () => {
         }
     }
 };
+
+window.onbeforeunload = function () { 
+    	$('#loading').show();
+    	$('body').css('oveflow', 'hidden');
+    }  //현재 페이지에서 다른 페이지로 넘어갈 때 표시해주는 기능
+    window.addEventListener('load', () =>{
+    	 $('#loading').hide();
+		 $('body').css('overflow', 'auto');
+    });
+    
+

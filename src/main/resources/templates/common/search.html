@@ -34,7 +34,7 @@
                 </svg>
 			</div>
 			<input type="text" id="search-input-text" placeholder="여행지, 즐길거리, 호텔 등">
-			<button onclick="searchPlaces()">검색</button>
+			<button id="search" onclick="searchPlaces()">검색</button>
 		</div>
 
 		<!-- 항공권 검색창 (초기에 숨김) -->
@@ -88,7 +88,7 @@
 				<div class="calendar-container">
 					<input type="text" name="dates" class="date-picker" placeholder="출발일 → 도착일">
 				</div>
-				<button type="button" class="traveler-picker">여행자 1명</button>
+				<button type="button" class="traveler-picker people-picker">여행자 1명</button>
 				<button type="button" class="search-btn">검색</button>
 				<div class="traveler-section">
 
@@ -135,7 +135,7 @@
 	</section>
 
 	<script src="/js/search.js"></script>
-	
+
 	
 </body>
 </html>

@@ -11,9 +11,15 @@
             integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 </head>
 <body>
+
 <div th:replace="~{common/header.html :: topbar}"></div>
 <main>
     <section th:replace="~{common/search.html :: search}"></section>
+    <hr>
+     <div id="loading">
+        <img id="loading-image" src="img/flight.gif" alt="Loading..." />
+    </div>
+    
     <section id="search-data">
         <section id="search-all-data" class="popular-destinations">
             <th:block th:if="${set != '전체'}">
@@ -69,6 +75,17 @@
             });
         });
     });
+    window.onbeforeunload = function () { 
+    	$('#loading').show();
+    	$(body).style.overflow='hidden';
+    }  //현재 페이지에서 다른 페이지로 넘어갈 때 표시해주는 기능
+    window.addEventListener('load', () =>{
+    	 $('#loading').hide();
+    	 $(body).style.overflow='auto';
+    });
+    
+
+
 </script>
 </body>
 </html>

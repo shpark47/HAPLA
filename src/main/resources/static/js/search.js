@@ -284,6 +284,7 @@ warningMessage.style.cssText = `
 selection.appendChild(warningMessage);
 
 traveler.addEventListener('click', function (e) {
+	console.log('click');
     e.stopPropagation();
     selection.style.display = 'block';
 });
@@ -334,61 +335,6 @@ incrementButtons.forEach(button => {
         updateWarningMessage();
     });
 
-	document.addEventListener('DOMContentLoaded', function() {
-	    const moreButton = document.querySelector('#more');
-	    const flightItems = document.querySelectorAll('.flight-item'); // 모든 항목
-
-	    // 초기 상태: 5개 이후 항목 숨기기
-	    let initialLimit = 5;
-	    let index = 0;
-	    for (const item of flightItems) {
-	        if (index >= initialLimit) {
-	            item.classList.add('hidden');
-	        }
-	        index++;
-	    }
-
-	    moreButton.addEventListener('click', function() {
-	        const hiddenItems = document.querySelectorAll('.flight-item.hidden');
-
-	        if (hiddenItems.length > 0) {
-	            // 숨겨진 항목이 있다면 → 모두 표시
-	            for (const item of flightItems) {
-	                item.classList.remove('hidden');
-	            }
-	            this.innerText = '숨기기 ↑'; // 버튼 텍스트 변경
-	        } else {
-	            // 이미 모두 보이는 경우 → 다시 5개까지만 표시
-	            index = 0;
-	            for (const item of flightItems) {
-	                item.classList.toggle('hidden', index >= initialLimit);
-	                index++;
-	            }
-	            this.innerText = '더보기 ↓'; // 버튼 텍스트 변경
-	        }
-	    });
-	});
-
-	/*<![CDATA[*/
-	   var prices = /*[[${flightsOffers.![price]}]]*/ []; // 가격 리스트 가져오기
-
-	   if (prices.length > 0) {
-	       var minPrice = Math.min.apply(null, prices); // 최솟값 계산
-	       var maxPrice = Math.max.apply(null, prices); // 최댓값 계산
-
-	       document.getElementById("price-range").min = minPrice;
-	       document.getElementById("price-range").max = maxPrice;
-	       document.getElementById("price-range").value = minPrice;
-	       document.getElementById("min-price").textContent = minPrice;
-	       document.getElementById("max-price").textContent = maxPrice;
-	   }
-	   /*]]>*/
-
-
-
-
-
-});
 
 decrementButtons.forEach(button => {
     button.addEventListener('click', function () {
@@ -490,4 +436,6 @@ document.querySelector('.search-btn').addEventListener('click', () => {
     form.action = '/flight/flightSearch';
     form.submit();
 
+	});
 });
+
