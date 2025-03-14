@@ -152,7 +152,7 @@ function filterPlaces(searchTerm) {
     autocompleteService.getPlacePredictions({
         input: searchTerm,
         rankby: 30000,
-        types: ['tourist_attraction'] // 장소만 검색
+        types: ['museum','art_gallery','amusement_park', 'natural_feature', 'park'] // 장소만 검색
     }, function (predictions, status) {
         const resultsList = document.getElementById("search-results");
         resultsList.innerHTML = ""; // 기존 리스트 초기화
