@@ -45,65 +45,6 @@ async function searchPlaces() {
     }
 }
 
-const displayAllPlace = (places) => {
-    let container = document.getElementById('search-all-data');
-    let div = document.createElement("div");
-    container.innerHTML = "";
-
-    fetch(`https://api.weatherapi.com/v1/current.json?key=b7639a3b840040e1abc73111250703&q=` + places.main_info.enCity + `&lang=ko`)
-        .then(response => response.json())
-        .then(data => {
-            div.innerHTML = `
-                <h2>${places.main_info.name} | 현재 기온 : ${data.current.temp_c}°C | 날씨 : ${data.current.condition.text} | 습도 : ${data.current.humidity}%</h2><br>
-                <img src="${places.main_info.photo_url}" alt="${places.main_info.name}">
-                <p>${places.main_info.description}</p>
-                `;
-            container.innerHTML = div.innerHTML;
-
-            const categories = [
-                { title: '여행지', data: places.tourist_attraction, type: 'tourist_attraction' },
-                { title: '관광명소', data: places.landmark, type: 'landmark' },
-                { title: '숙박', data: places.lodging, type: 'lodging' },
-                { title: '음식점', data: places.restaurant, type: 'restaurant' }
-            ];
-
-            categories.forEach(category => {
-                const h2 = document.createElement('h2');
-                h2.innerText = category.title;
-                container.appendChild(h2);
-                container.appendChild(otherPlace(category.data, category.type));
-            });
-        })
-        .catch(error => console.error('오류:', error));
-}
-
-const otherPlace = (p, category) => {
-    let grid = document.createElement("div");
-    grid.classList.add('destinations-grid');
-    p.forEach(attr => {
-        const div = document.createElement('div');
-        div.className = 'destination-card';
-        div.innerHTML = `
-            <input type="hidden" name="type" value="${category}">
-            <img src="${attr.photo_url}" alt="${attr.name}">
-            <div class="destination-info">
-            <h3>${attr.name}</h3> 
-            <p class="rating">⭐ ${attr.rating}</p>
-            <p class="review-count">${attr.review_count} 리뷰</p>
-            </div>
-        `;
-
-        div.addEventListener("click", () => {
-            let encodedPlaceId = encodeURIComponent(attr.place_id); // place_id를 URL 안전하게 인코딩
-            location.href = `/detail/${encodedPlaceId}/${category}`; // 상세 페이지 URL로 이동
-        });
-
-        grid.appendChild(div);
-    });
-    return grid;
-};
-
-
 // 항공 -----------------------------------------------------------------------------
 
 let fpInitialized = false;
