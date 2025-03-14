@@ -157,7 +157,6 @@ public class GoogleSearchController {
                 mainInfo.put("description", mainPlace.containsKey("formatted_address") ? mainPlace.get("formatted_address") : "설명 없음");
                 mainInfo.put("place_id", mainPlace.get("place_id"));
                 mainInfo.put("weather", getWeather((String) mainPlace.get("place_id")));
-                System.out.println(mainInfo.get("weather"));
                 return mainInfo;
             }
         } catch (Exception e) {
