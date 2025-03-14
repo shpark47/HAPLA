@@ -24,6 +24,8 @@ public class GoogleSearchController {
 
     private final UsersService usersService;
 
+    private final RestTemplate restTemplate;
+
     @Value("${google.api.key}")
     private String googleApiKey;
 
@@ -85,7 +87,6 @@ public class GoogleSearchController {
     }
 
     private List<Map<String, Object>> getPlacesFromApi(String placeId, String city, String category, int limit) {
-        RestTemplate restTemplate = new RestTemplate();
         List<Map<String, Object>> places = new ArrayList<>();
 
         try {
@@ -142,7 +143,7 @@ public class GoogleSearchController {
         return places;
     }
 
-    private Map<String, Object> getMainInfo(String city, RestTemplate restTemplate) {
+    private Map<String, Object> getMainInfo(String city) {
         try {
             String mainUrl = String.format("https://maps.googleapis.com/maps/api/place/textsearch/json?query=%s&language=ko&key=%s", city, googleApiKey);
             Map<String, Object> mainJsonResponse = restTemplate.getForObject(mainUrl, Map.class);
@@ -155,7 +156,8 @@ public class GoogleSearchController {
                 mainInfo.put("photo_url", photoUrl);
                 mainInfo.put("description", mainPlace.containsKey("formatted_address") ? mainPlace.get("formatted_address") : "설명 없음");
                 mainInfo.put("place_id", mainPlace.get("place_id"));
-                mainInfo.put("enCity", getCityInEnglish((String) mainPlace.get("place_id"), restTemplate));
+                mainInfo.put("weather", getWeather((String) mainPlace.get("place_id")));
+                System.out.println(mainInfo.get("weather"));
                 return mainInfo;
             }
         } catch (Exception e) {
@@ -164,12 +166,13 @@ public class GoogleSearchController {
         return new HashMap<>();
     }
 
-    private String getCityInEnglish(String placeId, RestTemplate restTemplate) {
+    private Map<String, Object> getWeather(String placeId) {
         try {
             String detailsUrl = String.format("https://maps.googleapis.com/maps/api/place/details/json?place_id=%s&language=en&key=%s", placeId, googleApiKey);
             Map<String, Object> detailsResponse = restTemplate.getForObject(detailsUrl, Map.class);
-            Map<String, Object> result = (Map<String, Object>) detailsResponse.get("result");
-            return (String) result.get("name");
+            String enCity = (String) ((Map<String, Object>) detailsResponse.get("result")).get("name");
+            String url = "https://api.weatherapi.com/v1/current.json?key=b7639a3b840040e1abc73111250703&q=" + enCity + "&lang=ko";
+            return restTemplate.getForObject(url, Map.class);
         } catch (Exception e) {
             log.error("Error getting city in English for city: {}", placeId, e);
         }
@@ -180,9 +183,8 @@ public class GoogleSearchController {
         Map<String, Object> filteredResponse = new HashMap<>();
         String[] categories = {"tourist_attraction", "landmark", "lodging", "restaurant"};
         Map<String, List<Map<String, Object>>> categoryResults = new HashMap<>();
-        RestTemplate restTemplate = new RestTemplate();
 
-        filteredResponse.put("main_info", getMainInfo(city, restTemplate));
+        filteredResponse.put("main_info", getMainInfo(city));
 
         for (String category : categories) {
             List<Map<String, Object>> categoryPlaces = getPlacesFromApi(null, city, category, 4); // 각 카테고리마다 4개씩 데이터 가져오기
@@ -200,35 +202,5 @@ public class GoogleSearchController {
             return String.format("https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=%s&key=%s", photoReference, googleApiKey);
         }
         return "/img/시나모롤.jpg";
-    }
-
-    private HashMap<String, Object> jsonToMap(JSONObject json) {
-        HashMap<String, Object> map = new HashMap<>();
-        for (String key : json.keySet()) {
-            Object value = json.get(key);
-            if (value instanceof JSONObject) {
-                map.put(key, jsonToMap((JSONObject) value));
-            } else if (value instanceof JSONArray) {
-                map.put(key, jsonToList((JSONArray) value));
-            } else {
-                map.put(key, value);
-            }
-        }
-        return map;
-    }
-
-    private ArrayList<Object> jsonToList(JSONArray jsonArray) {
-        ArrayList<Object> list = new ArrayList<>();
-        for (int i = 0; i < jsonArray.length(); i++) {
-            Object value = jsonArray.get(i);
-            if (value instanceof JSONObject) {
-                list.add(jsonToMap((JSONObject) value));
-            } else if (value instanceof JSONArray) {
-                list.add(jsonToList((JSONArray) value));
-            } else {
-                list.add(value);
-            }
-        }
-        return list;
     }
 }
