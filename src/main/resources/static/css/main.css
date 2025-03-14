@@ -6,6 +6,7 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    
 }
 
 .popular-destinations {
@@ -55,6 +56,8 @@ body {
 .destination-info {
     padding: 1rem;
 }
+
+
 
 @media (max-width: 1024px) {
     .destination-card {
