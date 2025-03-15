@@ -126,6 +126,25 @@ body {
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    background-color: #f3f3f3;
+/*     padding: 8px;
+    margin-top: 5px; */
+    border-radius: 5px;
+    color: #333;
+    font-size: 15px;
+}
+
+.memo-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.memo-text {
+    flex: 1;
+    display: flex;
+    font-size: 13px;
+    justify-content: center;
 }
 
 .controls {
@@ -156,6 +175,36 @@ body {
     display: inline-block;
     padding: 2px;
     margin: 3px;
+}
+
+/* button {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+} */
+
+.save-btn button {
+    background-color: #5A97C7;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    font-size: 16px;
+    cursor: pointer;
+    display: block;
+    margin: auto;
+}
+
+.save-btn button:hover {
+    background-color: #4A87B7; /* 호버 시 배경색 변경 */
 }
 
  /* 사이드 패널 스타일 */
@@ -273,19 +322,6 @@ ul#search-results li button.add-button {
     margin-left: 8px;
 }
 
-button {
-    margin-top: 10px;
-    padding: 10px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-button:hover {
-    background-color: #45a049;
-}
 
 /* 메모 패널 */
 #memo-panel .panel-header {
@@ -293,13 +329,31 @@ button:hover {
 }
 
 #memo-panel textarea {
-    width: 100%;
+    width: 80%;
     height: 200px;
     padding: 12px;
     border: 1px solid #ddd;
     border-radius: 6px;
     resize: none;
     font-size: 14px;
+    margin-top: 5%;
+    margin-bottom: 1%;
+}
+
+
+
+.remove-btn {
+    background: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 5px 8px;
+    margin-left: 10px;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+.remove-btn:hover {
+    background: #cc0000;
 }
 
 /* 숙소(장소) 검색 패널 */

@@ -146,18 +146,19 @@ function displayPlaceList(p, place) {
 
 
 // 🔍 장소 검색 기능 (검색 예측 결과 출력)
-function filterPlaces(searchTerm) {
+function filterPlaces(searchTerm,place) {
     const autocompleteService = new google.maps.places.AutocompleteService();
 
     autocompleteService.getPlacePredictions({
         input: searchTerm,
+		location: place,
         rankby: 30000,
-        types: ['museum','art_gallery','amusement_park', 'natural_feature', 'park'] // 장소만 검색
-    }, function (predictions, status) {
+		types: ['museum', 'park', 'restaurant', 'lodging', 'tourist_attraction'] // 장소 유형 추가
+		    }, function (predictions, status) {
         const resultsList = document.getElementById("search-results");
         resultsList.innerHTML = ""; // 기존 리스트 초기화
 
-        if (status !== google.maps.places.PlacesServiceStatus.OK || !predictions) {
+        if (status != google.maps.places.PlacesServiceStatus.OK || !predictions) {
             console.error("장소 검색 결과가 없습니다.");
             return;
         }
@@ -204,7 +205,9 @@ function createPlaceListItem(item) {
                     placeId: place.place_id,
                     lat: place.geometry.location.lat(),
                     lng: place.geometry.location.lng(),
+					
                 });
+				
 
             });
         };
@@ -268,6 +271,53 @@ document.querySelectorAll(".date-item").forEach(item => {
         this.classList.add("active");
     });
 });
+
+function saveMemo(){
+	console.log("메모 저장 버튼 클릭!");
+	
+	// 현재 선택된 날짜 찾기
+	const activeDateItem = document.querySelector(".date-item.active");
+	if(!activeDateItem){
+		alert("날짜를 먼저 선택하세요!");
+		return;
+	}
+	// 메모 입력값 가져오기
+	const memoText = document.getElementById("memo-text").value.trim();
+	if(memoText == ""){
+		alert("메모를 입력하세요!");
+		return;
+	}
+	
+	// 선택한 날짜의 'addMemo'요소 찾기
+	let addMemo = activeDateItem.querySelector(".addMemo");
+	if(!addMemo){
+		addMemo = document.createElement("div");
+		addMemo.classList.add("addMemo");
+		activeDateItem.appendChild(addMemo);
+	}
+	
+	// 메모 요소 추가(HTML 요소 생성)
+	const memoItem = document.createElement("div");
+	memoItem.classList.add("memo-item");
+	memoItem.innerHTML = 	`
+	        <span class="memo-text">${memoText}</span>
+	        <button class="remove-btn" onclick="removeMemo(this)">X</button>
+	    `;
+		
+		// 'addMemo'에 메모 추가
+		addMemo.appendChild(memoItem);
+		
+		// 메모 입력창 초기화
+		document.getElementById("memo-text").value = "";
+}
+	// 메모 삭제 기능 추가
+	function remove(button){
+		button.parentElement.remove(); // 부모 요소 삭제
+	}
+
+
+
+
 
 // 메뉴바 선택시 일정 목록으로 페이지 이동
 document.addEventListener("DOMContentLoaded", function () {
