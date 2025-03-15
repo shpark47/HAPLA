@@ -1,6 +1,7 @@
 let mapOptions;
 let lo;
 let p;
+let place;
 
 // ✅ 일정 페이지가 로드될 때 실행되는 함수
 function initMap() {
@@ -19,6 +20,7 @@ function initMap() {
 
         mapOptions.center = {lat: city.lat, lng: city.lng}; // 선택한 도시 좌표로 이동
         lo = mapOptions.center;
+        place = city.name;
         console.log(`📍 지도 위치 변경: ${city.name}, ${city.country}`);
     }
 
@@ -71,7 +73,7 @@ function openSidePanel(panelType) {
         stayPanel.style.display = 'block';
         p=1;
     }
-    displayPlaceList(p);
+    displayPlaceList(p, place);
 }
 
 // Close 버튼 클릭 시, +추가 버튼으로 돌아가게 처리
@@ -128,8 +130,12 @@ function initPlaceSearch() {
 input.addEventListener("input", function () {
     const searchTerm = input.value.trim();
     if (input && input.value.trim() == "") {
+
 		console.log(p);
         displayPlaceList(p); // 검색어가 없으면 인기 장소 출력
+
+        displayPlaceList(p, place); // 검색어가 없으면 인기 장소 출력
+
     } else {
         console.log('input!');
         filterPlaces(searchTerm);
@@ -138,6 +144,7 @@ input.addEventListener("input", function () {
 
 
 // 🌆 기본 장소 리스트 출력
+
 function displayPlaceList(p) {
     let loc
     // 인자가 없으면 기본적으로 지도 중심 좌표 사용
@@ -183,6 +190,10 @@ function displayPlaceList(p) {
         }
     });
 
+
+function displayPlaceList(p, place) {
+    filterPlaces(place)
+
     sidePanel[p].style.display = 'block';
 }
 
@@ -193,7 +204,8 @@ function filterPlaces(searchTerm) {
 
     autocompleteService.getPlacePredictions({
         input: searchTerm,
-        types: ['establishment'] // 장소만 검색
+        rankby: 30000,
+        types: ['museum','art_gallery','amusement_park', 'natural_feature', 'park'] // 장소만 검색
     }, function (predictions, status) {
         const resultsList = document.getElementById("search-results");
         resultsList.innerHTML = ""; // 기존 리스트 초기화
@@ -323,5 +335,4 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 });
-
-
+}
