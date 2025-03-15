@@ -10,6 +10,11 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://npmcdn.com/flatpickr/dist/l10n/ko.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style type="text/css">
+    	.flatpickr-calendar {
+    		top: 32.6rem !important;
+    	}
+    </style>
 </head>
 <body>
     <div th:replace="~{common/header.html :: topbar}"></div>
@@ -69,8 +74,8 @@
                     </div>
                     <button type="button" class="traveler-picker research">여행자 1명</button>
                     <button type="button" class="research-btn">검색</button>
-                    <div class="traveler-section" style="display: block;">
-                        <div class="traveler-selection" style="display: none;">
+                    <div class="traveler-section re-travel" style="display: block;">
+                        <div class="traveler-selection re-search" style="display: none;">
                             <input type="hidden" name="travelers" value="1" />
                             <div class="traveler-category">
                                 <span class="category-name">성인</span> <span class="category-age">18~64세</span>

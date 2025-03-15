@@ -128,6 +128,7 @@ function initPlaceSearch() {
 input.addEventListener("input", function () {
     const searchTerm = input.value.trim();
     if (input && input.value.trim() == "") {
+		console.log(p);
         displayPlaceList(p); // 검색어가 없으면 인기 장소 출력
     } else {
         console.log('input!');
@@ -158,7 +159,7 @@ function displayPlaceList(p) {
     const service = new google.maps.places.PlacesService(map);
 
     console.log(loc);
-
+	console.log(service);
     // ✅ 'Nearby Search' 요청 (현재 위치 기반 인기 장소 검색)
     service.nearbySearch({
         location: {lat:loc.lat, lng:loc.lng},	// 지도 중심 좌표 사용
