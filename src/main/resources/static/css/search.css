@@ -83,6 +83,10 @@ h1 {
 .traveler-selection {
 	margin-left: 21.5rem;
 }
+.re-search {
+	margin-left: -17.5rem !important;
+	margin-top: 3rem;
+}
 
 .people-picker {
 	padding: 0.1rem 2rem !important;
@@ -164,10 +168,22 @@ h1 {
 	border: 1px solid #ccc;
 	padding: 20px;
 	border-radius: 8px;
-	width: 100%;
+	width: 100% !important;
 	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
+.re-search {
+	width: 17rem !important;
+	margin-left: -20rem !important;
+	top: 2rem !important;
+}
 
+.re-travel {
+	width: 9.8rem !important;
+}
+
+re-calendar-container {
+	top: 34rem !important;
+}
 .traveler-category {
 	display: flex;
 	align-items: center;
@@ -266,26 +282,57 @@ button.reset:hover, button.apply:hover {
 }
 
 .dropdown-list {
-	display: none;
-	position: absolute;
-	background: white;
-	border: 1px solid #ccc;
-	max-height: 150px;
-	overflow-y: auto;
-	width: 200px;
-	list-style: none;
-	padding: 0;
-	margin-top: 3.2rem;
-	margin-left: 1.4rem;
+    display: none;
+    position: absolute;
+    background: white;
+    border: 1px solid #e0e0e0; /* 연한 테두리 */
+    border-radius: 8px; /* 모서리 둥글게 */
+    max-height: 180px; /* 높이 조정 */
+    overflow-y: auto;
+    width: 220px; /* 너비 조정 */
+    list-style: none;
+    padding: 8px 0; /* 패딩 조정 */
+    margin-top: 3.4rem; /* 마진 조정 */
+    margin-left: 1.6rem; /* 마진 조정 */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
+    z-index: 10; /* 다른 요소 위에 표시 */
+    transition: opacity 0.3s ease; /* 트랜지션 효과 추가 */
+}
+/* 스크롤바 스타일링 (웹킷 브라우저) */
+.dropdown-list::-webkit-scrollbar {
+    display: none;
 }
 
+.dropdown-list::-webkit-scrollbar-thumb {
+    background-color: #c0c0c0;
+    border-radius: 4px;
+}
+
+.dropdown-list::-webkit-scrollbar-track {
+    background-color: #f0f0f0;
+    border-radius: 4px;
+}
+
+/* 내부 요소 스타일링 (예시) */
 .dropdown-list li {
-	padding: 8px;
-	cursor: pointer;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
 }
 
 .dropdown-list li:hover {
-	background: #f0f0f0;
+    background-color: #f8f8f8;
+}
+
+/* 드롭다운 표시/숨김 시 애니메이션 효과 */
+.dropdown-list.show {
+    display: block;
+    opacity: 1;
+}
+
+.dropdown-list.hide {
+    opacity: 0;
+    transition: opacity 0.3s ease, display 0s 0.3s; /* 숨김 후 display none */
 }
 
 .group {
@@ -662,4 +709,43 @@ max-width
   margin-left:-40vw;
 }
 
+.show-more-button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
 
+.filter-group > label {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px; /* 체크박스 간 간격 */
+    cursor: pointer; /* 커서 스타일 변경 */
+}
+
+.filter-group > label > input[type=checkbox] {
+    appearance: none; /* 기본 체크박스 스타일 제거 */
+    width: 18px;
+    height: 18px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    margin-right: 8px; /* 체크박스와 레이블 간 간격 */
+    position: relative;
+    cursor: pointer;
+}
+
+.filter-group > label > input[type=checkbox]:checked::before {
+    content: '\2713'; /* 체크 표시 (유니코드) */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 14px;
+    color: #007bff; /* 체크 표시 색상 */
+}
+
+.filter-group > label > input[type=checkbox]:focus {
+    outline: 2px solid #007bff; /* 포커스 스타일 */
+}

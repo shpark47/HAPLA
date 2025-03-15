@@ -267,6 +267,7 @@ document.addEventListener('click', (event) => {
 const selection = document.querySelector('.traveler-selection');
 const traveler = document.querySelector('.traveler-picker');
 const resetBtn = document.querySelector('.reset');
+
 const applyButton = document.querySelector('.apply');
 const incrementButtons = document.querySelectorAll('.increment');
 const decrementButtons = document.querySelectorAll('.decrement');
@@ -289,10 +290,7 @@ traveler.addEventListener('click', function (e) {
     selection.style.display = 'block';
 });
 
-applyButton.addEventListener('click', function () {
-    updateTravelerCount();
-    selection.style.display = 'none';
-});
+
 
 document.addEventListener('click', function (e) {
     if (!selection.contains(e.target) && e.target !== traveler) {
@@ -347,12 +345,6 @@ decrementButtons.forEach(button => {
     });
 });
 
-resetBtn.addEventListener('click', function () {
-    countElements.forEach(countElement => {
-        countElement.textContent = '0';
-    });
-    updateTravelerCount();
-});
 
 function getTotalTravelers() {
     return Array.from(countElements).reduce((total, el) => total + parseInt(el.textContent), 0);
@@ -363,6 +355,18 @@ function updateTravelerCount() {
     traveler.textContent = `여행자 ${totalTravelers}명`;
     document.querySelector('input[name="travelers"]').value = totalTravelers;
 }
+
+resetBtn.addEventListener('click', function () {
+    countElements.forEach(countElement => {
+        countElement.textContent = '0';
+    });
+    updateTravelerCount();
+});
+
+applyButton.addEventListener('click', function () {
+    updateTravelerCount();
+    selection.style.display = 'none';
+});
 
 function updateWarningMessage() {
     let totalTravelers = getTotalTravelers();

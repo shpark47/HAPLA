@@ -130,7 +130,12 @@ function initPlaceSearch() {
 input.addEventListener("input", function () {
     const searchTerm = input.value.trim();
     if (input && input.value.trim() == "") {
+
+		console.log(p);
+        displayPlaceList(p); // 검색어가 없으면 인기 장소 출력
+
         displayPlaceList(p, place); // 검색어가 없으면 인기 장소 출력
+
     } else {
         console.log('input!');
         filterPlaces(searchTerm);
@@ -139,8 +144,56 @@ input.addEventListener("input", function () {
 
 
 // 🌆 기본 장소 리스트 출력
+
+function displayPlaceList(p) {
+    let loc
+    // 인자가 없으면 기본적으로 지도 중심 좌표 사용
+
+    if (!lo) {
+        if (!map) {
+            console.error("지도 객체(map)가 초기화되지 않았습니다.");
+            return;
+        }
+        loc = map.getCenter();
+        console.log("displayPlaceList에서 사용하는 location:", loc);
+    }
+    loc = lo;
+
+    const resultsList = document.getElementById("search-results");
+    resultsList.innerHTML = ""; // 기존 리스트 초기화
+
+    // Google Places 서비스 초기화
+    const service = new google.maps.places.PlacesService(map);
+
+    console.log(loc);
+	console.log(service);
+    // ✅ 'Nearby Search' 요청 (현재 위치 기반 인기 장소 검색)
+    service.nearbySearch({
+        location: {lat:loc.lat, lng:loc.lng},	// 지도 중심 좌표 사용
+        radius: 30000, // 검색 반경 (10km 내 인기 장소 검색)
+        type: ['tourist_attraction'] // 관광 명소 검색 (필요에 따라 변경 가능)
+    }, function (results, status) {
+        if (status == google.maps.places.PlacesServiceStatus.OK) {
+            results.forEach(place => {
+                const li = createPlaceListItem({
+                    name: place.name,
+                    placeId: place.place_id || "N/A",
+                    lat: place.geometry.location.lat(),
+                    lng: place.geometry.location.lng()
+                });
+                if (li) {
+                    resultsList.appendChild(li);
+                }
+            });
+        } else {
+            console.error("인기 장소를 가져오지 못했습니다. Status:", status);
+        }
+    });
+
+
 function displayPlaceList(p, place) {
     filterPlaces(place)
+
     sidePanel[p].style.display = 'block';
 }
 
@@ -282,5 +335,4 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 });
-
-
+}

@@ -641,6 +641,7 @@ window.onload = () => {
             if (hiddenCheckboxes.length > 0) {
                 showMoreButton = document.createElement("button");
                 showMoreButton.textContent = "더보기";
+				showMoreButton.classList.add('show-more-button');
                 container.appendChild(showMoreButton);
 
                 showMoreButton.addEventListener("click", () => {
