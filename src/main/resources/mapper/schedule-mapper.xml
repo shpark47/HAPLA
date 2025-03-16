@@ -47,4 +47,10 @@
 		from trip
 		where trip_no = #{tripNo}
 	</select>
+	
+	<insert id="saveDetail">
+		insert into detail(detail_no, trip_no, content, type, trip_date, place_id)
+		values(#{detailNo}, #{tripNo}, #{content}, #{type}, #{tripDate}, #{placeId})
+	</insert>
+	
 </mapper>

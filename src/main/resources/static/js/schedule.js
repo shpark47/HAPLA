@@ -130,12 +130,7 @@ function initPlaceSearch() {
 input.addEventListener("input", function () {
     const searchTerm = input.value.trim();
     if (input && input.value.trim() == "") {
-
-		console.log(p);
-        displayPlaceList(p); // 검색어가 없으면 인기 장소 출력
-
         displayPlaceList(p, place); // 검색어가 없으면 인기 장소 출력
-
     } else {
         console.log('input!');
         filterPlaces(searchTerm);
@@ -144,56 +139,8 @@ input.addEventListener("input", function () {
 
 
 // 🌆 기본 장소 리스트 출력
-
-function displayPlaceList(p) {
-    let loc
-    // 인자가 없으면 기본적으로 지도 중심 좌표 사용
-
-    if (!lo) {
-        if (!map) {
-            console.error("지도 객체(map)가 초기화되지 않았습니다.");
-            return;
-        }
-        loc = map.getCenter();
-        console.log("displayPlaceList에서 사용하는 location:", loc);
-    }
-    loc = lo;
-
-    const resultsList = document.getElementById("search-results");
-    resultsList.innerHTML = ""; // 기존 리스트 초기화
-
-    // Google Places 서비스 초기화
-    const service = new google.maps.places.PlacesService(map);
-
-    console.log(loc);
-	console.log(service);
-    // ✅ 'Nearby Search' 요청 (현재 위치 기반 인기 장소 검색)
-    service.nearbySearch({
-        location: {lat:loc.lat, lng:loc.lng},	// 지도 중심 좌표 사용
-        radius: 30000, // 검색 반경 (10km 내 인기 장소 검색)
-        type: ['tourist_attraction'] // 관광 명소 검색 (필요에 따라 변경 가능)
-    }, function (results, status) {
-        if (status == google.maps.places.PlacesServiceStatus.OK) {
-            results.forEach(place => {
-                const li = createPlaceListItem({
-                    name: place.name,
-                    placeId: place.place_id || "N/A",
-                    lat: place.geometry.location.lat(),
-                    lng: place.geometry.location.lng()
-                });
-                if (li) {
-                    resultsList.appendChild(li);
-                }
-            });
-        } else {
-            console.error("인기 장소를 가져오지 못했습니다. Status:", status);
-        }
-    });
-
-
 function displayPlaceList(p, place) {
     filterPlaces(place)
-
     sidePanel[p].style.display = 'block';
 }
 
@@ -325,52 +272,49 @@ document.querySelectorAll(".date-item").forEach(item => {
     });
 });
 
-function saveMemo(){
-	console.log("메모 저장 버튼 클릭!");
-	
-	// 현재 선택된 날짜 찾기
-	const activeDateItem = document.querySelector(".date-item.active");
-	if(!activeDateItem){
-		alert("날짜를 먼저 선택하세요!");
-		return;
-	}
-	// 메모 입력값 가져오기
-	const memoText = document.getElementById("memo-text").value.trim();
-	if(memoText == ""){
-		alert("메모를 입력하세요!");
-		return;
-	}
-	
-	// 선택한 날짜의 'addMemo'요소 찾기
-	let addMemo = activeDateItem.querySelector(".addMemo");
-	if(!addMemo){
-		addMemo = document.createElement("div");
-		addMemo.classList.add("addMemo");
-		activeDateItem.appendChild(addMemo);
-	}
-	
-	// 메모 요소 추가(HTML 요소 생성)
-	const memoItem = document.createElement("div");
-	memoItem.classList.add("memo-item");
-	memoItem.innerHTML = 	`
-	        <span class="memo-text">${memoText}</span>
-	        <button class="remove-btn" onclick="removeMemo(this)">X</button>
-	    `;
-		
-		// 'addMemo'에 메모 추가
-		addMemo.appendChild(memoItem);
-		
-		// 메모 입력창 초기화
-		document.getElementById("memo-text").value = "";
+function saveMemo() {
+
+    // 현재 선택된 날짜('.date-item') 찾기
+    const activeDateItem = document.querySelector(".date-item.active");
+    if (!activeDateItem) {
+        alert("날짜를 먼저 선택하세요!");
+        return;
+    }
+
+    // 메모 입력값 가져오기
+    const memoText = document.getElementById("memo-text").value.trim();
+    if (memoText === "") {
+        alert("메모를 입력하세요!");
+        return;
+    }
+
+    // ✅ 선택한 날짜의 `addMemo` 요소 찾기 (없으면 생성)
+    let addMemo = activeDateItem.querySelector(".addMemo");
+    if (!addMemo) {
+        addMemo = document.createElement("div");
+        addMemo.classList.add("addMemo");
+        activeDateItem.appendChild(addMemo);
+    }
+
+    // ✅ 메모 요소 추가 (HTML 요소 생성)
+    const memoItem = document.createElement("div");
+    memoItem.classList.add("memo-item");
+    memoItem.innerHTML = `
+        <span class="memo-text">${memoText}</span>
+        <button class="remove-btn" onclick="removeMemo(this)">X</button>
+    `;
+
+    // `addMemo`에 메모 추가
+    addMemo.appendChild(memoItem);
+
+    // 메모 입력창 초기화
+    document.getElementById("memo-text").value = "";
 }
-	// 메모 삭제 기능 추가
-	function remove(button){
-		button.parentElement.remove(); // 부모 요소 삭제
-	}
 
-
-
-
+// ✅ 메모 삭제 기능 추가
+function removeMemo(button) {
+    button.parentElement.remove(); // 부모 요소 (`memo-item`) 삭제
+}
 
 // 메뉴바 선택시 일정 목록으로 페이지 이동
 document.addEventListener("DOMContentLoaded", function () {
@@ -385,4 +329,3 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 });
-}
