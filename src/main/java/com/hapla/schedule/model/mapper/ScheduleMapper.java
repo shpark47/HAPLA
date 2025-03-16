@@ -21,4 +21,6 @@ public interface ScheduleMapper {
 
 	// 날짜 범위에 맞는 일정을 DB에서 가져오는 쿼리
 	List<Trip> selectScheduleByDateRange(Date startDate, Date endDate);
+
+	void saveDetail(Detail detail);
 }

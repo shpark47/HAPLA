@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.hapla.schedule.model.service.ScheduleService;
@@ -83,12 +84,20 @@ public class ScheduleController {
 		Trip trip = scheduleService.getTripNo(tripNo);
 		
 		// 여행 상세 일정 조회
-		List<Detail> tripDetail = scheduleService.getTripDetail(trip.getTripNo());
+		//List<Detail> tripDetail = scheduleService.getTripDetail(trip.getTripNo());
+		scheduleService.getTripDetail(trip.getTripNo());
 		
 		model.addAttribute("trip", trip);	// 여행 정보 추가
 		//model.addAttribute("detail", tripDetail);	// 일정 정보 추가
 		
 		return "/schedule/detail";
+	}
+
+	@PostMapping("/saveDetail")
+	public String saveDetail(@ModelAttribute Detail detail, Model model) {
+		scheduleService.saveDetail(detail);
+		model.addAttribute("message", "저장이 완료되었습니다.");
+		return "redirect:/schedule/list";
 	}
 
 }
