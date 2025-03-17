@@ -18,7 +18,7 @@ body {
     height: auto;
 }
 
-.banner .overlay {
+.banner .search {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -143,3 +143,78 @@ ul.pagination {
     background-color: #f8f9fa;
 }
 
+/* ✅ 검색 박스 스타일 */
+.searchDiv {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 10px;
+    background: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+
+/* ✅ 카테고리 선택 박스 */
+.searchDiv select {
+    flex: 1;
+    width:100px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+    background: #ffffff;
+    color: #333;
+    outline: none;
+    cursor: pointer;
+}
+
+/* ✅ 검색 입력창 */
+.searchDiv input[type="search"] {
+    flex: 2;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+    outline: none;
+    width: 100%;
+    background: #ffffff;
+    margin-top:-1px;
+}
+
+/* ✅ 검색 버튼 */
+.searchDiv button {
+    background: #ffffff;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ✅ 검색 버튼 아이콘 */
+.searchDiv button svg {
+    fill: white;
+    width: 20px;
+    height: 20px;
+}
+
+/* ✅ 반응형 디자인 */
+@media (max-width: 768px) {
+    .searchDiv {
+        flex-direction: column;
+        gap: 8px;
+        border: none;
+        background: none;
+    }
+
+    .searchDiv select,
+    .searchDiv input[type="search"],
+    .searchDiv button {
+        width: 100%;
+    }
+}

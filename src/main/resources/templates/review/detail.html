@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HAPLA 커뮤니티</title>
     <link href="/css/reviewDetail.css" rel="stylesheet" type="text/css">
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 </head>
 <body>
 <div th:replace="~{common/header.html :: topbar}"></div>
@@ -12,8 +13,10 @@
 	<div class="hero">
         <h3 style="color: #58a;">리뷰</h3>
     </div>
+    
     <div class="review-container">
     	<form class="needs-validation" method="POST" id="detailForm">
+    		<input type="hidden" id="userNo" th:value="${session.loginUser != null ? session.loginUser.userNo : ''}">
     		<input type="hidden" name="reviewNo" th:value="${r.reviewNo}">
 			<input type="hidden" name="page" th:value="${page}">
 	        <div class="review-header">
@@ -23,7 +26,9 @@
                     <p class="review-meta" th:text="${#dates.format(r.createDate, 'yyyy/MM/dd')}"></p>
 	            </div>
 	        </div>
-	        
+	        <button id="likeBtn" type="button" class="btn btn-outline-danger btn-sm" style="margin-left: 10px;">
+			    ❤️ <span id="likeCount" th:text="${r != null ? r.likes : 0}"></span>
+			</button>
 	        <p class="title" th:text="${r.title}"></p>
 			<div class="rating">
 				<span th:each="i : ${#numbers.sequence(1, 5)}">
@@ -62,5 +67,41 @@
     </div>
 </main>   
 <div th:replace="~{common/footer.html :: foot}"></div>
+<script th:inline="javascript">
+	document.addEventListener("DOMContentLoaded", function() {
+	    const likeBtn = document.getElementById("likeBtn");
+	    const likeCount = document.getElementById("likeCount");
+	    const userNo = document.getElementById("userNo").value;
+	    
+	    
+	
+	    likeBtn.addEventListener("click", function(event) {
+	        if (!userNo) { // ✅ 로그인 여부 확인
+	            alert("좋아요를 누르려면 로그인이 필요합니다.");
+	            return;
+	        }
+	
+	        $.ajax({
+	            url: "/review/likes", 
+	            type: "POST",
+	            contentType: "application/x-www-form-urlencoded",
+	            data: { 
+	                reviewNo: /*[[${r.reviewNo}]]*/ 1, 
+	                userNo: /*[[${session.loginUser.userNo}]]*/1
+	            },
+	            success: function(response) {
+	                $("#likeCount").text(response.likes);
+	            },
+	            error: function(xhr) {
+	                console.log("에러 상태 코드:", xhr.status);
+	                console.log("서버 응답:", xhr.responseText);
+	                alert("좋아요 처리 중 오류가 발생했습니다.\n" + xhr.responseText);
+	            }
+	        });
+	        event.preventDefault();
+	    });
+	});
+</script>
+
 </body>
 </html>
