@@ -63,7 +63,15 @@
 			        </div>
 			    </div>
 			</div>
-			<div class="save-btn"><button onclick="save()">저장</button></div>
+			<form action="saveDetail" method="post">
+	    		<input type="hidden" id="tripNo" name="tripNo" th:value="${trip.tripNo}">
+	    		<input type="hidden" id="startDate" name="startDate">
+	    		<input type="hidden" id="endDate" name="endDate">
+	    		<input type="hidden" id="content" name="content">
+	    		<input type="hidden" id="placeId" name="placeId">
+			<div class="save-btn"><button type="submit" onclick="saveDetail()">저장</button></div>
+    		</form>
+       
         </div>
 		
 		<!-- 사이드 패널 (메모 패널) -->

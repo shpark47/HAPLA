@@ -64,6 +64,10 @@ public class ScheduleService {
 		scheduleMapper.saveDetail(detail);
 	}
 
+	public Trip selectOneTrip(Trip trip) {
+		return scheduleMapper.selectOneTrip(trip);
+	}
+
 
 
 }
