@@ -28,9 +28,8 @@
 			            <span th:text="${#dates.format(date, 'M월 d일')}"></span>
 			        </div>
 			        <div class="date-item">
-			        	<div class="addDetail">
-			        	
-			        	</div>
+			        	<div class="addDetail"></div>
+			        	<div class="addMemo"></div>
 			            <div class="controls">
 			            	<div class="control-add" onclick="toggleControls(this)">
 			            		<span class="add-text">+추가</span>
@@ -64,13 +63,22 @@
 			        </div>
 			    </div>
 			</div>
+			<form action="saveDetail" method="post">
+	    		<input type="hidden" id="tripNo" name="tripNo" th:value="${trip.tripNo}">
+	    		<input type="hidden" id="startDate" name="startDate">
+	    		<input type="hidden" id="endDate" name="endDate">
+	    		<input type="hidden" id="content" name="content">
+	    		<input type="hidden" id="placeId" name="placeId">
+			<div class="save-btn"><button type="submit" onclick="saveDetail()">저장</button></div>
+    		</form>
+       
         </div>
 		
 		<!-- 사이드 패널 (메모 패널) -->
 		<div id="memo-panel" class="side-panel hidden">
 		    <div class="panel-header">
 		        <span>메모 작성</span>
-		        <button onclick="closeMemoPanel()">닫기</button>
+		        <!-- <button onclick="closeMemoPanel()">닫기</button> -->
 		    </div>
 		    <textarea id="memo-text"></textarea>
 		    <button onclick="saveMemo()">저장</button>
@@ -80,7 +88,7 @@
 		<div id="stay-panel" class="side-panel hidden">
 		    <div class="panel-header">
 		        <span>장소 검색</span>
-		        <button onclick="closePlacePanel()">닫기</button>
+		       <!--  <button onclick="closePlacePanel()">닫기</button> -->
 		    </div>
 		    <div class="search-container">
 	            <input type="text" id="searchInput" placeholder="장소 검색" oninput="filterPlaces()">
@@ -93,6 +101,7 @@
 	        <!-- 검색 결과 리스트 -->
 	        <ul id="search-results"></ul>
 		</div>
+		
 		
 		<!-- 사이드 패널 (마커 패널) -->
 		<!-- <div id="marker-panel" class="side-panel hidden">

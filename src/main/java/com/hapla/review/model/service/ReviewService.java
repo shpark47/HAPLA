@@ -29,5 +29,26 @@ public class ReviewService {
 	public int insertReview(Review r) {
 		return mapper.insertReview(r);
 	}
+	public int checkUserLike(int userNo, int reviewNo) {
+		return mapper.checkUserLike(userNo, reviewNo);
+	}
+	public void removeLike(int userNo, int reviewNo) {
+		mapper.deleteLike(userNo, reviewNo);
+	}
+	public void addLike(int userNo, int reviewNo) {
+		mapper.insertLike(userNo, reviewNo);
+	}
+	public int getLikeCount(int reviewNo) {
+		return mapper.countLikes(reviewNo);
+	}
+	public int getSearchListCount(String search) {
+		return mapper.getSearchListCount(search);
+	}
 
+	// ✅ 검색된 리뷰 목록 조회 (페이징 포함) → 새롭게 추가됨
+    public ArrayList<Review> searchReviewList(PageInfo pi, String search) {
+        int offset = (pi.getCurrentPage() - 1) * pi.getBoardLimit();
+        RowBounds rowBounds = new RowBounds(offset, pi.getBoardLimit());
+        return mapper.searchReviewList(search, rowBounds);
+    }
 }

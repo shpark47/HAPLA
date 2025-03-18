@@ -13,9 +13,8 @@ public class Detail {
 	private int datailNo;
 	private int tripNo;
 	private String content;
-	private String apiId;
-	private String type;
-	private Date tripDate;
-
+	private String placeId;
+	private Date startDate;
+	private Date endDate;
 	
 }

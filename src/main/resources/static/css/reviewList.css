@@ -6,10 +6,11 @@ body {
     background-color: #f5f5f5;
 }
 
-/* ✅ hero를 가장 뒤로 보내는 핵심 수정 */
+/* ✅ hero 배경을 유지하면서 텍스트와 검색창이 위에 오도록 설정 */
 .hero {
-    position: relative; /* ✅ 기존 absolute를 사용하지 않고 자연스럽게 뒤로 이동 */
-    height: 1010px;
+	display: flex;
+    position: relative;
+    height: auto;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -17,64 +18,74 @@ body {
     color: #6ea8ba;
     font-size: 2rem;
     font-weight: bold;
-    z-index: -1; /* ✅ hero를 가장 뒤로 배치 */
+    z-index: 2;
+    text-align: center;
 }
 
-/* ✅ hero의 배경 이미지는 그대로 유지 */
+.hero h3 {
+	align-self: flex-start; /* ✅ 왼쪽 정렬 */
+    margin-left: 10%; /* ✅ 왼쪽 여백 추가 (필요하면 조정 가능) */
+	margin-top: -550px;
+}
+
+/* ✅ hero 배경 이미지 (`z-index: -1;`로 검색창보다 뒤로) */
 .hero::before {
     content: "";
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
-    height: 100%;
+    height: 100%; /* ✅ `.hero`만 덮도록 조정 */
     background: url('/img/review.jpg') center/cover no-repeat;
     filter: blur(8px);
-    z-index: -2; /* ✅ 배경 이미지는 hero보다도 더 뒤로 */
+    z-index: -1;
+    pointer-events: none; /* ✅ 블러된 영역이 클릭을 방해하지 않도록 설정 */
 }
 
-/* ✅ hero 내부의 h3 위치 */
-.hero h3 {
-    position: relative;
-    text-align: center;
+.div{
+	margin-top:-50px;
 }
 
-/* ✅ 검색창 스타일 유지 */
-.search-bar {
-    margin-top: 20px;
-    width: 60%;
+/* ✅ 검색창이 보이도록 배경색과 위치 수정 */
+.search {
+    width: 200px;
     padding: 12px;
     border: none;
     border-radius: 8px;
     font-size: 16px;
-    margin-top: -650px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    position: relative; /* ✅ `.hero` 내부에서 자연스럽게 배치 */
+    z-index: 3; /* ✅ `.hero::before`보다 위로 배치 */
+    background: white; /* ✅ 배경 추가하여 blur 효과 방지 */
+    text-align: center;
 }
 
-/* ✅ container를 relative로 설정하여 reviews와 정렬 */
+/* ✅ container를 `.hero` 아래로 자연스럽게 배치 */
 .container {
     width: 80%;
     margin: auto;
+    margin-top: -550px;
     background: white;
     padding: 20px;
     border-radius: 10px;
-    height: 500px;
-    margin-top: -700px;
+    height: auto;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    position: relative; /* ✅ reviews를 자연스럽게 배치 */
+    position: relative;
+    z-index: 2;
 }
 
-/* ✅ reviews를 relative로 만들어 hero보다 위에 위치 */
+/* ✅ reviews 스타일 */
 .reviews {
     display: flex;
     gap: 20px;
     flex-wrap: wrap;
+    justify-content: center; /* ✅ 가운데 정렬 */
     position: relative;
-    z-index: 2; /* ✅ hero보다 위에 오도록 설정 */
-    margin-left: 100px;
+    z-index: 3;
+    margin-top: 30px;
 }
 
-/* ✅ review-card를 hero보다 위로 */
+/* ✅ review-card 스타일 */
 .review-card {
     width: 22%;
     background: #fff;
@@ -84,17 +95,15 @@ body {
     margin-bottom: 20px;
     cursor: pointer;
     position: relative;
-    z-index: 3; /* ✅ hero보다 위로 설정 */
+    z-index: 4;
 }
 
-/* ✅ review-card 내부 이미지 */
 .review-card img {
     width: 100%;
     height: 200px;
     object-fit: cover;
 }
 
-/* ✅ 리뷰 정보 스타일 */
 .review-info {
     padding: 15px;
 }
@@ -109,48 +118,47 @@ body {
     font-size: 14px;
 }
 
-/* ✅ 별점 스타일 */
 .rating {
     color: orange;
     font-size: 14px;
     margin-top: 5px;
 }
 
-/* ✅ 좋아요 스타일 */
 .likes {
     color: red;
-    font-size: 14px;
+    font-size: 16px;
     margin-top: 5px;
 }
 
-/* ✅ pagination을 감싸는 div를 사용하여 가로 정렬 */
+.rating-likes {
+    display: flex;
+    justify-content: space-between;
+}
+
+/* ✅ pagination을 가로 중앙 정렬 */
 .pagination-container {
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
-    margin-top: 20px; /* 필요 시 조정 가능 */
+    margin-top: 20px;
 }
 
-/* ✅ pagination만 가로 정렬 */
+/* ✅ pagination 스타일 */
 ul.pagination {
-    display: flex !important;
+    display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    flex-wrap: nowrap; /* ✅ 여러 줄로 떨어지지 않도록 설정 */
-    gap: 5px; /* 버튼 간격 */
+    gap: 5px;
     padding: 10px 0;
     list-style: none;
     margin: 0;
-    padding-inline-start: 0;
 }
 
 /* ✅ 페이지 아이템 스타일 */
 .pagination .page-item {
     margin: 0 5px;
-    display: flex;
-    align-items: center;
 }
 
 /* ✅ 페이지 링크 스타일 */
@@ -161,7 +169,6 @@ ul.pagination {
     padding: 8px 12px;
     border-radius: 5px;
     transition: background 0.3s, color 0.3s;
-    display: inline-block;
 }
 
 /* ✅ 현재 페이지 스타일 */
@@ -171,7 +178,7 @@ ul.pagination {
     border: 1px solid #007bff;
 }
 
-/* ✅ 페이지 링크 hover 효과 */
+/* ✅ hover 효과 */
 .pagination .page-link:hover {
     background-color: #0056b3;
     color: white;
@@ -190,4 +197,31 @@ ul.pagination {
     cursor: not-allowed;
     border: 1px solid #ddd;
     background-color: #f8f9fa;
+}
+
+/* ✅ 반응형 개선 (화면이 줄어들 때 카드 크기 조정) */
+@media (max-width: 1200px) {
+    .review-card {
+        width: 30%;
+    }
+}
+
+@media (max-width: 768px) {
+    .review-card {
+        width: 45%;
+    }
+
+    .search-bar {
+        width: 70%;
+    }
+}
+
+@media (max-width: 480px) {
+    .review-card {
+        width: 90%;
+    }
+
+    .search-bar {
+        width: 80%;
+    }
 }

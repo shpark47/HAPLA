@@ -8,13 +8,14 @@ import org.apache.ibatis.session.RowBounds;
 
 import com.hapla.comm.model.vo.Comm;
 import com.hapla.comm.model.vo.Reply;
+import com.hapla.common.PageInfo;
 
 @Mapper
 public interface CommMapper {
 
-	int getListCount(int i);
+	int getListCount(int i, @Param("category") int category);
 
-	ArrayList<Comm> selectCommList(int i, RowBounds rowBounds);
+	ArrayList<Comm> selectCommList(@Param("category") int category, RowBounds rowBounds);
 
 	int insertComm(Comm c);
 
@@ -39,12 +40,13 @@ public interface CommMapper {
 	Object removeLike(@Param("userNo") int userNo, @Param("commNo") int commNo);
 
 	void insertLike(@Param("userNo") int userNo, @Param("commNo") int commNo);
-
-//	void incrementLikeCount(int commNo);
-
+	
 	void deleteLike(@Param("userNo") int userNo, @Param("commNo") int commNo);
 
-//	void decrementLikeCount(int commNo);
-
 	int countLikes(int commNo);
+
+	ArrayList<Comm> searchCommList(@Param("category") int category, @Param("search") String search, RowBounds rowBounds);
+
+	int getSearchListCount(@Param("search") String search, @Param("category") int category);
+
 }

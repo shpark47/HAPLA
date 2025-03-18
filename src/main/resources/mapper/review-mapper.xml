@@ -7,10 +7,13 @@
     </select>
     
     <select id="selectReviewList" resultType="com.hapla.review.model.vo.Review">
-	    SELECT review.review_no, review.user_no, users.name, review.title, review.content, 
-	           review.rating, review.create_date, review.update_date, review.when, review.with_whom, review.thumnail, review.image_urls
+	    SELECT review.review_no, review.user_no, users.name, review.title, review.content,
+	           review.rating, review.create_date, review.update_date, review.when, review.with_whom, review.thumnail, review.image_urls,
+	           NVL(like_table.like_count, 0) AS likes
 	    FROM review
 	    JOIN users ON review.user_no = users.user_no
+	    left join (select review_no, count(*) as like_count from rlike group by review_no) like_table
+	    		on review.review_no = like_table.review_no
 	    ORDER BY review.create_date DESC
 	</select>
 	
@@ -28,5 +31,37 @@
 	    INSERT INTO review
 	    VALUES (#{reviewNo}, #{userNo}, #{title}, #{content}, #{rating}, SYSDATE, SYSDATE, #{when}, #{withWhom}, #{thumnail}, #{imageUrls})
 	</insert>
+	
+	<select id="checkUserLike" resultType="int">
+	    SELECT COUNT(*) FROM rlike WHERE user_no = #{userNo} AND review_no = #{reviewNo}
+	</select>
+	
+	<insert id="insertLike" parameterType="map">
+	    INSERT INTO rlike VALUES (seq_rlike.nextval, #{userNo}, #{reviewNo})
+	</insert>
+	
+	<delete id="deleteLike" parameterType="map">
+	    DELETE FROM rlike WHERE user_no = #{userNo} AND review_no = #{reviewNo}
+	</delete>
+	
+	<select id="countLikes" parameterType="map" resultType="int">
+	    SELECT count(*) FROM rlike WHERE review_no = #{reviewNo}
+	</select>
+	
+	<select id="searchReviewList" parameterType="string" resultType="com.hapla.review.model.vo.Review">
+        SELECT review_no, user_no, title, content, rating, create_date,
+               (SELECT COUNT(*) FROM rlike WHERE review_no = r.review_no) AS likes,
+               (SELECT name FROM users WHERE user_no = r.user_no) AS name
+        FROM review r
+        WHERE (title LIKE '%' || #{search} || '%' 
+        OR content LIKE '%' || #{search} || '%')
+        ORDER BY create_date DESC
+    </select>
+    
+    <select id="getSearchListCount" parameterType="string" resultType="int">
+        SELECT COUNT(*) FROM review 
+        WHERE (title LIKE '%' || #{search} || '%' 
+        OR content LIKE '%' || #{search} || '%')
+    </select>
 	
 </mapper>

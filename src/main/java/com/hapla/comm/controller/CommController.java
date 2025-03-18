@@ -35,25 +35,121 @@ import lombok.RequiredArgsConstructor;
 public class CommController {
     private final CommService commService;
     
+//    @GetMapping("list")
+//	public String selectList(@RequestParam(value="page", defaultValue="1") int currentPage, Model model, HttpServletRequest request) {
+//
+//    	int listCount = commService.getListCount(1);
+//		
+//		PageInfo pi = Pagination.getPageInfo(currentPage, listCount, 5);
+//		ArrayList<Comm> list = commService.selectCommList(pi, 1);
+//		
+//		model.addAttribute("list", list).addAttribute("pi", pi);
+//		model.addAttribute("loc", request.getRequestURI());
+//		// getRequestURI() : /board/list
+//		// getRequestURL() : http://localhost:8080/board/list 
+//		
+//		return "comm/list";
+//	}
+    
+//    @GetMapping("list")
+//    public String selectList(
+//            @RequestParam(value = "page", defaultValue = "1") int currentPage,
+//            @RequestParam(value = "search", required = false) String search,
+//            @RequestParam(value = "category", required = false, defaultValue = "-") String category,
+//            Model model,
+//            HttpServletRequest request) {
+//
+//        int listCount;
+//        PageInfo pi;
+//        ArrayList<Comm> list;
+//
+//        if ((search != null && !search.trim().isEmpty()) || !"-".equals(category)) {
+//            listCount = commService.getSearchListCount(search, category);
+//        } else {
+//            listCount = commService.getListCount(1, category);
+//        }
+//        
+//
+//        pi = Pagination.getPageInfo(currentPage, listCount, 5);
+//        list = commService.selectCommList(pi, 1, search, category);
+//
+//        model.addAttribute("list", list).addAttribute("pi", pi);
+//        model.addAttribute("search", search); // 검색어 유지
+//        model.addAttribute("category", category); // 카테고리 유지
+//        model.addAttribute("loc", request.getRequestURI());
+//
+//        return "comm/list";
+//    }
+    
     @GetMapping("list")
-	public String selectList(@RequestParam(value="page", defaultValue="1") int currentPage, Model model, HttpServletRequest request) {
-//		int currentPage = 1;
-//		if(page != null ) {
-//			currentPage = Integer.parseInt(page);
-//		}
-		
-		int listCount = commService.getListCount(1);
-		
-		PageInfo pi = Pagination.getPageInfo(currentPage, listCount, 5);
-		ArrayList<Comm> list = commService.selectCommList(pi, 1);
-		
-		model.addAttribute("list", list).addAttribute("pi", pi);
-		model.addAttribute("loc", request.getRequestURI());
-		// getRequestURI() : /board/list
-		// getRequestURL() : http://localhost:8080/board/list 
-		
-		return "comm/list";
-	}
+    public String selectList(
+            @RequestParam(value = "page", defaultValue = "1") int currentPage,
+            @RequestParam(value = "search", required = false) String search,
+            @RequestParam(value = "category", required = false, defaultValue = "0") int category,
+            Model model,
+            HttpServletRequest request) {
+
+        int listCount;
+        PageInfo pi;
+        ArrayList<Comm> list;
+
+//        // ✅ category가 "-"이면 전체 게시글을 조회하도록 NULL 처리
+//        if ("-".equals(category)) {
+//            category = 0;
+//        }
+
+        // ✅ 검색어가 있을 경우 검색된 게시글 개수 조회
+        if (search != null && !search.trim().isEmpty()) {
+            listCount = commService.getSearchListCount(search, category);
+        } else {
+            listCount = commService.getListCount(1, category);
+        }
+
+        pi = Pagination.getPageInfo(currentPage, listCount, 5);
+        list = commService.selectCommList(pi, 1, search, category);
+
+        model.addAttribute("list", list)
+             .addAttribute("pi", pi)
+             .addAttribute("search", search) // 검색어 유지
+             .addAttribute("category", category) // 카테고리 유지
+             .addAttribute("loc", request.getRequestURI());
+
+        return "comm/list";
+    }
+
+
+
+    
+//    @GetMapping("list")
+//    public String selectList(
+//        @RequestParam(value="page", defaultValue="1") int currentPage,
+//        @RequestParam(value="condition", required=false) String condition,  // 검색 조건
+//        @RequestParam(value="search", required=false) String search,  // 검색어
+//        Model model, HttpServletRequest request) {
+//
+//        int listCount;
+//        ArrayList<Comm> list;
+//        
+//        if (search != null && !search.trim().isEmpty()) { 
+//            // 🔹 검색이 있는 경우 → 검색 결과만 가져오기
+//            listCount = commService.getSearchListCount(condition, search, 1);
+//            PageInfo pi = Pagination.getPageInfo(currentPage, listCount, 5);
+//            list = commService.searchCommList(pi, condition, search, 1);
+//            model.addAttribute("condition", condition);
+//            model.addAttribute("search", search);
+//        } else { 
+//            // 🔹 검색이 없는 경우 → 전체 리스트 가져오기
+//            listCount = commService.getListCount(1);
+//            PageInfo pi = Pagination.getPageInfo(currentPage, listCount, 5);
+//            list = commService.selectCommList(pi, 1);
+//        }
+//
+//        // 모델에 추가
+//        model.addAttribute("list", list).addAttribute("pi", Pagination.getPageInfo(currentPage, listCount, 5));
+//        model.addAttribute("loc", request.getRequestURI());
+//
+//        return "comm/list";  // ✅ 동일한 뷰 파일 사용
+//    }
     
     @GetMapping("write")
 	public String writeComm() {

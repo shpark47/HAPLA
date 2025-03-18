@@ -4,22 +4,21 @@
     <select id="getListCount" parameterType="int" resultType="int">
         SELECT COUNT(*) FROM comm WHERE status = 'Y'
     </select>
-    
-   	<select id="selectCommList" resultType="com.hapla.comm.model.vo.Comm">
-	    SELECT comm.comm_no, comm.category_no, comm.user_no, comm.title, comm.comm_content, comm.views,
-	           comm.create_date, comm.update_date, comm.status,
-	           category.category_name, users.name,
-	           NVL(like_table.like_count, 0) AS likes  -- ✅ 좋아요 수 추가 (NVL 사용)
-	    FROM comm
-	    JOIN users ON comm.user_no = users.user_no
-	    JOIN category ON comm.category_no = category.category_no
-	    LEFT JOIN (SELECT comm_no, COUNT(*) AS like_count FROM clike GROUP BY comm_no) like_table
-	           ON comm.comm_no = like_table.comm_no
-	    WHERE comm.status = 'Y'
-	    order by comm.create_date desc
-	</select>
 
-
+	<select id="selectCommList" resultType="com.hapla.comm.model.vo.Comm">
+        SELECT comm.comm_no, comm.category_no, comm.user_no, comm.title, comm.comm_content, comm.views,
+               comm.create_date, comm.update_date, comm.status,
+               category.category_name, users.name,
+               NVL(like_table.like_count, 0) AS likes
+        FROM comm
+        JOIN users ON comm.user_no = users.user_no
+        JOIN category ON comm.category_no = category.category_no
+        LEFT JOIN (SELECT comm_no, COUNT(*) AS like_count FROM clike GROUP BY comm_no) like_table
+               ON comm.comm_no = like_table.comm_no
+        WHERE comm.status = 'Y'
+	    ORDER BY comm.create_date DESC
+    </select>
+	
 	
 	<insert id="insertComm">
 	    <selectKey order="BEFORE" resultType="int" keyProperty="commNo">
@@ -91,19 +90,30 @@
 	    DELETE FROM clike WHERE user_no = #{userNo} AND comm_no = #{commNo}
 	</delete>
 	
-<!-- 	<update id="incrementLikeCount" parameterType="map"> -->
-<!-- 	    UPDATE comm SET likes = likes + 1 WHERE comm_no = #{commNo} -->
-<!-- 	</update> -->
-	
-<!-- 	<update id="decrementLikeCount" parameterType="map"> -->
-<!-- 	    UPDATE comm SET likes = likes - 1 WHERE comm_no = #{commNo} -->
-<!-- 	</update> -->
-	
 	<select id="countLikes" parameterType="map" resultType="int">
 	    SELECT count(*) FROM clike WHERE comm_no = #{commNo}
 	</select>
 
-
+	<select id="getSearchListCount" resultType="int">
+        SELECT COUNT(*) FROM comm
+        WHERE (#{search} IS NULL OR title LIKE '%' || #{search} || '%')
+    </select>
+    
+    <select id="searchCommList" resultType="com.hapla.comm.model.vo.Comm">
+        SELECT comm.comm_no, comm.category_no, comm.user_no, comm.title, comm.comm_content, comm.views,
+               comm.create_date, comm.update_date, comm.status,
+               category.category_name, users.name,
+               NVL(like_table.like_count, 0) AS likes
+        FROM comm
+        JOIN users ON comm.user_no = users.user_no
+        JOIN category ON comm.category_no = category.category_no
+        LEFT JOIN (SELECT comm_no, COUNT(*) AS like_count FROM clike GROUP BY comm_no) like_table
+               ON comm.comm_no = like_table.comm_no
+        WHERE comm.status = 'Y'
+        AND (#{category} IS NULL OR comm.category_no = #{category})  <!-- ✅ 카테고리 필터 -->
+    	AND (#{search} IS NULL OR comm.title LIKE '%' || #{search} || '%' OR comm.comm_content LIKE '%' || #{search} || '%')  <!-- ✅ 검색 필터 -->
+       ORDER BY comm.create_date DESC
+    </select>
 
 </mapper>
 

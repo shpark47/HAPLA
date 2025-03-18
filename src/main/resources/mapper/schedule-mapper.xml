@@ -47,4 +47,17 @@
 		from trip
 		where trip_no = #{tripNo}
 	</select>
+	
+	<insert id="saveDetail">
+		insert into detail(detail_no, trip_no, content, place_id, start_date, end_date)
+		values(seq_detail.NEXTVAL, #{tripNo}, #{content},#{placeId}, #{startDate}, #{endDate})
+	</insert>
+	<select id="selectOneTrip" resultType="Trip">
+		select *
+		from trip
+		where user_No = #{userNo} and
+			  start_date = #{startDate} and
+			  end_date = #{endDate} and
+			  city_Name = #{cityName}
+	</select>
 </mapper>

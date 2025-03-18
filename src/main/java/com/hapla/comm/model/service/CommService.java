@@ -18,14 +18,26 @@ import lombok.RequiredArgsConstructor;
 public class CommService {
     private final CommMapper mapper;
 
-	public int getListCount(int i) {
-		return mapper.getListCount(i);
+	public int getListCount(int i, int category) {
+		return mapper.getListCount(i, category);
 	}
 
-	public ArrayList<Comm> selectCommList(PageInfo pi, int i) {
-		int offset = (pi.getCurrentPage() -1) * pi.getBoardLimit();
-		RowBounds rowBounds = new RowBounds(offset, pi.getBoardLimit());
-		return mapper.selectCommList(i, rowBounds);
+//	public ArrayList<Comm> selectCommList(PageInfo pi, int i, String search) {
+//		int offset = (pi.getCurrentPage() -1) * pi.getBoardLimit();
+//		RowBounds rowBounds = new RowBounds(offset, pi.getBoardLimit());
+//		return mapper.selectCommList(i, rowBounds);
+//	}
+	
+	public ArrayList<Comm> selectCommList(PageInfo pi, int i, String search, int category) {
+	    int offset = (pi.getCurrentPage() - 1) * pi.getBoardLimit();
+	    RowBounds rowBounds = new RowBounds(offset, pi.getBoardLimit());
+
+	    // 검색어가 없으면 기존 리스트 조회
+	    if (search == null || search.trim().isEmpty()) {
+	        return mapper.selectCommList(category, rowBounds);
+	    } else {
+	        return mapper.searchCommList(category, search, rowBounds);
+	    }
 	}
 
 	public int insertComm(Comm c) {
@@ -72,15 +84,17 @@ public class CommService {
 
 	public void addLike(int userNo, int commNo) {
         mapper.insertLike(userNo, commNo);
-//        mapper.incrementLikeCount(commNo);
     }
 
     public void removeLike(int userNo, int commNo) {
         mapper.deleteLike(userNo, commNo);
-//        mapper.decrementLikeCount(commNo);
     }
 
     public int getLikeCount(int commNo) {
         return mapper.countLikes(commNo);
     }
+
+	public int getSearchListCount(String search, int category) {
+		return mapper.getSearchListCount(search, category);
+	}
 }

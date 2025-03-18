@@ -56,8 +56,16 @@ public class ScheduleService {
 		return scheduleMapper.getMySchedule(userNo);
 	}
 
-	public List<Detail> getTripDetail(int userNo) {
-		return scheduleMapper.getTripDetail(userNo);
+	public List<Detail> getTripDetail(int tripNo) {
+		return scheduleMapper.getTripDetail(tripNo);
+	}
+
+	public void saveDetail(Detail detail) {
+		scheduleMapper.saveDetail(detail);
+	}
+
+	public Trip selectOneTrip(Trip trip) {
+		return scheduleMapper.selectOneTrip(trip);
 	}
 
 
