@@ -11,6 +11,8 @@ import com.hapla.schedule.model.vo.Trip;
 @Mapper
 public interface ScheduleMapper {
 
+	Trip selectOneTrip(Trip trip);
+
 	void saveTrip(Trip trip);
 
 	List<Trip> getMySchedule(int userNo);

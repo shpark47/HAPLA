@@ -6,11 +6,11 @@
            });
        }
        
-       // 메뉴바 선택시 일정 목록으로 페이지 이동
+       // 메뉴바 선택시 
        document.addEventListener("DOMContentLoaded", function(){
        	const menuBtn = document.getElementById("menuBtn");
        	console.log(menuBtn);
-       	console.log(menuBtn);
+       
        	
        	if(menuBtn){
        		menuBtn.addEventListener("click", function(){
