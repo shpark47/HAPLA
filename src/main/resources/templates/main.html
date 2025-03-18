@@ -77,11 +77,11 @@
     });
     window.onbeforeunload = function () { 
     	$('#loading').show();
-    	$(body).style.overflow='hidden';
+    	$('body').style.overflow='hidden';
     }  //현재 페이지에서 다른 페이지로 넘어갈 때 표시해주는 기능
     window.addEventListener('load', () =>{
     	 $('#loading').hide();
-    	 $(body).style.overflow='auto';
+    	 $('body').style.overflow='auto';
     });
     
 
