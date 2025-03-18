@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,9 +19,10 @@
                 </span>
             </div>
             <div class="trip_detail">
-	            <div class="sidebar-title">
-	                <span class="trip-title" id="tripTitle"></span>
-	                <span id="tripDates"></span>
+            
+	            <div class="sidebar-title" th:each=" trip : ${trip}" th:data-id="${trip.tripNo}">
+	                <span class="trip-title" id="tripTitle" th:data-city="${trip.cityName}" th:text="${trip.cityName}"></span>
+	                <span id="tripDates" th:text="${#dates.format(trip.startDate, 'yyyy.MM.dd')} + '~' + ${#dates.format(trip.endDate, 'yyyy.MM.dd')}"></span>
 				</div>
 	            <!-- ✅ 날짜별 일정 리스트 -->
 	            <div class="date-list" id="dateList"></div>
@@ -45,4 +46,9 @@
     
 
 </body>
+<script th:inline="javascript">
+/*<![CDATA[*/
+	window.trip = /*[[${trip}]]*/null;
+/*]]>*/
+</script>
 </html>

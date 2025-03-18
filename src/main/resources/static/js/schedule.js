@@ -13,10 +13,10 @@ function initMap() {
     // ✅ localStorage에서 선택한 도시 정보 가져오기
     const storedCity = localStorage.getItem("selectedCity");
 	
-    // 기본 지도 위치 설정 (초기값: 파리)
+    // 기본 지도 위치 설정
     mapOptions = {
         center: {lat: 37.5665, lng: 126.9780}, // 서울 기본 위치
-        zoom: 10
+        zoom: 12
     };
 
     // ✅ 저장된 도시 정보가 있으면 지도 위치 변경

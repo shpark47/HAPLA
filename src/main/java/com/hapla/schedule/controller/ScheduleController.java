@@ -90,7 +90,7 @@ public class ScheduleController {
 		// 여행 상세 일정 조회
 		//List<Detail> tripDetail = scheduleService.getTripDetail(trip.getTripNo());
 		scheduleService.getTripDetail(trip.getTripNo());
-		
+		System.out.println("trip : " + trip);
 		model.addAttribute("trip", trip);	// 여행 정보 추가
 		//model.addAttribute("detail", tripDetail);	// 일정 정보 추가
 		

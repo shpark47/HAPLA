@@ -1,26 +1,56 @@
-// ✅ 일정 페이지가 로드될 때 실행되는 함수
-        document.addEventListener("DOMContentLoaded", function () {
-            const tripData = localStorage.getItem("tripData");
+let trip;
+window.onload = () => {
+	trip = window.trip;
+	console.log("trip : " + trip.cityName);
+}
 
-            if (tripData) {
-                const data = JSON.parse(tripData);
+		function initMap(){
+			// 'tripTitle'요소에서 'data-city'속성 가져오기
+			const cityElement = document.getElementById("tripTitle");
+			const cityName = cityElement ? cityElement.getAttribute("data-city") : null;
+			
+			console.log("선택한 도시 : " + cityName);
+			
+			// 기본 위치(서울)
+			let defaultLocation = { lat: 37.5665, lng:126.9780};
+			
+			// Google Maps Geocoder 생성 (도시명을 좌표로 변환)
+		    const geocoder = new google.maps.Geocoder();
 
-                // ✅ 선택한 도시 정보 적용
-                if (data.city) {
-                    document.getElementById("tripTitle").textContent = `${data.city.name}, ${data.city.country}`;
-                }
+		    if (cityName) {
+		        geocoder.geocode({ address: cityName }, function(results, status) {
+		            if (status == "OK") {
+		                defaultLocation = results[0].geometry.location;
+		                console.log("📌 변환된 좌표:", defaultLocation);
 
-                // ✅ 선택한 날짜 정보 적용
-                document.getElementById("tripDates").textContent = `📅 ${data.startDate} ~ ${data.endDate}`;
+		                // Google 지도 생성
+		                const map = new google.maps.Map(document.getElementById("map"), {
+		                    center: defaultLocation,
+		                    zoom: 12
+		                });
 
-                // ✅ 날짜별 일정 리스트 생성
-                generateDateList(data.startDate, data.endDate);
+		                // 마커 추가
+		                new google.maps.Marker({
+		                    position: defaultLocation,
+		                    map: map,
+		                    title: cityName
+		                });
 
-                // ✅ 지도 위치 변경
-                initMap(data.city.lat, data.city.lng);
-            }
-        });
+		            } else {
+		                console.error("📍 도시 좌표 변환 실패:", status);
+		            }
+		        });
+		    } else {
+		        console.warn("🚨 도시 정보 없음! 기본 위치 사용");
 
+		        // Google 지도 기본값 (서울)
+		        const map = new google.maps.Map(document.getElementById("map"), {
+		            center: defaultLocation,
+		            zoom: 12
+		        });
+		    }
+		}		
+		
         // ✅ 날짜별 일정 리스트 생성
         function generateDateList(start, end) {
             const dateList = document.getElementById("dateList");
@@ -41,10 +71,6 @@
 
                 let dateItem = document.createElement("div");
                 dateItem.classList.add("date-item");
-
-                let addButton = document.createElement("button");
-                addButton.classList.add("control-add");
-                addButton.textContent = "➕ 추가";
 
                 dateItem.appendChild(addButton);
                 dateContainer.appendChild(planDate);
@@ -70,14 +96,7 @@
 		        });
 		    }
 		});
-        // ✅ Google 지도 초기화 함수
-        function initMap(lat = 48.8566, lng = 2.3522) {
-            new google.maps.Map(document.getElementById('map'), {
-                center: { lat: lat, lng: lng },
-                zoom: 10 
-            });
-        }
-        
+
         // 메뉴바 선택시 일정 목록으로 페이지 이동
         document.addEventListener("DOMContentLoaded", function(){
         	const menuBtn = document.getElementById("menuBtn");
