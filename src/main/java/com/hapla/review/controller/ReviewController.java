@@ -35,27 +35,64 @@ public class ReviewController {
 		return "review/main";
 	}
 	
+//	@GetMapping("list")
+//	public String selectList(@RequestParam(value="page", defaultValue="1") int currentPage, Model model, HttpServletRequest request) {
+////		int currentPage = 1;
+////		if(page != null ) {
+////			currentPage = Integer.parseInt(page);
+////		}
+//		
+////		System.out.println("현재 요청된 페이지 번호: " + currentPage);
+//		
+//		int boardLimit = 4;
+//		int listCount = reviewService.getListCount();
+//		PageInfo pi = Pagination.getPageInfo(currentPage, listCount, boardLimit);
+//		
+////		System.out.println("전체 리뷰 개수: " + listCount + ", 시작 페이지: " + pi.getStartPage() + ", 마지막 페이지: " + pi.getEndPage() + ", 한 페이지 최대 개수 : " + boardLimit);
+//		
+//		ArrayList<Review> list = reviewService.selectReviewList(pi);
+//		
+//		model.addAttribute("list", list).addAttribute("pi", pi);
+//		model.addAttribute("loc", request.getRequestURI());
+//		return "review/list";
+//	}
+	
 	@GetMapping("list")
-	public String selectList(@RequestParam(value="page", defaultValue="1") int currentPage, Model model, HttpServletRequest request) {
-//		int currentPage = 1;
-//		if(page != null ) {
-//			currentPage = Integer.parseInt(page);
-//		}
-		
-//		System.out.println("현재 요청된 페이지 번호: " + currentPage);
-		
-		int boardLimit = 4;
-		int listCount = reviewService.getListCount();
-		PageInfo pi = Pagination.getPageInfo(currentPage, listCount, boardLimit);
-		
-//		System.out.println("전체 리뷰 개수: " + listCount + ", 시작 페이지: " + pi.getStartPage() + ", 마지막 페이지: " + pi.getEndPage() + ", 한 페이지 최대 개수 : " + boardLimit);
-		
-		ArrayList<Review> list = reviewService.selectReviewList(pi);
-		
-		model.addAttribute("list", list).addAttribute("pi", pi);
-		model.addAttribute("loc", request.getRequestURI());
-		return "review/list";
+	public String selectList(
+	        @RequestParam(value = "page", defaultValue = "1") int currentPage,
+	        @RequestParam(value = "search", required = false) String search, // ✅ 검색어 추가
+	        Model model, HttpServletRequest request) {
+
+	    int boardLimit = 4;
+	    int listCount;
+
+	    // ✅ 검색어가 있을 경우 필터링된 게시글 개수 조회
+	    if (search != null && !search.trim().isEmpty()) {
+	        listCount = reviewService.getSearchListCount(search); // ✅ 검색 결과 개수
+	    } else {
+	        listCount = reviewService.getListCount(); // ✅ 전체 게시글 개수
+	    }
+
+	    PageInfo pi = Pagination.getPageInfo(currentPage, listCount, boardLimit);
+
+	    ArrayList<Review> list;
+
+	    // ✅ 검색어 여부에 따라 쿼리 다르게 실행
+	    if (search != null && !search.trim().isEmpty()) {
+	        list = reviewService.searchReviewList(pi, search); // ✅ 검색 리스트 불러오기
+	    } else {
+	        list = reviewService.selectReviewList(pi); // ✅ 전체 리스트 불러오기
+	    }
+
+	    // ✅ 검색어 유지하여 View로 전달
+	    model.addAttribute("list", list)
+	         .addAttribute("pi", pi)
+	         .addAttribute("search", search)
+	         .addAttribute("loc", request.getRequestURI());
+
+	    return "review/list";
 	}
+
 	
 	@GetMapping("write")
 	public String writeReview() {
@@ -81,7 +118,7 @@ public class ReviewController {
 	
 	        if (r.getImageUrls() != null && !r.getImageUrls().isEmpty()) {
 	            String[] imageUrlsArray = r.getImageUrls().split(",");
-	            System.out.println("imageUrlsArray : " + Arrays.toString(imageUrlsArray));
+//	            System.out.println("imageUrlsArray : " + Arrays.toString(imageUrlsArray));
 	
 	            if (imageUrlsArray.length > 0) {
 	                thumbnail = imageUrlsArray[0]; // 첫 번째 이미지를 썸네일로 사용
@@ -105,7 +142,7 @@ public class ReviewController {
 	@PostMapping("insert")
 	public String insertReview(@ModelAttribute Review r) {
 
-		System.out.println(r);
+//		System.out.println(r);
 
 		if (r.getImageUrls() != null) {
 			String img = r.getImageUrls();

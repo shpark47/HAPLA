@@ -124,10 +124,6 @@ header {
     box-shadow: none;
 }
 
-/* 🌟 좋아요 및 댓글 섹션 */
-.likes {
-    text-align: right;
-}
 
 .comments {
     border-top: 2px solid #007bff;
@@ -209,11 +205,63 @@ header {
 }
 }
 
+/* ✅ 버튼을 가로로 나란히 배치 */
+.buttons {
+    display: flex;
+    align-items: center; /* 버튼들을 세로 중앙 정렬 */
+    gap: 10px; /* 버튼 간격 */
+    margin-bottom: 10px;
+    justify-content: flex-end; /* 📌 버튼을 오른쪽 정렬 */
+}
+
+/* ✅ 좋아요 버튼 스타일 */
+#likeBtn {
+    display: flex; /* 내부 요소 정렬 */
+    align-items: center;
+    justify-content: center;
+    gap: 5px; /* 아이콘과 텍스트 간격 */
+    width: 90px; /* 📌 가로 길이 고정 */
+    height: 40px; /* 📌 버튼 높이 조정 */
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    background: linear-gradient(to right, #ff7e5f, #f76c6c); /* 📌 예쁜 그라디언트 효과 */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 2px 4px 10px rgba(255, 65, 108, 0.4); /* 📌 버튼 그림자 */
+}
+
+/* ✅ 마우스 호버 시 */
+#likeBtn:hover {
+    background: linear-gradient(to right, #f76c6c, #ff5e62);
+    transform: scale(1.05);
+}
+
+/* ✅ 클릭 시 애니메이션 */
+#likeBtn:active {
+    transform: scale(0.95);
+    box-shadow: 1px 2px 5px rgba(255, 65, 108, 0.2);
+}
+
+/* ✅ 좋아요 카운트 스타일 */
+#likeCount {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+h2 {
+	margin-bottom: -50px;
+}
+
 /* ✅ 목록 버튼 스타일 */
 .cancel-button {
-    position: absolute; /* 📌 section 내부에서 위치 조정 */
-    top: 20px; /* 상단에서 20px */
-    right: 20px; /* 우측에서 20px */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 90px; /* 📌 가로 길이 고정 */
+    height: 40px; /* 📌 버튼 높이 조정 */
     padding: 10px 20px;
     background: linear-gradient(to right, #ff7e5f, #f76c6c);
     color: white;
@@ -225,10 +273,12 @@ header {
     transition: background-color 0.3s ease;
 }
 
+/* ✅ 마우스 호버 시 */
 .cancel-button:hover {
     background: linear-gradient(to right, #f76c6c, #ff5e62);
     box-shadow: 0 4px 8px rgba(247, 108, 108, 0.3);
 }
+
 
 /* ✅ community 섹션을 상대 위치로 설정 */
 .community {

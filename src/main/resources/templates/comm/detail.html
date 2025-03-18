@@ -18,15 +18,17 @@
     </section>
     <section class="community">
         <form class="needs-validation" method="POST" id="detailForm">
-        	<!-- 로그인한 사용자의 userNo를 hidden input으로 추가 -->
-			<input type="hidden" id="userNo" th:value="${session.loginUser != null ? session.loginUser.userNo : ''}">
+        	<input type="hidden" id="userNo" th:value="${session.loginUser != null ? session.loginUser.userNo : ''}">
             <input type="hidden" name="commNo" th:value="${c.commNo}">
             <input type="hidden" name="page" th:value="${page}">
             <h2 style="display: inline-block;">커뮤니티</h2>
-			<button id="likeBtn" class="btn btn-outline-danger btn-sm" style="margin-left: 10px;">
-			    ❤️ <span id="likeCount" th:text="${c != null ? c.likes : 0}"></span>
-			</button>
-			<button class="cancel-button" type="button" onclick="history.back();">목록</button>
+            <div class="buttons">
+	            <button id="likeBtn" class="btn btn-outline-danger btn-sm" style="margin-left: 10px;">
+				    ❤️ <span id="likeCount" th:text="${c != null ? c.likes : 0}"></span>
+				</button>
+				<button class="cancel-button" type="button" onclick="goBackAndRefresh();">목록</button>
+			</div>
+			
             <table>
                 <tr>
                     <th>제목</th>
@@ -346,6 +348,10 @@
 	    });
 	});
 
+	function goBackAndRefresh() {
+        history.back();
+        setTimeout(() => location.reload(), 500); // 0.5초 후 새로고침
+    }
 	
 </script>
 
