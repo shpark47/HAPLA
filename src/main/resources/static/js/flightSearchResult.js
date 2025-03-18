@@ -264,9 +264,9 @@ document.querySelector('#go').addEventListener('click', () => {
 
 
 document.querySelector('.research-btn').addEventListener('click', () => {
-    const form = document.querySelector('.research-form');
-    form.action = '/flight/flightSearch';
-    form.submit();
+	const form = document.querySelector('.research-form');
+	form.action = '/flight/flightSearch';
+	form.submit();
 });
 
 const inputBtns = document.querySelectorAll('.trip-group button');
@@ -287,225 +287,222 @@ const dates = document.querySelector('input[name="dates"]');
 const travelers = document.querySelector('input[name="travelers"]');
 const flightContainer = document.querySelector('.flight-container');
 const flightSearchResult = window.flightSearchResult;
-//const airLine=[];
-//for(const flightSearchResults of flightSearchResult) {
-//	airLine.push(flightSearchResults.out)
-//}
-//console.log(airLine);
+
 
 // 시간대 확인 함수
 const getTimeSlot = (timeStr) => {
-    // timeStr 형식: "HH:mm:ss" (예: "08:00:00")
-	
-    const hours= (timeStr.split(':')[0]); // 시간 부분 추출
+	// timeStr 형식: "HH:mm:ss" (예: "08:00:00")
+
+	const hours = (timeStr.split(':')[0]); // 시간 부분 추출
 	const hour = parseInt(hours.slice(0, 2));
-    if (hour >= 6 && hour < 12) return 'morning';
-    if (hour >= 12 && hour < 18) return 'afternoon';
-    if (hour >= 18 && hour < 24) return 'evening';
-    return 'night';
+	if (hour >= 6 && hour < 12) return 'morning';
+	if (hour >= 12 && hour < 18) return 'afternoon';
+	if (hour >= 18 && hour < 24) return 'evening';
+	return 'night';
 };
 
 let hasInbound = null;
 
 const applyFilter = (flightData) => {
-    console.log('applyFilter 함수 실행');
+	console.log('applyFilter 함수 실행');
 
-    const flightContainers = document.querySelectorAll('.flight-container');
-    
-    // 경유 필터링 체크박스
-    const checkedLayovers = document.querySelectorAll('input[name="layover"]:checked');
-    const selectedLayoverOptions = Array.from(checkedLayovers).map(input => input.value);
+	const flightContainers = document.querySelectorAll('.flight-container');
 
-    // 가는 날 출발 시간 필터링 체크박스
-    const outChecked = document.querySelectorAll('input[name="out-departure-time"]:checked');
-    const outSelectedOptions = Array.from(outChecked).map(input => input.value);
+	// 경유 필터링 체크박스
+	const checkedLayovers = document.querySelectorAll('input[name="layover"]:checked');
+	const selectedLayoverOptions = Array.from(checkedLayovers).map(input => input.value);
+
+	// 가는 날 출발 시간 필터링 체크박스
+	const outChecked = document.querySelectorAll('input[name="out-departure-time"]:checked');
+	const outSelectedOptions = Array.from(outChecked).map(input => input.value);
 	console.log(outSelectedOptions);
-    // 오는 날 출발 시간 필터링 체크박스
-    const inChecked = document.querySelectorAll('input[name="in-departure-time"]:checked');
-    const inSelectedOptions = Array.from(inChecked).map(input => input.value);
+	// 오는 날 출발 시간 필터링 체크박스
+	const inChecked = document.querySelectorAll('input[name="in-departure-time"]:checked');
+	const inSelectedOptions = Array.from(inChecked).map(input => input.value);
 
 	const airline = document.querySelectorAll('input[name="airline-filter"]:checked');
 	const airlineSelectedOptions = Array.from(airline).map(input => input.value);
-	
-	
 
-    flightContainers.forEach((flightContainer, index) => {
-        const flight = flightData[index] || {};
+
+
+	flightContainers.forEach((flightContainer, index) => {
+		const flight = flightData[index] || {};
 		console.log(flight);
-        const outboundStops = parseInt(flightContainer.dataset.outboundStops || 0);
-        const inboundStops = parseInt(flightContainer.dataset.inboundStops || 0);
-        
-        // 시간 데이터에서 "HH:mm:ss" 형식으로 변환
-        const outboundTime = (flightContainer.dataset.outboundTime?.split('T')[1] || '').replace(/:/g, '');
-        const inboundTime = (flightContainer.dataset.inboundTime?.split('T')[1] || '').replace(/:/g, '');
-        
+		const outboundStops = parseInt(flightContainer.dataset.outboundStops || 0);
+		const inboundStops = parseInt(flightContainer.dataset.inboundStops || 0);
+
+		// 시간 데이터에서 "HH:mm:ss" 형식으로 변환
+		const outboundTime = (flightContainer.dataset.outboundTime?.split('T')[1] || '').replace(/:/g, '');
+		const inboundTime = (flightContainer.dataset.inboundTime?.split('T')[1] || '').replace(/:/g, '');
+
 		console.log('airlineSelectedOptions : ' + airlineSelectedOptions);
-		console.log('outboundTime : ' + typeof(outboundTime));
-		console.log('inboundTime : ' + typeof(inboundTime));
-        hasInbound = flight['inboundDepartureTime'] != null; // 귀국 구간 존재 여부
+		console.log('outboundTime : ' + typeof (outboundTime));
+		console.log('inboundTime : ' + typeof (inboundTime));
+		hasInbound = flight['inboundDepartureTime'] != null; // 귀국 구간 존재 여부
 
-        // 기본적으로 보이도록 설정
-        flightContainer.classList.remove('hidden');
+		// 기본적으로 보이도록 설정
+		flightContainer.classList.remove('hidden');
 
-        let shouldHide = false; // 모든 조건을 체크하기 위한 플래그
+		let shouldHide = false; // 모든 조건을 체크하기 위한 플래그
 
-        // 1. 경유 필터링
-        if (selectedLayoverOptions.length > 0) {
-            const isDirect = selectedLayoverOptions.includes('direct');
-            const isOneStop = selectedLayoverOptions.includes('oneStop');
-            const isMultiStop = selectedLayoverOptions.includes('multiStop');
+		// 1. 경유 필터링
+		if (selectedLayoverOptions.length > 0) {
+			const isDirect = selectedLayoverOptions.includes('direct');
+			const isOneStop = selectedLayoverOptions.includes('oneStop');
+			const isMultiStop = selectedLayoverOptions.includes('multiStop');
 
-            if (
-                // 직항만 선택: 출발 또는 귀국이 직항이 아니면 숨김
-                (isDirect && !isOneStop && !isMultiStop && (outboundStops != 0 || (hasInbound && inboundStops != 0))) ||
-                // 1회 경유만 선택: 출발과 귀국(있을 경우)이 1회가 아니면 숨김
-                (isOneStop && !isDirect && !isMultiStop && 
-                    (outboundStops != 1 || (hasInbound && inboundStops != 1))) ||
-                // 2회 이상 경유만 선택: 출발과 귀국(있을 경우)이 2회 미만이면 숨김
-                (isMultiStop && !isDirect && !isOneStop && 
-                    (outboundStops < 2 && (!hasInbound || inboundStops < 2))) ||
-                // 직항 + 1회 경유: 2회 이상 경유 숨김
-                (isDirect && isOneStop && !isMultiStop && 
-                    (outboundStops >= 2 || (hasInbound && inboundStops >= 2))) ||
-                // 1회 경유 + 2회 이상 경유: 직항 숨김
-                (isOneStop && isMultiStop && !isDirect && 
-                    (outboundStops == 0 || (hasInbound && inboundStops == 0))) ||
-                // 직항 + 2회 이상 경유: 1회 경유 숨김
-                (isDirect && isMultiStop && !isOneStop && 
-                    (outboundStops == 1 || (hasInbound && inboundStops == 1)))
-            ) {
-                shouldHide = true; // 조건에 해당하면 숨김 플래그 설정
-            }
-        }
-
-        // 2. 가는 날 출발 시간 필터링
-        if (outSelectedOptions.length > 0 && !shouldHide) {
-            const outboundTimeSlot = getTimeSlot(outboundTime);
-			console.log('outboundTimeSlot : '+ outboundTimeSlot);
-            const timeMatch = outSelectedOptions.includes(outboundTimeSlot);
-            if (!timeMatch) {
-                shouldHide = true; // 시간대가 선택된 옵션과 맞지 않으면 숨김
-            }
-        }
-
-        // 3. 오는 날 출발 시간 필터링 (왕복일 경우에만 적용)
-        if (hasInbound && inSelectedOptions.length > 0 && !shouldHide) {
-            const inboundTimeSlot = getTimeSlot(inboundTime);
-			console.log('inboundTimeSlot : ' + inboundTimeSlot);
-            const timeMatch = inSelectedOptions.includes(inboundTimeSlot);
-            if (!timeMatch) {
-                shouldHide = true; // 시간대가 선택된 옵션과 맞지 않으면 숨김
-            }
-        }
-		
-		if(airlineSelectedOptions.length > 0 && !shouldHide) {
-			if(!airlineSelectedOptions.some(option => flight.airline.includes(option))) {
-				// .some -> 일치하는게 하나라도 있으면 true 반환(배열을 돌다가 한번이라도 true면 true 반환 후 탈출)
-				shouldHide = true; 			
+			if (
+				// 직항만 선택: 출발 또는 귀국이 직항이 아니면 숨김
+				(isDirect && !isOneStop && !isMultiStop && (outboundStops != 0 || (hasInbound && inboundStops != 0))) ||
+				// 1회 경유만 선택: 출발과 귀국(있을 경우)이 1회가 아니면 숨김
+				(isOneStop && !isDirect && !isMultiStop &&
+					(outboundStops != 1 || (hasInbound && inboundStops != 1))) ||
+				// 2회 이상 경유만 선택: 출발과 귀국(있을 경우)이 2회 미만이면 숨김
+				(isMultiStop && !isDirect && !isOneStop &&
+					(outboundStops < 2 && (!hasInbound || inboundStops < 2))) ||
+				// 직항 + 1회 경유: 2회 이상 경유 숨김
+				(isDirect && isOneStop && !isMultiStop &&
+					(outboundStops >= 2 || (hasInbound && inboundStops >= 2))) ||
+				// 1회 경유 + 2회 이상 경유: 직항 숨김
+				(isOneStop && isMultiStop && !isDirect &&
+					(outboundStops == 0 || (hasInbound && inboundStops == 0))) ||
+				// 직항 + 2회 이상 경유: 1회 경유 숨김
+				(isDirect && isMultiStop && !isOneStop &&
+					(outboundStops == 1 || (hasInbound && inboundStops == 1)))
+			) {
+				shouldHide = true; // 조건에 해당하면 숨김 플래그 설정
 			}
 		}
-		
 
-        // 최종적으로 숨김 여부 결정
-        if (shouldHide) {
-            flightContainer.classList.add('hidden');
-        }
+		// 2. 가는 날 출발 시간 필터링
+		if (outSelectedOptions.length > 0 && !shouldHide) {
+			const outboundTimeSlot = getTimeSlot(outboundTime);
+			console.log('outboundTimeSlot : ' + outboundTimeSlot);
+			const timeMatch = outSelectedOptions.includes(outboundTimeSlot);
+			if (!timeMatch) {
+				shouldHide = true; // 시간대가 선택된 옵션과 맞지 않으면 숨김
+			}
+		}
 
-    });
+		// 3. 오는 날 출발 시간 필터링 (왕복일 경우에만 적용)
+		if (hasInbound && inSelectedOptions.length > 0 && !shouldHide) {
+			const inboundTimeSlot = getTimeSlot(inboundTime);
+			console.log('inboundTimeSlot : ' + inboundTimeSlot);
+			const timeMatch = inSelectedOptions.includes(inboundTimeSlot);
+			if (!timeMatch) {
+				shouldHide = true; // 시간대가 선택된 옵션과 맞지 않으면 숨김
+			}
+		}
+
+		if (airlineSelectedOptions.length > 0 && !shouldHide) {
+			if (!airlineSelectedOptions.some(option => flight.airline.includes(option))) {
+				// .some -> 일치하는게 하나라도 있으면 true 반환(배열을 돌다가 한번이라도 true면 true 반환 후 탈출)
+				shouldHide = true;
+			}
+		}
+
+
+		// 최종적으로 숨김 여부 결정
+		if (shouldHide) {
+			flightContainer.classList.add('hidden');
+		}
+
+	});
 };
 
 
 // 이벤트 리스너 추가
 document.addEventListener('change', (e) => {
-    if (
-        e.target.matches('input[name="layover"]') ||
-        e.target.matches('input[name="out-departure-time"]') ||
-        e.target.matches('input[name="in-departure-time"]') ||
+	if (
+		e.target.matches('input[name="layover"]') ||
+		e.target.matches('input[name="out-departure-time"]') ||
+		e.target.matches('input[name="in-departure-time"]') ||
 		e.target.matches('input[name="airline-filter"]')
-    ) {
-        applyFilter(flightSearchResult); // 데이터 전달
-    }
+	) {
+		applyFilter(flightSearchResult); // 데이터 전달
+	}
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-    applyFilter(flightSearchResult); // 초기 필터링 적용
+	applyFilter(flightSearchResult); // 초기 필터링 적용
 });
 
 // 페이지 로드 시 실행
-document.addEventListener('DOMContentLoaded', function () {
-    const flightList = document.getElementById('flight-list');
-    const sortSelect = document.getElementById('sort-select');
-    let flightData = window.flightSearchResult || []; // Thymeleaf에서 전달된 데이터
+document.addEventListener('DOMContentLoaded', function() {
+	const flightList = document.getElementById('flight-list');
+	const sortSelect = document.getElementById('sort-select');
+	let flightData = window.flightSearchResult || []; // Thymeleaf에서 전달된 데이터
 
-    // 날짜 문자열을 Date 객체로 변환하고 시간 차이를 계산하는 함수
-    function getDurationInHours(startTime, endTime) {
-        const start = new Date(startTime);
-        const end = new Date(endTime);
-        const diffMs = end - start;
-        return diffMs / (1000 * 60 * 60); // 밀리초를 시간 단위로 변환
-    }
+	// 날짜 문자열을 Date 객체로 변환하고 시간 차이를 계산하는 함수
+	function getDurationInHours(startTime, endTime) {
+		const start = new Date(startTime);
+		const end = new Date(endTime);
+		const diffMs = end - start;
+		return diffMs / (1000 * 60 * 60); // 밀리초를 시간 단위로 변환
+	}
 
-    // 총 소요 시간 계산 (outbound + inbound)
-    function getTotalDuration(flight) {
-        const outboundDuration = getDurationInHours(flight.outboundDepartureTime, flight.outboundArrivalTime);
-        const inboundDuration = flight.inboundDepartureTime && flight.inboundArrivalTime
-            ? getDurationInHours(flight.inboundDepartureTime, flight.inboundArrivalTime)
-            : 0;
-        return outboundDuration + inboundDuration;
-    }
+	// 총 소요 시간 계산 (outbound + inbound)
+	function getTotalDuration(flight) {
+		const outboundDuration = getDurationInHours(flight.outboundDepartureTime, flight.outboundArrivalTime);
+		const inboundDuration = flight.inboundDepartureTime && flight.inboundArrivalTime
+			? getDurationInHours(flight.inboundDepartureTime, flight.inboundArrivalTime)
+			: 0;
+		return outboundDuration + inboundDuration;
+	}
 
-    // 가격에서 숫자만 추출 (예: "1658.50 EUR" -> 1658.50)
-    function parsePrice(priceStr) {
-        return parseFloat(priceStr.split(' ')[0]);
-    }
+	// 가격에서 숫자만 추출 (예: "1658.50 EUR" -> 1658.50)
+	function parsePrice(priceStr) {
+		return parseFloat(priceStr.split(' ')[0]);
+	}
 
-    // 가성비 점수 계산 (낮을수록 가성비 좋음: 가격/시간)
-    function getValueScore(flight) {
-        const price = parsePrice(flight.price);
-        const totalDuration = getTotalDuration(flight);
-        return totalDuration > 0 ? price / totalDuration : Infinity; // 시간이 0이면 Infinity 반환
-    }
+	// 가성비 점수 계산 (낮을수록 가성비 좋음: 가격/시간)
+	function getValueScore(flight) {
+		const price = parsePrice(flight.price);
+		const totalDuration = getTotalDuration(flight);
+		return totalDuration > 0 ? price / totalDuration : Infinity; // 시간이 0이면 Infinity 반환
+	}
 
-    // 항공편 렌더링 함수
-    function renderFlights(flights) {
-        flightList.innerHTML = ''; // 기존 목록 초기화
-        flights.forEach(flight => {
-            const flightDiv = document.createElement('div');
-            flightDiv.className = 'flight-container';
-            flightDiv.setAttribute('data-outbound-stops', flight.outboundTotalStops);
-            flightDiv.setAttribute('data-inbound-stops', flight.inboundTotalStops || 0);
-            flightDiv.setAttribute('data-inbound-time', flight.inboundDepartureTime || '');
-            flightDiv.setAttribute('data-outbound-time', flight.outboundDepartureTime);
+	// 항공편 렌더링 함수
+	function renderFlights(flights) {
+		flightList.innerHTML = ''; // 기존 목록 초기화
+		flights.forEach(flight => {
+			const flightDiv = document.createElement('div');
+			flightDiv.className = 'flight-container';
+			flightDiv.setAttribute('data-outbound-stops', flight.outboundTotalStops);
+			flightDiv.setAttribute('data-inbound-stops', flight.inboundTotalStops || 0);
+			flightDiv.setAttribute('data-inbound-time', flight.inboundDepartureTime || '');
+			flightDiv.setAttribute('data-outbound-time', flight.outboundDepartureTime);
 
-            // 시간 포맷팅 함수
-            const formatTime = (dateStr) => {
-                const date = new Date(dateStr);
-                return date.toLocaleTimeString('ko-KR', { hour: 'numeric', minute: '2-digit', hour12: true });
-            };
+			// 시간 포맷팅 함수
+			const formatTime = (dateStr) => {
+				const date = new Date(dateStr);
+				return date.toLocaleTimeString('ko-KR', { hour: 'numeric', minute: '2-digit', hour12: true });
+			};
 
-            flightDiv.innerHTML = `
+			flightDiv.innerHTML = `
                 <div class="flight-info">
                     <div class="airline-info">
-                        <span>${flight.outboundKorAirlineName}</span>
-                        ${flight.inboundAirline && flight.inboundAirline !== flight.outboundAirline 
-                            ? `<span>${flight.inboundKorAirlineName}</span>` : ''}
+                        <span>${flight.outboundKorAirlineName != null ? flight.outboundKorAirlineName : flight.airlineNm} </span>
+                        ${flight.inboundAirline && flight.inboundAirline !== flight.outboundAirline
+					? `<span>${flight.inboundKorAirlineName}</span>` : ''}
                     </div>
                     <div class="flight-details">
                         <div class="departure">
                             <div class="flight-title">
                                 <div class="time-info outbound">
-                                    <div class="airport-code">${flight.outboundDepartureAirport}</div>
-                                    <div class="flight-time">${formatTime(flight.outboundDepartureTime)}</div>
+                                    <div class="airport-code">${flight.outboundDepartureAirport != null ? flight.outboundDepartureAirport : flight.airlineNm}</div>
+                                    <div class="flight-time">${flight.outboundDepartureTime  ?  formatTime(flight.outboundDepartureTime) : formatTime(flight.depPlandTime)}</div>
                                 </div>
                                 <div class="flight-path"></div>
                                 <div class="time-info outbound">
-                                    <div class="airport-code">${flight.outboundArrivalAirport}</div>
-                                    <div class="flight-time">${formatTime(flight.outboundArrivalTime)}</div>
+                                    <div class="airport-code">${flight.outboundArrivalAirport != null ? flight.outboundArrivalAirport : flight.airlineNm}</div>
+									<div class="flight-time">${flight.outboundArrivalTime ? formatTime(flight.outboundArrivalTime) : formatTime(flight.arrPlandTime)}</div>
+
                                 </div>
                             </div>
                             <div class="duration">
-                                <span>${formatTime(flight.outboundDepartureTime)}</span> → 
-                                <span>${formatTime(flight.outboundArrivalTime)}</span>
+                                <span>${flight.outboundDepartureTime ? formatTime(flight.outboundDepartureTime) : formatTime(flight.depPlandTime)}</span> → 
+                                <span>${flight.outboundArrivalTime ? formatTime(flight.outboundArrivalTime) : formatTime(flight.arrPlandTime)}</span>
                                 (<span>${flight.outboundHasConnections === 'true' ? '경유 ' + flight.outboundTotalStops + '회' : '직항'}</span>)
                             </div>
                         </div>
@@ -536,137 +533,146 @@ document.addEventListener('DOMContentLoaded', function () {
                 <div class="flight-price">
                     <div class="price-info">
                         <div class="price-title">
-                            <strong>가격 : </strong> <span>${flight.price}</span>
+                            <strong>가격 : </strong> <span>${flight.price != null ? flight.price : flight.economyCharge}</span>
                         </div>
                         <button class="view-deal">예약가능</button>
                     </div>
                 </div>
             `;
-            flightList.appendChild(flightDiv);
-        });
-    }
+			flightList.appendChild(flightDiv);
+		});
+	}
 
-    // 정렬 함수
-    function sortFlights(criterion) {
-        let sortedFlights = [...flightData]; // 원본 데이터 복사
-        switch (criterion) {
-            case 'best': // 가성비 최고
-                sortedFlights.sort((a, b) => getValueScore(a) - getValueScore(b));
-                break;
-            case 'price': // 최저가
-                sortedFlights.sort((a, b) => parsePrice(a.price) - parsePrice(b.price));
-                break;
-            case 'duration': // 최단시간
-                sortedFlights.sort((a, b) => getTotalDuration(a) - getTotalDuration(b));
-                break;
-            default:
-                break;
-        }
-        renderFlights(sortedFlights); // 정렬된 데이터로 화면 갱신
-    }
+	// 정렬 함수
+	function sortFlights(criterion) {
+		let sortedFlights = [...flightData]; // 원본 데이터 복사
+		switch (criterion) {
+			case 'best': // 가성비 최고
+				sortedFlights.sort((a, b) => getValueScore(a) - getValueScore(b));
+				break;
+			case 'price': // 최저가
+				sortedFlights.sort((a, b) => parsePrice(a.price) - parsePrice(b.price));
+				break;
+			case 'duration': // 최단시간
+				sortedFlights.sort((a, b) => getTotalDuration(a) - getTotalDuration(b));
+				break;
+			default:
+				break;
+		}
+		renderFlights(sortedFlights); // 정렬된 데이터로 화면 갱신
+	}
 
-    // 초기 렌더링
-    renderFlights(flightData);
+	// 초기 렌더링
+	renderFlights(flightData);
 
-    // 정렬 선택 이벤트 리스너
-    sortSelect.addEventListener('change', function () {
-        sortFlights(this.value);
-    });
+	// 정렬 선택 이벤트 리스너
+	sortSelect.addEventListener('change', function() {
+		sortFlights(this.value);
+	});
 });
 
 
 window.onload = () => {
-	
-   	
-	   
-    let airline = [];
-	let korAirline=[];
-    let seenAirlines = new Set();
+
+	let airline = [];
+	let korAirline = [];
+	let seenAirlines = new Set();
 	// set -> es6에서부터 사용 가능한 데이터 구조 배열과 유사하지만 중복된값저장 불가능
-    let flightSearchResult = window.flightSearchResult;
+	let flightSearchResult = window.flightSearchResult;
+	console.log("flightSearchResult:", flightSearchResult);
 
-    console.log("flightSearchResult:", flightSearchResult);
-
-    if (flightSearchResult) {
-        for (let flightSearchResults of flightSearchResult) {
-            let outboundAirline = flightSearchResults['outboundAirline'];
-            let inboundAirline = flightSearchResults['inboundAirline'];
+	if (flightSearchResult) {
+		for (let flightSearchResults of flightSearchResult) {
+			let outboundAirline = flightSearchResults['outboundAirline'];
+			let inboundAirline = flightSearchResults['inboundAirline'];
 			let outboundKorAirline = flightSearchResults['outboundKorAirlineName'];
 			let inboundKorAirline = flightSearchResults['inboundKorAirlineName'];
+			let airlineNm = flightSearchResults['airlineNm'];
+			
+			if(outboundAirline != '') {
+				if (outboundAirline && !seenAirlines.has(outboundAirline)) {
+					airline.push(outboundAirline);
+					korAirline.push(outboundKorAirline);
+					seenAirlines.add(outboundAirline);
+				}
+				if (inboundAirline && !seenAirlines.has(inboundAirline)) {
+					airline.push(inboundAirline);
+					korAirline.push(inboundKorAirline);
+					seenAirlines.add(inboundAirline);
+				}
+			}
+			console.log(airlineNm);
+//			console.log(seenAirlines);
+			if(airlineNm != undefined) {
+				if(!seenAirlines.has(airlineNm)) {
+					console.log('이상한곳에 들어옴');
+					airline.push(airlineNm);
+					korAirline.push(airlineNm);
+					seenAirlines.add(airlineNm);
+				}
+			}
+		}
 
-            if (outboundAirline && !seenAirlines.has(outboundAirline)) {
-                airline.push(outboundAirline);
-				korAirline.push(outboundKorAirline);
-                seenAirlines.add(outboundAirline);
-				
-            }
+		let container = document.getElementsByClassName("filter-group")[3];
 
-            if (inboundAirline && !seenAirlines.has(inboundAirline)) {
-                airline.push(inboundAirline);
-				korAirline.push(inboundKorAirline);
-                seenAirlines.add(inboundAirline);
-            }
-        }
+		console.log("container:", container);
 
-        let container = document.getElementsByClassName("filter-group")[3];
+		if (container) {
+			let visibleCount = 5;
+			let hiddenCheckboxes = [];
+			let showMoreButton;
 
-        console.log("container:", container);
-
-        if (container) {
-            let visibleCount = 5;
-            let hiddenCheckboxes = [];
-            let showMoreButton;
-
-            for (let i = 0; i < airline.length; i++) {
-                let airlines = airline[i];
+			for (let i = 0; i < airline.length; i++) {
+				let airlines = airline[i];
 				let korAirlines = korAirline[i];
-                let label = document.createElement("label");
-                let checkbox = document.createElement("input");
-                checkbox.type = "checkbox";
-                checkbox.name = "airline-filter";
-                checkbox.value = airlines;
+				let label = document.createElement("label");
+				let checkbox = document.createElement("input");
+				checkbox.type = "checkbox";
+				checkbox.name = "airline-filter";
+				checkbox.value = airlines;
 
-                label.appendChild(checkbox);
-                label.appendChild(document.createTextNode(korAirlines));
+				label.appendChild(checkbox);
+				label.appendChild(document.createTextNode(korAirlines));
 
-                if (i < visibleCount) {
-                    container.appendChild(label);
-                } else {
-                    hiddenCheckboxes.push(label);
-                }
+				if (i < visibleCount) {
+					container.appendChild(label);
+				} else {
+					hiddenCheckboxes.push(label);
+				}
 
-                console.log("checkbox.value:", checkbox.value, "label.textContent:", label.textContent);
-            }
+				console.log("checkbox.value:", checkbox.value, "label.textContent:", label.textContent);
+			}
 
-            if (hiddenCheckboxes.length > 0) {
-                showMoreButton = document.createElement("button");
-                showMoreButton.textContent = "더보기";
+			if (hiddenCheckboxes.length > 0) {
+				showMoreButton = document.createElement("button");
+				showMoreButton.textContent = "더보기";
 				showMoreButton.classList.add('show-more-button');
-                container.appendChild(showMoreButton);
+				container.appendChild(showMoreButton);
 
-                showMoreButton.addEventListener("click", () => {
-                    if (showMoreButton.textContent === "더보기") {
-                        // 숨겨진 체크박스를 더보기 버튼 위에 추가
-                        hiddenCheckboxes.forEach(label => container.insertBefore(label, showMoreButton));
-                        showMoreButton.textContent = "숨기기";
-                    } else {
-                        // 숨겨진 체크박스를 제거
-                        hiddenCheckboxes.forEach(label => container.removeChild(label));
-                        showMoreButton.textContent = "더보기";
-                    }
-                });
-            }
-        }
-    }
-};
+				showMoreButton.addEventListener("click", () => {
+					if (showMoreButton.textContent === "더보기") {
+						// 숨겨진 체크박스를 더보기 버튼 위에 추가
+						hiddenCheckboxes.forEach(label => container.insertBefore(label, showMoreButton));
+						showMoreButton.textContent = "숨기기";
+					} else {
+						// 숨겨진 체크박스를 제거
+						hiddenCheckboxes.forEach(label => container.removeChild(label));
+						showMoreButton.textContent = "더보기";
+					}
+				});
+			}
+		}
+	}
+}
 
-window.onbeforeunload = function () { 
-    	$('#loading').show();
-    	$('body').css('oveflow', 'hidden');
-    }  //현재 페이지에서 다른 페이지로 넘어갈 때 표시해주는 기능
-    window.addEventListener('load', () =>{
-    	 $('#loading').hide();
-		 $('body').css('overflow', 'auto');
-    });
-    
+
+window.onbeforeunload = function() {
+	$('#loading').show();
+	$('body').css('oveflow', 'hidden');
+}  //현재 페이지에서 다른 페이지로 넘어갈 때 표시해주는 기능
+window.addEventListener('load', () => {
+	$('#loading').hide();
+	$('body').css('overflow', 'auto');
+});
+
 

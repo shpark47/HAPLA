@@ -123,9 +123,9 @@
         <aside class="filters">
             <div class="filter-group">
                 <h4>경유</h4>
-                <label><input type="checkbox" name="layover" id="direct" value="direct" checked>직항</label>
-                <label><input type="checkbox" name="layover" id="1stop" value="oneStop" checked>1회 경유</label>
-                <label><input type="checkbox" name="layover" id="2plusstops" value="multiStop" checked> 2회 이상 경유</label>
+                <label><input type="checkbox" name="layover" id="direct" value="direct" >직항</label>
+                <label><input type="checkbox" name="layover" id="1stop" value="oneStop" >1회 경유</label>
+                <label><input type="checkbox" name="layover" id="2plusstops" value="multiStop"> 2회 이상 경유</label>
             </div>
             <hr>
             <div class="filter-group">
@@ -164,12 +164,6 @@
                 </div>
             </div>
             <hr>
-            <div id="price">
-                <h4>가격</h4>
-                <input type="range" id="price-range" min="" max="" value="">
-                <p>최소 가격: <span id="min-price"></span></p>
-                <p>최대 가격: <span id="max-price"></span></p>
-            </div>
         </aside>
 
         <main class="flight-results" th:if="${flightOffers != null and not #lists.isEmpty(flightOffers)}">
@@ -184,20 +178,20 @@
                     </select>
                 </div>
             </div>
+            
+            
+            
             <div id="flight-list">
                 <!-- 수정: flight가 HashMap이므로 모든 접근을 대괄호 표기법으로 변경 -->
                 <div class="flight-container" 
 				     th:each="flight : ${flightOffers}" 
 				     th:attr="data-outbound-stops=${flight['outboundTotalStops']}, 
-				              data-inbound-stops=${flight['inboundTotalStops'] != null ? flight['inboundTotalStops'] : 0}, 
-				              data-inbound-time=${flight['inboundDepartureTime']},  
-				              data-outbound-time=${flight['outboundDepartureTime']}">
-				
-			
-
+ 				              data-inbound-stops=${flight['inboundTotalStops'] != null ? flight['inboundTotalStops'] : 0},  
+ 				              data-inbound-time=${flight['inboundDepartureTime']},   
+ 				              data-outbound-time=${flight['outboundDepartureTime']}"> 
                     <div class="flight-info">
                         <div class="airline-info">
-                            <span th:text="${flight['outboundKorAirlineName']}"></span>
+                            <span th:text="${flight['outboundKorAirlineName'] ?: flight['airlineNm']}"></span>
                             <span th:if="${flight['inboundAirline'] != null and flight['inboundAirline'] != flight['outboundAirline']}"
                                   th:text="${flight['inboundKorAirlineName']}"></span>
                         </div>
@@ -206,13 +200,13 @@
                             <div class="departure">
                                 <div class="flight-title">
                                     <div class="time-info outbound">
-                                        <div class="airport-code" th:text="${flight['outboundDepartureAirport']}"></div>
-                                        <div class="flight-time" th:text="${#temporals.format(flight['outboundDepartureTime'], 'a h:mm')}"></div>
+                                        <div class="airport-code" th:text="${flight['outboundDepartureAirport']} ?: ${flight['depAirportNm']}"></div>
+                                        <div class="flight-time" th:text="${#temporals.format(flight['outboundDepartureTime'], 'a h:mm')} ?: ${#temporals.format(flight['depPlandTime'], 'a h:mm')}"></div>
                                     </div>
                                     <div class="flight-path"></div>
                                     <div class="time-info outbound">
-                                        <div class="airport-code" th:text="${flight['outboundArrivalAirport']}"></div>
-                                        <div class="flight-time" th:text="${#temporals.format(flight['outboundArrivalTime'], 'a h:mm')}"></div>
+                                        <div class="airport-code" th:text="${flight['outboundArrivalAirport']} ?: ${flight['arrAirportNm']}"></div>
+                                        <div class="flight-time" th:text="${#temporals.format(flight['outboundArrivalTime'], 'a h:mm')} ?: ${#temporals.format(flight['arrPlandTime'], 'a h:mm')}"></div>
                                     </div>
                                 </div>
                                 <div class="duration">
@@ -225,10 +219,10 @@
 
                             <!-- 귀국 구간 (존재하면) -->
                             <!-- 수정: 오류 발생 위치 (249번째 줄) - HashMap 키 접근 방식 변경 -->
-                            <div th:if="${flight['inboundDepartureTime'] != null}" class="return-section">
+                            <div class="return-section">
                                 <hr style="border: 1px dashed #ccc; margin: 10px 0;">
                                 <div class="return">
-                                    <div class="flight-title">
+                                    <div class="flight-title" th:if="${flight['inboundDepartureTime'] != null}">
                                         <div class="time-info inbound">
                                             <div class="airport-code" th:text="${flight['inboundDepartureAirport']}"></div>
                                             <div class="flight-time" th:text="${#temporals.format(flight['inboundDepartureTime'], 'a h:mm')}"></div>
@@ -239,11 +233,13 @@
                                             <div class="flight-time" th:text="${#temporals.format(flight['inboundArrivalTime'], 'a h:mm')}"></div>
                                         </div>
                                     </div>
-                                    <div class="duration">
-                                        <span th:text="${#temporals.format(flight['inboundDepartureTime'], 'a h:mm')}"></span>
-                                        → <span th:text="${#temporals.format(flight['inboundArrivalTime'], 'a h:mm')}"></span>
-                                        (<span th:text="${flight['inboundHasConnections'] == 'true' ? '경유 ' + flight['inboundTotalStops'] + '회' : '직항'}"></span>)
-                                    </div>
+                     			<div class="duration">
+								    <span th:text="${flight['inboundDepartureTime'] != null ? #temporals.format(flight['inboundDepartureTime'], 'a h:mm') : (flight['depPlandTime'] != null ? #temporals.format(flight['depPlandTime'], 'a h:mm') : '')}"></span>
+								    →
+								    <span th:text="${flight['inboundArrivalTime'] != null ? #temporals.format(flight['inboundArrivalTime'], 'a h:mm') : (flight['arrPlandTime'] != null ? #temporals.format(flight['arrPlandTime'], 'a h:mm') : '')}"></span>
+								    (<span th:text="${flight['inboundHasConnections'] == 'true' ? '경유 ' + flight['inboundTotalStops'] + '회' : '직항'}"></span>)
+								</div>
+
                                 </div>
                             </div>
                         </div>
@@ -251,7 +247,7 @@
                     <div class="flight-price">
                         <div class="price-info">
                             <div class="price-title">
-                                <strong>가격 : </strong> <span th:text="${flight['price']}"></span>
+                                <strong>가격 : </strong> <span th:text="${flight['price'] ?: flight['economyCharge']}"></span>
                             </div>
                             <button class="view-deal">예약하기</button>
                         </div>
@@ -265,7 +261,7 @@
     <script th:inline="javascript">
     /*<![CDATA[*/
     	window.flightSearchResult = /*[[${flightOffers}]]*/;
-//     	console.log("window.flightSearchResult : " + window.flightSearchResult);
+//      	console.log("window.flightSearchResult : " + window.flightSearchResult);
     /*]]>*/
     </script>
     <script th:inline="javascript" src="/js/search.js"></script>

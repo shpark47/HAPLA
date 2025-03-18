@@ -554,6 +554,7 @@ button.reset:hover, button.apply:hover {
 
 .price-title {
 	display: flex;
+	justify-content: flex-end;
 }
 
 .price {

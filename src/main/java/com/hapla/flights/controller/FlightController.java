@@ -1,11 +1,17 @@
 package com.hapla.flights.controller;
 
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -130,24 +136,24 @@ public class FlightController {
         return searchList;
     } 
 
-    public List<Map<String, Object>> removeDuplicates(List<Map<String, Object>> flightOffers) {
-        if (flightOffers == null || flightOffers.isEmpty()) {
-            return new ArrayList<>();
-        }
-
-        List<Map<String, Object>> uniqueOffers = new ArrayList<>();
-        Set<String> seen = new HashSet<>();
-
-        for (Map<String, Object> offer : flightOffers) {
-            String key = (String) offer.get("flightNumber") + "_" + offer.get("departureTime");
-            if (!seen.contains(key)) {
-                seen.add(key);
-                uniqueOffers.add(offer);
-            }
-        }
-
-        return uniqueOffers;
-    }
+//    public List<Map<String, Object>> removeDuplicates(List<Map<String, Object>> flightOffers) {
+//        if (flightOffers == null || flightOffers.isEmpty()) {
+//            return new ArrayList<>();
+//        }
+//
+//        List<Map<String, Object>> uniqueOffers = new ArrayList<>();
+//        Set<String> seen = new HashSet<>();
+//
+//        for (Map<String, Object> offer : flightOffers) {
+//            String key = (String) offer.get("flightNumber") + "_" + offer.get("departureTime");
+//            if (!seen.contains(key)) {
+//                seen.add(key);
+//                uniqueOffers.add(offer);
+//            }
+//        }
+//
+//        return uniqueOffers;
+//    }
 
     public boolean isDomesticFlight(String departureCode, String arrivalCode) {
         List<String> koreanAirports = Arrays.asList("ICN", "GMP", "PUS", "CJU", "TAE", "KWJ", "RSU", "KPO", "WJU",
@@ -197,74 +203,182 @@ public class FlightController {
         return null;
     }
 
+//    public List<Map<String, Object>> getDomesticFlightOffers(String departure, String arrival, String departureDate, String returnDate, String travelers) {
+//        RestTemplate restTemplate = new RestTemplate();
+//        List<Map<String, Object>> results = new ArrayList<>();
+//
+//        try {
+//            String url = "http://apis.data.go.kr/1613000/DmstcFlightNvgInfoService/getFlightOpratInfoList"
+//                    + "?serviceKey=" + TAGO_API_KEY
+//                    + "&pageNo=1"
+//                    + "&numOfRows=10"
+//                    + "&_type=json"
+//                    + "&depAirportId=" + URLEncoder.encode(getAirportId(departure), "UTF-8")
+//                    + "&arrAirportId=" + URLEncoder.encode(getAirportId(arrival), "UTF-8")
+//                    + "&depPlandTime=" + URLEncoder.encode(departureDate.replace("-", ""), "UTF-8");
+//
+//            System.out.println("Domestic Flight API URL: " + url);
+//
+//            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+//            System.out.println("Domestic API Response: " + response.getBody()); // 전체 응답 로그 추가
+//
+//            if (response.getStatusCode() == HttpStatus.OK) {
+//                JSONObject json = new JSONObject(response.getBody());
+//                JSONObject responseObj = json.getJSONObject("response");
+//                JSONObject bodyObj = responseObj.getJSONObject("body");
+//                Object itemsObj = bodyObj.get("items"); // Object 타입으로 받음.
+//
+//                JSONArray items = null;
+//
+//                if (itemsObj instanceof JSONObject) {
+//                    JSONObject itemsJsonObj = (JSONObject) itemsObj;
+//                    Object itemObj = itemsJsonObj.get("item");
+//
+//                    if (itemObj instanceof JSONObject) {
+//                        items = new JSONArray().put((JSONObject) itemObj); // 단일 객체 처리
+//                    } else if (itemObj instanceof JSONArray) {
+//                        items = (JSONArray) itemObj; // 배열 처리
+//                    } else {
+//                        System.out.println("Item 필드 형식이 예상과 다릅니다.");
+//                        return results;
+//                    }
+//                } else if (itemsObj instanceof JSONArray) {
+//                    items = (JSONArray) itemsObj; // items가 배열인 경우
+//                } else {
+//                    System.out.println("Items 필드 형식이 예상과 다릅니다.");
+//                    return results;
+//                }
+//
+//                if (items == null || items.length() == 0) {
+//                    System.out.println("No domestic flight offers found.");
+//                    return results;
+//                }
+//
+//                for (int i = 0; i < items.length(); i++) {
+//                    JSONObject flight = items.getJSONObject(i);
+//                    Map<String, Object> flightData = new HashMap<>();
+//
+//                    double priceKRW = flight.has("economyCharge") ? flight.getDouble("economyCharge") : 0.0;
+//                    double priceEUR = priceKRW / 1300.0;
+//
+//                    String airline = flight.getString("airlineNm");
+//                    flightData.put("price", priceKRW > 0 ? String.format("%.2f EUR (₩%,.0f)", priceEUR, priceKRW) : "가격 정보 없음");
+//                    flightData.put("airline", airline);
+//                    flightData.put("outboundAirline", airline);
+//                    flightData.put("inboundAirline", airline);
+//                    flightData.put("flightNumber", flight.getString("vihicleId"));
+//                    flightData.put("departureTime", LocalDateTime.parse(formatTAGODateTime(String.valueOf(flight.getLong("depPlandTime")))));
+//                    flightData.put("arrivalTime", LocalDateTime.parse(formatTAGODateTime(String.valueOf(flight.getLong("arrPlandTime")))));
+//                    flightData.put("departureAirport", departure);
+//                    flightData.put("arrivalAirport", arrival);
+//                    flightData.put("isDomestic", "true");
+//
+//                    System.out.println("Domestic flight data: " + flightData); // 디버깅 로그 추가
+//                    results.add(flightData);
+//                }
+//            } else {
+//                System.out.println("Domestic API Error: Status " + response.getStatusCode() + ", Body: " + response.getBody());
+//            }
+//        } catch (JSONException e) {
+//            System.out.println("JSON 파싱 오류: " + e.getMessage());
+//            e.printStackTrace();
+//        } catch (Exception e) {
+//            System.out.println("Domestic API Exception: " + e.getMessage());
+//            e.printStackTrace();
+//        }
+//        return results;
+//    }
+    
     public List<Map<String, Object>> getDomesticFlightOffers(String departure, String arrival, String departureDate, String returnDate, String travelers) {
-        RestTemplate restTemplate = new RestTemplate();
         List<Map<String, Object>> results = new ArrayList<>();
+        HttpURLConnection conn = null;
+        BufferedReader rd = null;
 
         try {
-            String url = "http://apis.data.go.kr/1613000/DmstcFlightNvgInfoService/getFlightOpratInfoList"
-                    + "?serviceKey=" + TAGO_API_KEY
-                    + "&pageNo=1"
-                    + "&numOfRows=10"
-                    + "&_type=json"
-                    + "&depAirportId=" + URLEncoder.encode(getAirportId(departure), "UTF-8")
-                    + "&arrAirportId=" + URLEncoder.encode(getAirportId(arrival), "UTF-8")
-                    + "&depPlandTime=" + URLEncoder.encode(departureDate.replace("-", ""), "UTF-8");
-
-            System.out.println("Domestic Flight API URL: " + url);
-
-            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
-            System.out.println("Domestic API Response: " + response.getBody());
-
-            if (response.getStatusCode() == HttpStatus.OK) {
-                JSONObject json = new JSONObject(response.getBody());
-                JSONObject responseObj = json.getJSONObject("response");
-                JSONObject bodyObj = responseObj.getJSONObject("body");
-                JSONObject itemsObj = bodyObj.getJSONObject("items");
-
-                JSONArray items;
-                if (itemsObj.has("item") && itemsObj.get("item") instanceof JSONObject) {
-                    items = new JSONArray().put(itemsObj.getJSONObject("item"));
-                } else {
-                    items = itemsObj.optJSONArray("item");
-                }
-
-                if (items == null || items.length() == 0) {
-                    System.out.println("No domestic flight offers found.");
-                    return results;
-                }
-
-                for (int i = 0; i < items.length(); i++) {
-                    JSONObject flight = items.getJSONObject(i);
-                    Map<String, Object> flightData = new HashMap<>();
-
-                    double priceKRW = flight.has("economyCharge") ? flight.getDouble("economyCharge") : 0.0;
-                    double priceEUR = priceKRW / 1300.0;
-
-                    String airline = flight.getString("airlineNm");
-                    flightData.put("price", priceKRW > 0 ? String.format("%.2f EUR (₩%,.0f)", priceEUR, priceKRW) : "가격 정보 없음");
-                    flightData.put("airline", airline);
-                    flightData.put("outboundAirline", airline);
-                    flightData.put("inboundAirline", airline);
-                    flightData.put("flightNumber", flight.getString("vihicleId"));
-                    flightData.put("departureTime", LocalDateTime.parse(formatTAGODateTime(String.valueOf(flight.getLong("depPlandTime")))));
-                    flightData.put("arrivalTime", LocalDateTime.parse(formatTAGODateTime(String.valueOf(flight.getLong("arrPlandTime")))));
-                    flightData.put("departureAirport", departure);
-                    flightData.put("arrivalAirport", arrival);
-                    flightData.put("isDomestic", "true");
-
-                    System.out.println("Domestic flight data: " + flightData); // 디버깅 로그 추가
-                    results.add(flightData);
-                }
-            } else {
-                System.out.println("Domestic API Error: Status " + response.getStatusCode() + ", Body: " + response.getBody());
+            if (departure == null || arrival == null || departureDate == null) {
+                throw new IllegalArgumentException("필수 파라미터가 누락되었습니다.");
             }
-        } catch (Exception e) {
-            System.out.println("Domestic API Exception: " + e.getMessage());
+
+            StringBuilder urlBuilder = new StringBuilder("http://apis.data.go.kr/1613000/DmstcFlightNvgInfoService/getFlightOpratInfoList");
+            urlBuilder.append("?" + URLEncoder.encode("serviceKey", "UTF-8") + "=" + TAGO_API_KEY);
+            urlBuilder.append("&" + URLEncoder.encode("pageNo", "UTF-8") + "=" + URLEncoder.encode("1", "UTF-8"));
+            urlBuilder.append("&" + URLEncoder.encode("numOfRows", "UTF-8") + "=" + URLEncoder.encode("10", "UTF-8"));
+            urlBuilder.append("&" + URLEncoder.encode("_type", "UTF-8") + "=" + URLEncoder.encode("json", "UTF-8"));
+            urlBuilder.append("&" + URLEncoder.encode("depAirportId", "UTF-8") + "=" + URLEncoder.encode(getAirportId(departure), "UTF-8"));
+            urlBuilder.append("&" + URLEncoder.encode("arrAirportId", "UTF-8") + "=" + URLEncoder.encode(getAirportId(arrival), "UTF-8"));
+            urlBuilder.append("&" + URLEncoder.encode("depPlandTime", "UTF-8") + "=" + URLEncoder.encode(departureDate.replace("-", ""), "UTF-8"));
+            URL url = new URL(urlBuilder.toString());
+
+            System.out.println("API URL: " + url);
+
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("Content-type", "application/json");
+
+            int responseCode = conn.getResponseCode();
+            System.out.println("Response code: " + responseCode);
+
+            if (responseCode >= 200 && responseCode <= 300) {
+                rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            } else {
+                rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+            }
+
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = rd.readLine()) != null) {
+                sb.append(line);
+            }
+
+            String responseBody = sb.toString();
+            System.out.println("API Response Body: " + responseBody);
+
+            JSONObject json = new JSONObject(responseBody);
+            JSONObject response = json.getJSONObject("response");
+            JSONObject body = response.getJSONObject("body");
+            JSONObject items = body.getJSONObject("items");
+            JSONArray itemArray = items.getJSONArray("item");
+
+            for (int i = 0; i < itemArray.length(); i++) {
+                JSONObject flightJson = itemArray.getJSONObject(i);
+                Map<String, Object> flightMap = new HashMap<>();
+                System.out.println("json data:"+ flightJson);
+                LocalDateTime arrPlandTime = LocalDateTime.parse(formatTAGODateTime(String.valueOf(flightJson.getLong("arrPlandTime"))));
+                LocalDateTime depPlandTime = LocalDateTime.parse(formatTAGODateTime(String.valueOf(flightJson.getLong("depPlandTime"))));
+                flightMap.put("arrPlandTime", arrPlandTime);
+                flightMap.put("airlineNm", flightJson.getString("airlineNm"));
+                flightMap.put("arrAirportNm", flightJson.getString("arrAirportNm"));
+                flightMap.put("depPlandTime", depPlandTime);
+                flightMap.put("depAirportNm", flightJson.getString("depAirportNm"));
+                flightMap.put("vihicleId", flightJson.getString("vihicleId"));
+                
+                // 필드가 없을 경우 기본값 0 설정
+                flightMap.put("economyCharge", flightJson.optInt("economyCharge", 0));
+                
+                results.add(flightMap);
+            }
+
+        } catch (MalformedURLException e) {
             e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rd != null) rd.close();
+                if (conn != null) conn.disconnect();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+
+        System.out.println("Results: " + results);
         return results;
     }
+    
 
     public String formatTAGODateTime(String tagoDateTime) {
         return tagoDateTime.substring(0, 4) + "-" + tagoDateTime.substring(4, 6) + "-" + tagoDateTime.substring(6, 8)
@@ -356,6 +470,7 @@ public class FlightController {
             List<Map<String, Object>> flightOffers;
             if (isDomestic) {
                 flightOffers = getDomesticFlightOffers(departureCode, arrivalCode, departureDate, returnDate, travelers);
+                System.out.println("flightOffers : " + flightOffers);
             } else {
                 String accessToken = getAmadeusAccessToken();
                 if (accessToken == null) {
@@ -386,8 +501,15 @@ public class FlightController {
             List<Map<String, Object>> uniqueFlightOffers = new ArrayList<>();
 
             for (Map<String, Object> offer : flightOffers) {
-                String flightNumber = (String) offer.get("flightNumber");
+            	String flightNumber = "";
+            	if((String)offer.get("flightNumber") != null) {
+                	flightNumber = (String)offer.get("flightNumber");
+            	} else {
+            		flightNumber = (String)offer.get("vihicleId");
+            	}
                 if (!uniqueFlightNumbers.contains(flightNumber)) {
+                	System.out.println("flightNumber : " + flightNumber);
+                	System.out.println("offer : " + offer);
                     uniqueFlightNumbers.add(flightNumber);
                     uniqueFlightOffers.add(offer);
                 }
@@ -399,7 +521,7 @@ public class FlightController {
             if (!uniqueFlightOffers.isEmpty()) {
                 System.out.println("First flight offer: " + uniqueFlightOffers.get(0));
                 System.out.println("Outbound Airline: " + uniqueFlightOffers.get(0).get("outboundAirline"));
-                System.out.println("Inbound Airline: " + uniqueFlightOffers.get(0).get("inboundAirline"));
+                System.out.println("x: " + uniqueFlightOffers.get(0).get("inboundAirline"));
             }
             	fService.countPlus(iataMap);
             	List<AirlineInfo> airlineList = loadCSV();
