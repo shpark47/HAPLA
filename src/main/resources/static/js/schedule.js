@@ -331,15 +331,62 @@ function removeMemo(button) {
 }
 
 
-function saveDetail(){
-	
-	// 현재 선택된 날짜('.date-item') 찾기
+function saveDetail() {
+	    // 현재 활성화된 날짜 항목 찾기
 	    const activeDateItem = document.querySelector(".date-item.active");
+		const tripDate = localStorage.getItem("tripData");
+		document.querySelector('input[name="startDate"]').value=JSON.parse(tripDate).startDate;
+		document.querySelector('input[name="endDate"]').value=JSON.parse(tripDate).endDate;
 	    if (!activeDateItem) {
 	        alert("날짜를 먼저 선택하세요!");
 	        return;
 	    }
+	
+	    // 1. addMemo 영역에서 메모 내용 추출하기
+	    let memoContent = "";
+	    const addMemoContainer = activeDateItem.querySelector(".addMemo");
+	    if (addMemoContainer) {
+	        // addMemo 영역 안에 여러 개의 메모 항목이 있을 경우
+	        const memoItems = addMemoContainer.querySelectorAll(".memo-item");
+	        let memos = [];
+	        for (let i = 0; i < memoItems.length; i++) {
+	            // 각 메모 항목 안의 memo-text 요소의 내용을 가져옴
+	            const memoTextElem = memoItems[i].querySelector(".memo-text");
+	            if (memoTextElem) {
+	                memos.push(memoTextElem.textContent.trim());
+	            }
+	        }
+	        memoContent = memos.join("\n"); // 줄바꿈으로 연결
+	    }
+	
+	    // 2. addDetail 영역에서 장소의 placeId 추출하기
+	    let placeIds = [];
+	    const addDetailContainer = activeDateItem.querySelector(".addDetail");
+	    if (addDetailContainer) {
+	        const placeItems = addDetailContainer.querySelectorAll(".place-item");
+	        for (let i = 0; i < placeItems.length; i++) {
+	            const placeId = placeItems[i].getAttribute("data-place-id");
+	            if (placeId) {
+	                placeIds.push(placeId);
+	            }
+	        }
+	    }
+	    const placeIdStr = placeIds.length > 0 ? placeIds.join(",") : "";
+	
+	    // 3. 추출한 데이터를 hidden input에 할당 (폼 전송용)
+	    document.getElementById("content").value = memoContent;
+	    document.getElementById("placeId").value = placeIdStr;
+		document.getElementById("tripDate").value = tripDate;
 		
+	    console.log("저장할 메모:", memoContent);
+	    console.log("저장할 placeId:", placeIdStr);
+		
+		form.submit();
+		form.action='/schedule/saveDetail'
+	
+		
+			
+	/*
 	const tripDate = localStorage.getItem("tripData");
 	const content = document.getElementById("memo-text").value.trim();
 	document.querySelector('input[name="startDate"]').value=JSON.parse(tripDate).startDate;
@@ -369,11 +416,15 @@ function saveDetail(){
 	document.getElementById("placeId").value = placeIdStr;
 
 	console.log("🚀 저장할 데이터:", { tripNo, tripDate, content, placeIdStr });
+	
 
 		form.submit();
 		form.action='/schedule/saveDetail'
+		
+		*/
+		}
 
-}
+
 // 메뉴바 선택시 일정 목록으로 페이지 이동
 document.addEventListener("DOMContentLoaded", function () {
     const menuBtn = document.getElementById("menuBtn");
