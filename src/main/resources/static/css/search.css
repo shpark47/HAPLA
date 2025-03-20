@@ -689,25 +689,20 @@ max-width
 }
 
 #loading {
-	margin-top:12rem;
 	width: 45rem;
 	height: 33rem;
-	margin-left: 36rem;
-	top: 0;
-	left: 0;
-	opacity: 0.6;
 	position: fixed;
-	display: block;
+	transform: translate(30%, 0%); /* 추가 */
+	opacity: 0.6;
 	z-index: 99;
 	text-align: center;
 }
 
 #loading-image {
-  position: absolute;
-  z-index: 100;
-  width:100%;
-  height:100%;
-  margin-left:-35.7rem;
+	position: absolute;
+	z-index: 100;
+	width: 100%;
+	height: 100%;
 }
 
 .show-more-button {
