@@ -25,6 +25,7 @@
             <div class="date-list" id="dateList">
 			    <div th:each="date : ${dateRange}" class="date-container">
 			        <div class="plan-title">
+						<input type="hidden" th:value="${date}" id="selectDate"/>
 			            <span th:text="${#dates.format(date, 'M월 d일')}"></span>
 			        </div>
 			        <div class="date-item">

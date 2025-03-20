@@ -33,7 +33,7 @@
                 </div>
             </th:block>
             <th:block th:if="${set == '전체'}">
-                <h2 th:text="${main_info.name + ' | 현재 기온 : ' + main_info.weather.current.temp_c + '°C | 날씨 : ' + main_info.weather.current.condition.text + ' | 습도 : ' + main_info.weather.current.humidity + '%'}"></h2><br>
+                <h2 th:text="${main_info.name + ' | 현재 기온 : ' + main_info.weather.temp_c + '°C | 날씨 : ' + main_info.weather.condition.text + ' | 습도 : ' + main_info.weather.humidity + '%'}"></h2><br>
                 <img th:src="${main_info.photo_url}" th:alt="${main_info.name}">
                 <p th:text="${main_info.description}"></p>
                 <div class="destinations-grid" th:each="category : ${categories}">
