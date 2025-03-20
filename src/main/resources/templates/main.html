@@ -16,9 +16,6 @@
 <main>
     <section th:replace="~{common/search.html :: search}"></section>
     <hr>
-     <div id="loading">
-        <img id="loading-image" src="img/flight.gif" alt="Loading..." />
-    </div>
     
     <section id="search-data">
         <section id="search-all-data" class="popular-destinations">
@@ -75,13 +72,14 @@
             });
         });
     });
+    
     window.onbeforeunload = function () { 
     	$('#loading').show();
-    	$('body').style.overflow='hidden';
+    	$('body').css({overflow:'hidden'});
     }  //현재 페이지에서 다른 페이지로 넘어갈 때 표시해주는 기능
     window.addEventListener('load', () =>{
     	 $('#loading').hide();
-    	 $('body').style.overflow='auto';
+    	 $('body').css({overflow:'auto'});
     });
     
 
