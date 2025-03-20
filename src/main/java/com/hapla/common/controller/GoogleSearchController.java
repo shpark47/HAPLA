@@ -30,7 +30,7 @@ public class GoogleSearchController {
     private String googleApiKey;
 
     @GetMapping("/main")
-    public String main(Model model) {
+    public String mainPage(Model model) {
         Users loginUser = (Users) model.getAttribute("loginUser");
         if (loginUser == null) {
             return "/main";
@@ -53,7 +53,7 @@ public class GoogleSearchController {
         } catch (Exception e) {
             log.error("Error during searchPlaces", e);
             model.addAttribute("errorMessage", "서버 오류가 발생했습니다.");
-            return "error";
+            return null;
         }
     }
 
@@ -69,7 +69,7 @@ public class GoogleSearchController {
         } catch (Exception e) {
             log.error("Error during searchAllPlaces", e);
             model.addAttribute("errorMessage", "서버 오류가 발생했습니다.");
-            return "error";
+            return null;
         }
     }
 
@@ -79,8 +79,8 @@ public class GoogleSearchController {
 
         for (String placeId : placeIds) {
             List<Map<String, Object>> placeDetails = getPlacesFromApi(placeId, null, null, 0);
-            if (placeDetails != null && !placeDetails.isEmpty()) {
-                placesList.add(placeDetails.get(0));
+            if (!placeDetails.isEmpty()) {
+                placesList.add(placeDetails.getFirst());
             }
         }
         return placesList;
@@ -105,8 +105,8 @@ public class GoogleSearchController {
                         placeData.put("name", result.optString("name", "이름 없음"));
                         placeData.put("rating", result.optDouble("rating", 0.0));
                         placeData.put("reviews", result.optInt("user_ratings_total", 0));
-                        placeData.put("photo_url", getPhotoUrl(result.toMap()));
-                        placeData.put("types", result.optJSONArray("types") != null && result.optJSONArray("types").length() > 0 ? result.optJSONArray("types").get(0) : "기타");
+                        placeData.put("photo_url", getPhotoUrl(result));
+                        placeData.put("types", result.optJSONArray("types") != null && !result.optJSONArray("types").isEmpty() ? result.optJSONArray("types").get(0) : "기타");
                         places.add(placeData);
                     }
                 }
@@ -131,7 +131,7 @@ public class GoogleSearchController {
                         placeData.put("name", placeJson.optString("name"));
                         placeData.put("rating", placeJson.has("rating") ? placeJson.optDouble("rating") : 0.0); // rating이 없는 경우 0.0으로 설정
                         placeData.put("reviews", placeJson.has("user_ratings_total") ? placeJson.optInt("user_ratings_total") : 0); // reviews 없는 경우 0 으로 설정
-                        placeData.put("photo_url", getPhotoUrl(placeJson.toMap()));
+                        placeData.put("photo_url", getPhotoUrl(placeJson));
                         placeData.put("types", category);
                         places.add(placeData);
                     }
@@ -146,15 +146,17 @@ public class GoogleSearchController {
     private Map<String, Object> getMainInfo(String city) {
         try {
             String mainUrl = String.format("https://maps.googleapis.com/maps/api/place/textsearch/json?query=%s&language=ko&key=%s", city, googleApiKey);
-            Map<String, Object> mainJsonResponse = restTemplate.getForObject(mainUrl, Map.class);
-            List<Map<String, Object>> mainResults = (List<Map<String, Object>>) mainJsonResponse.get("results");
+            String response = restTemplate.getForObject(mainUrl, String.class);
+            JSONObject jsonResponse = new JSONObject(response);
+            JSONArray mainResults = jsonResponse.getJSONArray("results");
             if (mainResults != null && !mainResults.isEmpty()) {
-                Map<String, Object> mainPlace = mainResults.get(0);
-                String photoUrl = getPhotoUrl(mainPlace);
+                JSONObject mainPlace = mainResults.getJSONObject(0);
+
                 Map<String, Object> mainInfo = new HashMap<>();
                 mainInfo.put("name", mainPlace.get("name"));
+                String photoUrl = getPhotoUrl(mainPlace);
                 mainInfo.put("photo_url", photoUrl);
-                mainInfo.put("description", mainPlace.containsKey("formatted_address") ? mainPlace.get("formatted_address") : "설명 없음");
+                mainInfo.put("description", mainPlace.has("formatted_address") ? mainPlace.getString("formatted_address") : "설명 없음");
                 mainInfo.put("place_id", mainPlace.get("place_id"));
                 mainInfo.put("weather", getWeather((String) mainPlace.get("place_id")));
                 return mainInfo;
@@ -168,10 +170,13 @@ public class GoogleSearchController {
     private Map<String, Object> getWeather(String placeId) {
         try {
             String detailsUrl = String.format("https://maps.googleapis.com/maps/api/place/details/json?place_id=%s&language=en&key=%s", placeId, googleApiKey);
-            Map<String, Object> detailsResponse = restTemplate.getForObject(detailsUrl, Map.class);
-            String enCity = (String) ((Map<String, Object>) detailsResponse.get("result")).get("name");
+            String response = restTemplate.getForObject(detailsUrl, String.class);
+            JSONObject jsonResponse = new JSONObject(response).getJSONObject("result");
+            String enCity = (String) jsonResponse.get("name");
+
             String url = "https://api.weatherapi.com/v1/current.json?key=b7639a3b840040e1abc73111250703&q=" + enCity + "&lang=ko";
-            return restTemplate.getForObject(url, Map.class);
+            String weatherResponse = restTemplate.getForObject(url, String.class);
+            return new JSONObject(weatherResponse).getJSONObject("current").toMap();
         } catch (Exception e) {
             log.error("Error getting city in English for city: {}", placeId, e);
         }
@@ -194,10 +199,10 @@ public class GoogleSearchController {
         return filteredResponse;
     }
 
-    private String getPhotoUrl(Map<String, Object> place) {
-        List<Map<String, Object>> photos = (List<Map<String, Object>>) place.get("photos");
+    private String getPhotoUrl(JSONObject place) {
+        JSONArray photos = place.getJSONArray("photos");
         if (photos != null && !photos.isEmpty()) {
-            String photoReference = (String) photos.get(0).get("photo_reference");
+            String photoReference = (String) photos.getJSONObject(0).get("photo_reference");
             return String.format("https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=%s&key=%s", photoReference, googleApiKey);
         }
         return "/img/시나모롤.jpg";

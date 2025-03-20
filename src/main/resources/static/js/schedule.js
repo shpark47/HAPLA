@@ -334,6 +334,8 @@ function removeMemo(button) {
 function saveDetail() {
 	    // 현재 활성화된 날짜 항목 찾기
 	    const activeDateItem = document.querySelector(".date-item.active");
+        const selectDate = activeDateItem.previousElementSibling.querySelector('#selectDate').value;
+        console.log(selectDate)
 		const tripDate = localStorage.getItem("tripData");
 		document.querySelector('input[name="startDate"]').value=JSON.parse(tripDate).startDate;
 		document.querySelector('input[name="endDate"]').value=JSON.parse(tripDate).endDate;
