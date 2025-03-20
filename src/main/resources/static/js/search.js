@@ -443,3 +443,11 @@ document.querySelector('.search-btn').addEventListener('click', () => {
 	});
 });
 
+window.onbeforeunload = function () { 
+    	$('#loading').show();
+    	$('body').css({overflow:'hidden'});
+    }  //현재 페이지에서 다른 페이지로 넘어갈 때 표시해주는 기능
+    window.addEventListener('load', () =>{
+    	 $('#loading').hide();
+    	 $('body').css({overflow:'auto'});
+    });
