@@ -56,7 +56,7 @@ let fp = flatpickr(datePickerInput, {
     defaultDate: [new Date(), new Date(new Date().setDate(new Date().getDate() + 7))],
     monthSelectorType: "static",
     showMonths: 2,
-    locale: "Korean",
+    locale: "ko",
     position: "below",
     closeOnSelect: true, // 두 번째 날짜 선택 후 자동으로 닫힘
     onOpen: function (selectedDates, dateStr, instance) {

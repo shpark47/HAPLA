@@ -14,7 +14,7 @@ const updateDatePicker = () => {
 		defaultDate: mode === "range" ? [new Date(), new Date(new Date().setDate(new Date().getDate() + 7))] : new Date(),
 		monthSelectorType: "static",
 		showMonths: 2,
-		locale: "Korean",
+		locale: "ko",
 		position: "below",
 		closeOnSelect: mode === "single", // 편도/다구간은 날짜 한 번 선택 시 자동 닫기, 왕복은 유지
 		onOpen: function(selectedDates, dateStr, instance) {
