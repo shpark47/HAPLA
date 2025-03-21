@@ -11,11 +11,6 @@
 		default, #{startDate}, #{endDate}, sysdate, #{cityName})
 	</insert>
 
-	<!-- <insert id="saveTrip"> insert all into trip values (seq_trip.NEXTVAL, 
-		#{userNo}, default, #{startDate}, #{endDate}, sysdate, #{cityName}) into 
-		detail values (seq_detail.NEXTVAL, seq_trip.NEXTVAL, default, default, default, 
-		sysdate) -->
-
 	<!-- 날짜 범위에 맞는 일정 조회 -->
 	<select id="selectScheduleByDateRange" resultType="Trip">
 	 <![CDATA[
@@ -56,18 +51,12 @@
 		values(seq_detail.NEXTVAL, #{tripNo}, #{content}, #{placeId}, #{selectDate})
 	</insert>
 
-	<!--
-	<insert id="saveDetail" keyProperty="trip_no">
-		<selectKey resultType="int" keyProperty="tripNo"
-			order="BEFORE">
-			select seq_trip.NEXTVAL from dual
-		</selectKey>
-		insert into detail(detail_no, trip_no, content, place_id, select_date)
-		values(seq_detail.NEXTVAL, #{tripNo}, #{content},#{placeId},
-		#{selectDate})
-	</insert>
-
-	 <select id="selectOneTrip" resultType="Trip"> select * from trip where 
-		user_No = #{userNo} and start_date = #{startDate} and end_date = #{endDate} 
-		and city_Name = #{cityName} </select> -->
+<!--	<insert id="saveDetail" keyProperty="trip_no">-->
+<!--		<selectKey resultType="int" keyProperty="tripNo"-->
+<!--			order="BEFORE">-->
+<!--			select seq_trip.NEXTVAL from dual-->
+<!--		</selectKey>-->
+<!--		insert into detail(detail_no, trip_no, content, place_id, select_date)-->
+<!--		values(seq_detail.NEXTVAL, #{tripNo}, #{selectDate})-->
+<!--	</insert>-->
 </mapper>

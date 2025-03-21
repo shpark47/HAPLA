@@ -1,19 +1,14 @@
 package com.hapla.schedule.controller;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.hapla.schedule.model.service.ScheduleService;
 import com.hapla.schedule.model.vo.Detail;
@@ -29,10 +24,6 @@ import lombok.RequiredArgsConstructor;
 public class ScheduleController {
 
 	private final ScheduleService scheduleService;
-	/*
-	 * // 생성자 Autowired 주입 public ScheduleController(ScheduleService
-	 * scheduleService) { this.scheduleService = scheduleService; }
-	 */
 
 	// 캘린더 페이지로 이동
 	@GetMapping("/calendar")
@@ -48,8 +39,6 @@ public class ScheduleController {
 
 		// Trip 객체 생성
 		trip.setUserNo(user.getUserNo());
-
-//		System.out.println("trip : " + trip);
 
 		// 1. 서비스 호출하여 DB 저장
 		scheduleService.saveTrip(trip);
@@ -97,8 +86,4 @@ public class ScheduleController {
 
 		return "/schedule/detail";
 	}
-
-	
-
-
 }
