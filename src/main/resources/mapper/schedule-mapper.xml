@@ -46,9 +46,12 @@
 	</select>
 
 	<!-- 조회한 tripNo를 이용해서 detail 저장 -->
-	<insert id="saveDetail">
-		insert into detail(detail_no, trip_no, content, place_id, select_date)
-		values(seq_detail.NEXTVAL, #{tripNo}, #{content}, #{placeId}, #{selectDate})
+	<insert id="saveDetail" parameterType="Detail">
+	    <selectKey resultType="int" keyProperty="detailNo" order="BEFORE">
+	        SELECT SEQ_DETAIL_NO.NEXTVAL FROM DUAL
+	    </selectKey>
+	    INSERT INTO DETAIL (DETAIL_NO, TRIP_NO, SELECT_DATE)
+	    VALUES (#{detailNo}, #{tripNo}, #{selectDate})
 	</insert>
 
 <!--	<insert id="saveDetail" keyProperty="trip_no">-->
@@ -59,4 +62,14 @@
 <!--		insert into detail(detail_no, trip_no, content, place_id, select_date)-->
 <!--		values(seq_detail.NEXTVAL, #{tripNo}, #{selectDate})-->
 <!--	</insert>-->
+	<insert id="insertMemo">
+		insert into detail_memo(detail_no, content)
+		values (#{detailNo}, #{content})
+	</insert>
+	
+	<insert id="insertPlace">
+		insert into detail_place(detail_no, place_id)
+		values (#{detailNo}, #{placeId})
+	</insert>
+	
 </mapper>
