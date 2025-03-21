@@ -26,5 +26,10 @@ public interface ScheduleMapper {
 	List<Trip> selectScheduleByDateRange(Date startDate, Date endDate);
 
 	Integer getTripNoByUser(int userNo);	// tripNo 조회
+	
 	void saveDetail(Detail detail); 	// Detail 저장
+
+	void insertMemo(@Param("detailNo") int detailNo, @Param("content") String content);
+    
+	void insertPlace(@Param("detailNo") int detailNo, @Param("placeId") String placeId);
 }
