@@ -370,16 +370,17 @@ function removeMemo(button) {
 }
 
 function saveDetail() {
-    console.log(placeMap)
+    const placeObj = Object.fromEntries(placeMap);
+    const memoObj = Object.fromEntries(memoMap);
+
+    const data = [placeObj, memoObj];
+
     fetch('/schedule/saveDetail', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json' // ✅ 올바른 Content-Type 설정
         },
-        body: JSON.stringify({
-            placeMap:placeMap,
-            memoMap:'memoMap'
-        })
+        body: JSON.stringify(data)
     })
         .then(response => response.json())
         .then(message => {

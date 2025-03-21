@@ -1,19 +1,15 @@
 package com.hapla.ajax.controller;
 
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
-import org.springframework.http.MediaType;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import com.hapla.schedule.model.service.ScheduleService;
-import com.hapla.schedule.model.vo.Detail;
 import com.hapla.users.model.vo.Users;
 
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -24,11 +20,17 @@ public class AjaxController {
 	private final ScheduleService scheduleService;
 	
 	@PostMapping("/schedule/saveDetail")
-	public String saveDetail(Model model, @RequestBody Map<Object, Object> detail) {
+	public String saveDetail(Model model, @RequestBody List<Map<String, List<String>>> maps) throws ParseException {
 	    Users loginUser = (Users) model.getAttribute("loginUser");
-		System.out.println("들어왔다.");
-		System.out.println(loginUser);
-		System.out.println(detail);
+		Set<String> dateSet = maps.getFirst().keySet();
+		ArrayList<String> dates = new ArrayList<>(dateSet);
+
+		SimpleDateFormat sdf = new SimpleDateFormat("yy/MM/dd");
+		Date date = sdf.parse(dates.get(0));
+		String date1 = sdf.format(date);
+
+		System.out.println(date1);
+		System.out.println(maps.getLast());
 		return null;
 	}
 }
