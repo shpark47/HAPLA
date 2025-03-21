@@ -382,7 +382,7 @@ function saveDetail() {
         },
         body: JSON.stringify(data)
     })
-        .then(response => response.json())
+        .then(response => response.text())
         .then(message => {
             console.log("서버 응답:", message);
             alert(message); // ✅ 알림 추가 (저장 완료 메시지)
