@@ -31,4 +31,6 @@ public interface ReviewMapper {
 
 	ArrayList<Review> searchReviewList(@Param("search") String search, RowBounds rowBounds);
 
+	int deleteReview(int reviewNo);
+
 }

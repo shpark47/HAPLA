@@ -17,9 +17,9 @@
         </section>
         <section class="community">
             <form class="needs-validation" action="/comm/update" method="POST" id="updateForm">
+            	<input type="hidden" name="userNo" id="userNo" th:value="${session.loginUser != null ? session.loginUser.userNo : ''}">
             	<input type="hidden" name="commNo" th:value="${c.commNo}">
 				<input type="hidden" name="page" th:value="${page}">
-                <h2>커뮤니티</h2>
                 <table>
                     <tr>
                         <th>제목</th>

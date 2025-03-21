@@ -79,6 +79,7 @@ public class ReviewAjaxController {
 
 	        response.put("status", "success");
 	        response.put("likes", updatedLikeCount);
+	        response.put("isLiked", !isLiked);
 	        return ResponseEntity.ok(response);
 
 	    } catch (Exception e) {
@@ -113,6 +114,7 @@ public class ReviewAjaxController {
 	        
 	        response.put("status", "success");
 	        response.put("likes", updatedLikeCount);
+	        response.put("isLiked", !isLiked);
 	        return ResponseEntity.ok(response);
 
 	    } catch (Exception e) {
