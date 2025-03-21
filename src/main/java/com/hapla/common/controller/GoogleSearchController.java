@@ -33,6 +33,7 @@ public class GoogleSearchController {
     public String mainPage(Model model) {
         Users loginUser = (Users) model.getAttribute("loginUser");
         if (loginUser == null) {
+            model.addAttribute("set", "loginX");
             return "/main";
         }
 
@@ -90,12 +91,12 @@ public class GoogleSearchController {
         List<Map<String, Object>> places = new ArrayList<>();
 
         try {
-            String url;
+            String url, response;
             JSONObject jsonResponse;
 
             if (placeId != null && !placeId.isEmpty()) {
                 url = String.format("https://maps.googleapis.com/maps/api/place/details/json?place_id=%s&language=ko&key=%s", placeId, googleApiKey);
-                String response = restTemplate.getForObject(url, String.class);
+                response = restTemplate.getForObject(url, String.class);
 
                 if (response != null && !response.trim().isEmpty()) {
                     jsonResponse = new JSONObject(response);
@@ -112,7 +113,7 @@ public class GoogleSearchController {
                 }
             } else if (city != null && !city.isEmpty() && category != null && !category.isEmpty()) {
                 url = String.format("https://maps.googleapis.com/maps/api/place/textsearch/json?query=%s+%s&language=ko&key=%s", city, category, googleApiKey);
-                String response = restTemplate.getForObject(url, String.class);
+                response = restTemplate.getForObject(url, String.class);
 
                 if (response != null && !response.trim().isEmpty()) {
                     jsonResponse = new JSONObject(response);

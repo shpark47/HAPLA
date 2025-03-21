@@ -19,7 +19,11 @@
     
     <section id="search-data">
         <section id="search-all-data" class="popular-destinations">
-            <th:block th:if="${set != '전체'}">
+            <div style="min-height: 500px" th:if="${set == 'loginX'}">
+                <br/><br/><br/><br/>
+                <h1>로그인 시 즐겨찾기 목록이 조회됩니다.</h1>
+            </div>
+            <th:block th:if="${set != '전체' && set != 'loginX'}">
                 <div class="destinations-grid">
                     <h2 th:text="${set}"></h2>
                     <div class="destination-card" th:each="place : ${places}" th:attr="data-place-id=${place.place_id}, data-type=${place.types}">

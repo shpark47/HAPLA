@@ -94,7 +94,7 @@ function fetchUserProfile(token) {
             loginImage = data.picture; // 프로필 이미지 URL 저장
             loginName = data.name; // 사용자 이름 저장
             loginType = "G"; // 로그인 타입을 'G'(구글)로 설정
-            tokenId = data.userId; // 사용자 ID 저장
+            tokenId = data.tokenId; // 사용자 ID 저장
             checkUser(tokenId, loginType); // 사용자 확인 함수 호출
         })
         .catch(error => {

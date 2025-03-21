@@ -28,14 +28,12 @@ public class GoogleLoginController {
             // 읽어온 JSON 데이터를 파싱하여 JsonObject로 변환
 
             String userId = jsonObject.get("sub").getAsString(); // 구글 사용자 고유 ID (sub 필드)
-            String email = jsonObject.get("email").getAsString(); // 사용자 이메일
             String name = jsonObject.get("name").getAsString(); // 사용자 이름
             String pictureUrl = jsonObject.get("picture").getAsString(); // 사용자 프로필 사진 URL
 
             // 반환할 사용자 정보
             JsonObject response = new JsonObject(); // 응답용 JSON 객체 생성
-            response.addProperty("userId", userId); // 사용자 ID 추가
-            response.addProperty("email", email); // 이메일 추가
+            response.addProperty("tokenId", userId); // 사용자 ID 추가
             response.addProperty("name", name); // 이름 추가
             response.addProperty("picture", pictureUrl); // 프로필 사진 URL 추가
             System.out.println(response); // 디버깅용으로 응답 데이터 출력
