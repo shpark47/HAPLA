@@ -56,7 +56,7 @@ let fp = flatpickr(datePickerInput, {
     defaultDate: [new Date(), new Date(new Date().setDate(new Date().getDate() + 7))],
     monthSelectorType: "static",
     showMonths: 2,
-    locale: "ko",
+    locale: "Korean",
     position: "below",
     closeOnSelect: true, // 두 번째 날짜 선택 후 자동으로 닫힘
     onOpen: function (selectedDates, dateStr, instance) {
@@ -98,15 +98,18 @@ let fp = flatpickr(datePickerInput, {
         }
 
         // 두 날짜가 선택되면 자동으로 적용
-        if (selectedDates.length === 2) {
+        if (selectedDates.length == 2) {
             const startDate = selectedDates[0].toISOString().split('T')[0]; // YYYY-MM-DD 형식
             const endDate = selectedDates[1].toISOString().split('T')[0];   // YYYY-MM-DD 형식
             const startDateKr = selectedDates[0].toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' });
             const endDateKr = selectedDates[1].toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' });
+			
 
             // 입력 필드에 두 형식으로 값 설정
             datePickerInput.value = `${startDate} ~ ${endDate}`; // 데이터 전송용 형식
             datePickerInput.dataset.displayValue = `${startDateKr} ~ ${endDateKr}`; // 사용자 표시용 형식
+			console.log(datePickerInput.value);
+			console.log(datePickerInput.dataset.displayValue);
 
             // 달력 닫기
             instance.close();
@@ -116,7 +119,7 @@ let fp = flatpickr(datePickerInput, {
 });
 
 function updateTitle(selectedDates, titleDiv) {
-    if (selectedDates.length === 2) {
+    if (selectedDates.length == 2) {
         const startDate = selectedDates[0].toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' });
         const endDate = selectedDates[1].toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' });
         titleDiv.textContent = `${startDate} 출발 → ${endDate} 도착`;
@@ -440,6 +443,14 @@ document.querySelector('.search-btn').addEventListener('click', () => {
 
 	});
 });
+
+document.querySelector('.search-bar').addEventListener('keyup', (e) => {
+	if(e.key=='Enter') {
+//		console.log('enter');
+		searchPlaces();
+		}
+});
+
 
 window.onbeforeunload = function () { 
     	$('#loading').show();
