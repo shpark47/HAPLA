@@ -14,6 +14,7 @@
 	    JOIN users ON review.user_no = users.user_no
 	    left join (select review_no, count(*) as like_count from rlike group by review_no) like_table
 	    		on review.review_no = like_table.review_no
+	    WHERE review.status = 'Y'
 	    ORDER BY review.create_date DESC
 	</select>
 	
@@ -49,7 +50,7 @@
 	</select>
 	
 	<select id="searchReviewList" parameterType="string" resultType="com.hapla.review.model.vo.Review">
-        SELECT review_no, user_no, title, content, rating, create_date,
+        SELECT review_no, user_no, title, content, rating, create_date, thumnail,
                (SELECT COUNT(*) FROM rlike WHERE review_no = r.review_no) AS likes,
                (SELECT name FROM users WHERE user_no = r.user_no) AS name
         FROM review r
@@ -63,5 +64,11 @@
         WHERE (title LIKE '%' || #{search} || '%' 
         OR content LIKE '%' || #{search} || '%')
     </select>
+	
+	<update id="deleteReview">
+		update review
+		set status = 'N'
+		where review_no = #{reviewNo}
+	</update>
 	
 </mapper>

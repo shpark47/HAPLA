@@ -18,13 +18,42 @@
     </section>
     <section class="community">
         <form class="needs-validation" method="POST" id="detailForm">
-        	<input type="hidden" id="userNo" th:value="${session.loginUser != null ? session.loginUser.userNo : ''}">
+        	<input type="hidden" name="userNo" id="userNo" th:value="${session.loginUser != null ? session.loginUser.userNo : ''}">
             <input type="hidden" name="commNo" th:value="${c.commNo}">
             <input type="hidden" name="page" th:value="${page}">
             <h2 style="display: inline-block;">커뮤니티</h2>
             <div class="buttons">
 	            <button id="likeBtn" class="btn btn-outline-danger btn-sm" style="margin-left: 10px;">
-				    ❤️ <span id="likeCount" th:text="${c != null ? c.likes : 0}"></span>
+				    <!-- 좋아요가 눌리지 않은 상태(빈 하트) -->
+				    <svg th:attr="style=${isLiked == false} ? 'display: inline;' : 'display: none;'" 
+				         fill="#fcfcfc" height="20px" width="20px" version="1.1" id="heart-outline" 
+				         xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+				         viewBox="0 0 471.701 471.701" xml:space="preserve">
+				        <g>
+				            <path d="M433.601,67.001c-24.7-24.7-57.4-38.2-92.3-38.2s-67.7,13.6-92.4,38.3l-12.9,12.9l-13.1-13.1
+				                c-24.7-24.7-57.6-38.4-92.5-38.4c-34.8,0-67.6,13.6-92.2,38.2c-24.7,24.7-38.3,57.5-38.2,92.4c0,34.9,13.7,67.6,38.4,92.3
+				                l187.8,187.8c2.6,2.6,6.1,4,9.5,4c3.4,0,6.9-1.3,9.5-3.9l188.2-187.5c24.7-24.7,38.3-57.5,38.3-92.4
+				                C471.801,124.501,458.301,91.701,433.601,67.001z M414.401,232.701l-178.7,178l-178.3-178.3c-19.6-19.6-30.4-45.6-30.4-73.3
+				                s10.7-53.7,30.3-73.2c19.5-19.5,45.5-30.3,73.1-30.3c27.7,0,53.8,10.8,73.4,30.4l22.6,22.6c5.3,5.3,13.8,5.3,19.1,0l22.4-22.4
+				                c19.6-19.6,45.7-30.4,73.3-30.4c27.6,0,53.6,10.8,73.2,30.3c19.6,19.6,30.3,45.6,30.3,73.3
+				                C444.801,187.101,434.001,213.101,414.401,232.701z"/>
+				        </g>
+				    </svg>
+				    
+				    <!-- 좋아요가 눌린 상태(빨간색 하트) -->
+				    <svg th:attr="style=${isLiked == true} ? 'display: inline;' : 'display: none;'" 
+					     height="20px" width="20px" version="1.1" id="heart-fill" 
+					     xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+					     viewBox="0 0 471.701 471.701" xml:space="preserve">
+					    <g>
+					        <path fill="red" d="M433.601,67.001c-24.7-24.7-57.4-38.2-92.3-38.2s-67.7,13.6-92.4,38.3l-12.9,12.9l-13.1-13.1
+					            c-24.7-24.7-57.6-38.4-92.5-38.4c-34.8,0-67.6,13.6-92.2,38.2c-24.7,24.7-38.3,57.5-38.2,92.4c0,34.9,13.7,67.6,38.4,92.3
+					            l187.8,187.8c2.6,2.6,6.1,4,9.5,4c3.4,0,6.9-1.3,9.5-3.9l188.2-187.5c24.7-24.7,38.3-57.5,38.3-92.4
+					            C471.801,124.501,458.301,91.701,433.601,67.001z"/>
+					    </g>
+					</svg>
+				    
+				    <span id="likeCount" th:text="${c != null ? c.likes : 0}"></span>
 				</button>
 				<button class="cancel-button" type="button" onclick="goBackAndRefresh();">목록</button>
 			</div>
@@ -36,7 +65,7 @@
                 </tr>
                 <tr>
                     <th width="50px">등록자</th>
-                    <td th:text="${c != null ? c.name : '등록자 없음'}"></td>
+                    <td>[[${c.name}]]</td>
                 </tr>
                 <tr>
                     <th width="50px">등록일</th>
@@ -136,6 +165,11 @@
 </div>
 
 <script th:inline="javascript">
+	function goBackAndRefresh() {
+	    const backUrl = '/comm/list';
+	    window.location.href = backUrl + (backUrl.includes('?') ? '&' : '?') + 'refresh=true';
+	}
+	
 	window.addEventListener('load', () => {
         const form = document.getElementById('detailForm');
         const updateButton = document.getElementById('updateForm'); // 수정 버튼
@@ -180,6 +214,8 @@
                 form.submit();
             });
         }
+        
+        
     });
 	
 	const tbody = document.querySelectorAll('tbody')[1];
@@ -195,7 +231,7 @@
 				replyContent:document.getElementById('replyContent').value,
 				commNo:/*[[${c.commNo}]]*/1,
 				name:/*[[${c.name}]]*/'user01',
-				userNo:/*[[${session.loginUser != null ? session.loginUser.userNo : ''}]]*/'user01'
+				userNo:/*[[${session.loginUser != null ? session.loginUser.userNo : ''}]]*/1
 			},
 			success: data => {
 				console.log(data);
@@ -216,7 +252,7 @@
 					tr.innerHTML += '<td>' + r.updateDate + '</td>';
 					
 					const iconTd = document.createElement('td');  // <td></td>
-					iconTd.setAttribute('width', '80px');         // <td width="80px"></td>
+					iconTd.setAttribute('width', '100px');         // <td width="80px"></td>
 					if(r.replyWriter == /*[[${session.loginUser != null ? session.loginUser.userNo : ''}]]*/'user01'){
 						iconTd.innerHTML = '<span class="updel"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/></svg></span>&nbsp;&nbsp;<span class="updel"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16"><path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/></svg></span><input type="hidden" th:value="' + r.replyContent + '">';
 					}
@@ -320,6 +356,7 @@
 	    const likeBtn = document.getElementById("likeBtn");
 	    const likeCount = document.getElementById("likeCount");
 	    const userNo = document.getElementById("userNo").value;
+	    const likeIcon = document.querySelector("#likeBtn svg path");
 
 	    likeBtn.addEventListener("click", function(event) {
 	        if (!userNo) { // ✅ 로그인 여부 확인
@@ -332,10 +369,22 @@
 	            type: "POST",
 	            data: { 
 	                commNo: /*[[${c.commNo}]]*/ 1, 
-	                userNo: /*[[${session.loginUser.userNo}]]*/1
+	                userNo: /*[[${c.userNo}]]*/ 1
 	            },
 	            success: function(response) {
+	                // 좋아요 개수 업데이트
 	                $("#likeCount").text(response.likes);
+
+	                // 좋아요 상태 확인 및 하트 색상 변경
+	                if (response.isLiked) {  
+	                    // 좋아요가 눌린 상태 - 빨간 하트 보여주기
+	                    $("#heart-outline").hide();
+	                    $("#heart-fill").show();
+	                } else {
+	                    // 좋아요가 눌리지 않은 상태 - 빈 하트 보여주기
+	                    $("#heart-fill").hide();
+	                    $("#heart-outline").show();
+	                }
 	            },
 	            error: function(xhr) {
 	                console.log("에러 상태 코드:", xhr.status);
@@ -348,11 +397,6 @@
 	    });
 	});
 
-	function goBackAndRefresh() {
-        history.back();
-        setTimeout(() => location.reload(), 500); // 0.5초 후 새로고침
-    }
-	
 </script>
 
 

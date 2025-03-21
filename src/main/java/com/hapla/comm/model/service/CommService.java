@@ -1,6 +1,7 @@
 package com.hapla.comm.model.service;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.stereotype.Service;
@@ -9,7 +10,6 @@ import com.hapla.comm.model.mapper.CommMapper;
 import com.hapla.comm.model.vo.Comm;
 import com.hapla.comm.model.vo.Reply;
 import com.hapla.common.PageInfo;
-import com.hapla.users.model.vo.Users;
 
 import lombok.RequiredArgsConstructor;
 
@@ -44,14 +44,18 @@ public class CommService {
 		return mapper.insertComm(c);
 	}
 
-	public Comm selectComm(int commNo, String name) {
-		Comm c = mapper.selectComm(commNo);
-		if(c != null && name != null && !(c.getName().equals(name))) {
-			int result = mapper.updateCount(commNo);
-			if(result > 0) {
-				c.setViews(c.getViews() + 1);
-			}
-		} return c;
+	public Comm selectComm(int commNo, Integer userNo) {
+	    Comm c = mapper.selectComm(commNo);
+	    if (c != null) {
+	        // 현재 사용자가 본인이 작성한 게시글이 아닌 경우에만 조회수 증가 처리
+	        if (userNo == null || !Objects.equals(c.getUserNo(), userNo)) {
+	            int result = mapper.updateCount(commNo);
+	            if (result > 0) {
+	                c.setViews(c.getViews() + 1);
+	            }
+	        }
+	    }
+	    return c;
 	}
 
 	public ArrayList<Reply> selectReplyList(int commNo) {

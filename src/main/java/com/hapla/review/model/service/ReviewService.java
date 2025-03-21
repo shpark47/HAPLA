@@ -51,4 +51,7 @@ public class ReviewService {
         RowBounds rowBounds = new RowBounds(offset, pi.getBoardLimit());
         return mapper.searchReviewList(search, rowBounds);
     }
+	public int deleteReview(int reviewNo) {
+		return mapper.deleteReview(reviewNo);
+	}
 }
