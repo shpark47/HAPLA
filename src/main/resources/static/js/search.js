@@ -384,8 +384,6 @@ function searchAirports(query, dropdownId) {
             if (data.length > 0) {
                 data.forEach(airport => {
                     const li = document.createElement('li');
-//                    li.textContent = `${airport.countryKoName}, ${airport.cityKoName}`; // 표시할 값
-//					li.textContent += `${airport.airportsKoName} (${airport.iataCode})`;
 					li.innerHTML = `${airport.korCountryName}, ${airport.korCityName}<br>${airport.korAirportName} (${airport.iataCode})`;
                     li.dataset.korAirportName = airport.korAirportName + '(' + airport.iataCode + ')'; // 클릭 시 사용
                     li.addEventListener('click', function () {

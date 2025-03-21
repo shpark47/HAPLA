@@ -67,43 +67,18 @@ public class FlightController {
     
     
     private final FlightService fService;
-//    public List<Airport> loadCSV() {
-//        List<Airport> airports = new ArrayList<>();
-//        try (CSVReader csvReader = new CSVReader(new FileReader("src/main/resources/static/csv/airports.csv"))) {
-//            String[] values;
-//            while ((values = csvReader.readNext()) != null) {
-//                Airport airport = new Airport();
-//                airport.setIataCode(values[0]);
-//                airport.setEngAirportName(values[1]);
-//                airport.setKorAirportName(values[2]);
-//                airport.setEngCityName(values[3]);
-//                airport.setKorCityName(values[4]);
-//                airport.setKorCountryName(values[5]);
-//                airport.setEngCountryName(values[6]);
-//                airports.add(airport);
-//            }
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        } catch (CsvValidationException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        return airports;
-//    }
-    
-	  public List<AirlineInfo> loadCSV() {
-	  List<AirlineInfo> airlineList = new ArrayList<>();
-	  try (CSVReader csvReader = new CSVReader(new FileReader("src/main/resources/static/csv/airlineNames.csv"))) {
-	      String[] values;
-	      while ((values = csvReader.readNext()) != null) {
-	          AirlineInfo airline = new AirlineInfo();
-	          airline.setKorAirline(values[1]);
-	          airline.setCarrierCode(values[2]);
+    	public List<AirlineInfo> loadCSV() {
+    	List<AirlineInfo> airlineList = new ArrayList<>();
+    	try (CSVReader csvReader = new CSVReader(new FileReader("src/main/resources/static/csv/airlineNames.csv"))) {
+		String[] values;
+		while ((values = csvReader.readNext()) != null) {
+			AirlineInfo airline = new AirlineInfo();
+			airline.setKorAirline(values[1]);
+			airline.setCarrierCode(values[2]);
 	        
-	          airlineList.add(airline);
-	      }
-	  } catch (FileNotFoundException e) {
+			airlineList.add(airline);
+		}
+    		} catch (FileNotFoundException e) {
 	      e.printStackTrace();
 	  } catch (CsvValidationException e) {
 	      e.printStackTrace();
@@ -136,24 +111,6 @@ public class FlightController {
         return searchList;
     } 
 
-//    public List<Map<String, Object>> removeDuplicates(List<Map<String, Object>> flightOffers) {
-//        if (flightOffers == null || flightOffers.isEmpty()) {
-//            return new ArrayList<>();
-//        }
-//
-//        List<Map<String, Object>> uniqueOffers = new ArrayList<>();
-//        Set<String> seen = new HashSet<>();
-//
-//        for (Map<String, Object> offer : flightOffers) {
-//            String key = (String) offer.get("flightNumber") + "_" + offer.get("departureTime");
-//            if (!seen.contains(key)) {
-//                seen.add(key);
-//                uniqueOffers.add(offer);
-//            }
-//        }
-//
-//        return uniqueOffers;
-//    }
 
     public boolean isDomesticFlight(String departureCode, String arrivalCode) {
         List<String> koreanAirports = Arrays.asList("ICN", "GMP", "PUS", "CJU", "TAE", "KWJ", "RSU", "KPO", "WJU",
@@ -202,92 +159,6 @@ public class FlightController {
         }
         return null;
     }
-
-//    public List<Map<String, Object>> getDomesticFlightOffers(String departure, String arrival, String departureDate, String returnDate, String travelers) {
-//        RestTemplate restTemplate = new RestTemplate();
-//        List<Map<String, Object>> results = new ArrayList<>();
-//
-//        try {
-//            String url = "http://apis.data.go.kr/1613000/DmstcFlightNvgInfoService/getFlightOpratInfoList"
-//                    + "?serviceKey=" + TAGO_API_KEY
-//                    + "&pageNo=1"
-//                    + "&numOfRows=10"
-//                    + "&_type=json"
-//                    + "&depAirportId=" + URLEncoder.encode(getAirportId(departure), "UTF-8")
-//                    + "&arrAirportId=" + URLEncoder.encode(getAirportId(arrival), "UTF-8")
-//                    + "&depPlandTime=" + URLEncoder.encode(departureDate.replace("-", ""), "UTF-8");
-//
-//            System.out.println("Domestic Flight API URL: " + url);
-//
-//            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
-//            System.out.println("Domestic API Response: " + response.getBody()); // 전체 응답 로그 추가
-//
-//            if (response.getStatusCode() == HttpStatus.OK) {
-//                JSONObject json = new JSONObject(response.getBody());
-//                JSONObject responseObj = json.getJSONObject("response");
-//                JSONObject bodyObj = responseObj.getJSONObject("body");
-//                Object itemsObj = bodyObj.get("items"); // Object 타입으로 받음.
-//
-//                JSONArray items = null;
-//
-//                if (itemsObj instanceof JSONObject) {
-//                    JSONObject itemsJsonObj = (JSONObject) itemsObj;
-//                    Object itemObj = itemsJsonObj.get("item");
-//
-//                    if (itemObj instanceof JSONObject) {
-//                        items = new JSONArray().put((JSONObject) itemObj); // 단일 객체 처리
-//                    } else if (itemObj instanceof JSONArray) {
-//                        items = (JSONArray) itemObj; // 배열 처리
-//                    } else {
-//                        System.out.println("Item 필드 형식이 예상과 다릅니다.");
-//                        return results;
-//                    }
-//                } else if (itemsObj instanceof JSONArray) {
-//                    items = (JSONArray) itemsObj; // items가 배열인 경우
-//                } else {
-//                    System.out.println("Items 필드 형식이 예상과 다릅니다.");
-//                    return results;
-//                }
-//
-//                if (items == null || items.length() == 0) {
-//                    System.out.println("No domestic flight offers found.");
-//                    return results;
-//                }
-//
-//                for (int i = 0; i < items.length(); i++) {
-//                    JSONObject flight = items.getJSONObject(i);
-//                    Map<String, Object> flightData = new HashMap<>();
-//
-//                    double priceKRW = flight.has("economyCharge") ? flight.getDouble("economyCharge") : 0.0;
-//                    double priceEUR = priceKRW / 1300.0;
-//
-//                    String airline = flight.getString("airlineNm");
-//                    flightData.put("price", priceKRW > 0 ? String.format("%.2f EUR (₩%,.0f)", priceEUR, priceKRW) : "가격 정보 없음");
-//                    flightData.put("airline", airline);
-//                    flightData.put("outboundAirline", airline);
-//                    flightData.put("inboundAirline", airline);
-//                    flightData.put("flightNumber", flight.getString("vihicleId"));
-//                    flightData.put("departureTime", LocalDateTime.parse(formatTAGODateTime(String.valueOf(flight.getLong("depPlandTime")))));
-//                    flightData.put("arrivalTime", LocalDateTime.parse(formatTAGODateTime(String.valueOf(flight.getLong("arrPlandTime")))));
-//                    flightData.put("departureAirport", departure);
-//                    flightData.put("arrivalAirport", arrival);
-//                    flightData.put("isDomestic", "true");
-//
-//                    System.out.println("Domestic flight data: " + flightData); // 디버깅 로그 추가
-//                    results.add(flightData);
-//                }
-//            } else {
-//                System.out.println("Domestic API Error: Status " + response.getStatusCode() + ", Body: " + response.getBody());
-//            }
-//        } catch (JSONException e) {
-//            System.out.println("JSON 파싱 오류: " + e.getMessage());
-//            e.printStackTrace();
-//        } catch (Exception e) {
-//            System.out.println("Domestic API Exception: " + e.getMessage());
-//            e.printStackTrace();
-//        }
-//        return results;
-//    }
     
     public List<Map<String, Object>> getDomesticFlightOffers(String departure, String arrival, String departureDate, String returnDate, String travelers) {
         List<Map<String, Object>> results = new ArrayList<>();
