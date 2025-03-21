@@ -39,14 +39,14 @@ body {
 
 /* ✅ 기존 `review-container` 디자인 유지 + 스크롤 추가 */
 .review-container {
-    width: 60%;
+    width: 70%;
     max-width: 900px;
     margin: auto;
     background: white;
     padding: 20px;
     border-radius: 10px;
-    height: 600px;  /* 기존 유지 */
-    margin-top: -900px; /* 기존 유지 */
+    height: 700px;  /* 기존 유지 */
+    margin-top: -970px; /* 기존 유지 */
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     position: relative;
     overflow-y: auto; /* ✅ 내부 내용이 넘칠 경우에만 세로 스크롤 */
@@ -126,30 +126,59 @@ body {
     object-fit: cover;
 }
 
-/* ✅ 좋아요 섹션 유지 */
-.like-section {
+#likeBtn {
+    position: absolute;
+    top: 30px;                 /* 화면 위쪽으로부터의 거리 */
+    right: 30px;                /* 화면 오른쪽으로부터의 거리 */
     display: flex;
     align-items: center;
-    margin-top: 15px;
-}
-
-.like-icon {
-    width: 20px;
-    height: 20px;
-    margin-right: 5px;
+    justify-content: center;
+    gap: 5px;
+    padding: 5px;
+    background: none;           /* 배경 제거 */
+    border: none;               /* 테두리 제거 */
     cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.like-count {
-    font-size: 14px;
-    color: #333;
+/* ✅ 마우스 호버 시 */
+#likeBtn:hover {
+    transform: scale(1.05);
+}
+
+/* ✅ 클릭 시 애니메이션 */
+#likeBtn:active {
+    transform: scale(0.95);
+}
+
+/* ✅ 좋아요 아이콘 스타일 */
+.heart-icon {
+    transition: transform 0.2s;
+}
+
+/* ✅ 좋아요 클릭 애니메이션 */
+.heart-icon.active {
+    animation: heartPop 0.3s ease-in-out;
+}
+
+@keyframes heartPop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.4); }
+    100% { transform: scale(1); }
+}
+
+/* ✅ 좋아요 카운트 스타일 */
+#likeCount {
+    font-weight: bold;
+    font-size: 16px;
+    color: #000000;  /* 좋아요가 눌리면 빨간색 */
 }
 
 /* ✅ 목록 버튼 스타일 */
-.cancel-button {
+.deleteModal {
     display: block; /* 블록 요소로 설정하여 너비를 가득 채움 */
     width: 150px; /* 버튼 크기 조정 */
-    margin: 20px auto 0; /* 상단 마진 추가 & 중앙 정렬 */
+    margin: 10px auto;            /* 버튼을 중앙으로 정렬 */
     padding: 10px 20px;
     background-color: #007bff; /* 📌 파란색 */
     color: white;
@@ -161,21 +190,82 @@ body {
     text-align: center;
     transition: background-color 0.3s ease;
 }
+/* ✅ 공통 버튼 스타일 */
+.cancel-button {
+    display: block;              /* 블록 요소로 설정하여 너비를 가득 채움 */
+    width: 150px;                 /* 버튼 너비 조정 */
+    margin: 10px auto;            /* 버튼을 중앙으로 정렬 */
+    padding: 10px 20px;
+    background-color: #007bff;    /* 기본 색상 - 파란색 */
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.3s ease, transform 0.2s;
+}
 
+/* ✅ 버튼 호버 효과 */
 .cancel-button:hover {
-    background-color: #0056b3; /* 📌 마우스 호버 시 진한 파란색 */
+    background-color: #0056b3;   /* 호버 시 진한 파란색 */
+    transform: scale(1.05);
+}
+
+.deleteModal:hover {
+    background-color: #0056b3;   /* 호버 시 진한 파란색 */
+    transform: scale(1.05);
 }
 
 /* ✅ 버튼을 review-container 하단에 위치시키기 */
 .review-container {
     position: relative;
-    padding-bottom: 60px; /* 버튼이 겹치지 않도록 아래쪽 패딩 추가 */
+    padding-bottom: 80px; /* 버튼들이 겹치지 않도록 여유 공간 확보 */
 }
 
 /* ✅ 버튼을 컨테이너 내부 하단 중앙에 고정 */
 .button-container {
-    position: absolute;
-    bottom: 20px; /* 📌 review-container 하단에서 20px 위로 */
-    left: 50%;
-    transform: translateX(-50%);
+    position: sticky;        /* 스크롤 시 review-container 하단에 고정 */
+    bottom: -90px;               /* 하단에 붙여서 위치 고정 */
+    width: 100%;             /* review-container의 너비에 맞게 설정 */
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+    background-color: white; /* 📌 버튼 뒤에 흰색 배경 추가 (겹침 방지) */
+    border-top: 1px solid #ddd;
+}
+
+/* 🌟 기본적으로 숨겨진 모달 */
+.modal {
+    display: none; /* 🌟 기본적으로 숨김 */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* 배경 어둡게 */
+    z-index: 1050;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 🌟 모달이 활성화되었을 때 적용되는 스타일 */
+.modal.show {
+    display: flex; /* 🔹 show 클래스가 추가될 때만 모달 표시 */
+}
+
+/* 🌟 모달 내용 스타일 */
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    min-width: 300px;
+    text-align: center;
+}
+
+/* 🌟 모달 배경 z-index 조정 */
+.modal-backdrop {
+    z-index: 1040 !important;
 }

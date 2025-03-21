@@ -60,7 +60,7 @@ public class ReviewController {
 	@GetMapping("list")
 	public String selectList(
 	        @RequestParam(value = "page", defaultValue = "1") int currentPage,
-	        @RequestParam(value = "search", required = false) String search, // ✅ 검색어 추가
+	        @RequestParam(value = "search", required = false) String search, // ✅ 검색어 추가,
 	        Model model, HttpServletRequest request) {
 
 	    int boardLimit = 4;
@@ -102,15 +102,16 @@ public class ReviewController {
 	@GetMapping("/{id}/{page}")
     public ModelAndView selectReview(@PathVariable("id") int reviewNo, 
                                      @PathVariable("page") int page,
-                                     HttpSession session) throws Exception {
-        ModelAndView mv = new ModelAndView();
+                                     HttpSession session, ModelAndView mv) throws Exception {
 
-        // 현재 로그인한 사용자 정보 가져오기
         Users loginUser = (Users) session.getAttribute("loginUser");
-        String name = (loginUser != null) ? loginUser.getName() : null;
+        Integer userNo = (loginUser != null) ? loginUser.getUserNo() : null;
 
-        // 게시글 상세 조회
         Review r = reviewService.selectReview(reviewNo);
+        
+        int updatedLikeCount = reviewService.getLikeCount(reviewNo);
+        r.setLikes(updatedLikeCount);
+        boolean isLiked = (userNo != null) && reviewService.checkUserLike(userNo, reviewNo) > 0;
 
         if(r != null) {
 	    	List<String> imageUrls = null;
@@ -131,6 +132,7 @@ public class ReviewController {
 	          .addObject("page", page)
 	          .addObject("thumbnail", thumbnail)
 	          .addObject("imageUrls", imageUrls)
+	          .addObject("isLiked", isLiked)
 	          .setViewName("review/detail");
 	
 	        return mv;
@@ -163,4 +165,14 @@ public class ReviewController {
 		}
 		throw new Exception("실패");
 	}
+	
+	@PostMapping("delete")
+    public String deleteReview(@RequestParam("reviewNo") int reviewNo, HttpServletRequest request) {
+    	int result = reviewService.deleteReview(reviewNo);
+    	if(result > 0) {
+    		return "redirect:/review/main";
+    	} else {
+    		throw new Exception("실패");
+    	}
+    }
 }

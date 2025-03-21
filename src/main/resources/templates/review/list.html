@@ -7,10 +7,10 @@
     <link href="/css/reviewList.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-<div th:replace="~{common/header.html :: topbar}"></div>
+<div th:replace="~{common/header.html :: topbar}" style="position: fixed; top: 0; width: 100%; z-index: 10000;"></div>
 
 <main class="content">
-    <form action="/review/list" method="GET" onsubmit="return validateForm()">
+    <form action="/review/list" method="GET" onsubmit="return validateForm()" style="position: relative; z-index: 1";>
         <div class="hero" style="height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
     <h3>리뷰 목록</h3>
     <div class="div" style="display: flex; align-items: center; gap: 10px; width: 60%; max-width: 600px; background: white; padding: 5px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);">
@@ -38,7 +38,7 @@
             </div>
             <!-- ✅ 최대 4개까지만 표시 & 클릭 시 상세보기 이동 가능 -->
             <div th:each="r: ${list}" class="review-card" th:data-id="${r.reviewNo}" th:data-page="${pi.currentPage}">
-		<img th:src="@{${r.thumnail != null ? r.thumnail : '/img/noImage.jpg'}}" alt="리뷰 이미지">
+		<img th:src="${r.thumnail != null and r.thumnail != '' ? r.thumnail : '/img/noImage.jpg'}" alt="리뷰 이미지">
                 <div class="review-info">
                     <h3 th:text="${r.title != null ? r.title : '제목 없음'}"></h3>
                     <div class="author">
@@ -89,7 +89,7 @@
     </div>
 </main>
 
-<div th:replace="~{common/footer.html :: foot}"></div>
+<div th:replace="~{common/footer.html :: foot}" style="position: fixed; top: 0; width: 100%; z-index: 10000;"></div>
 
 <script th:inline="javascript">
     window.addEventListener('load', () => {

@@ -198,19 +198,23 @@ public class CommController {
     
     @GetMapping("/{id}/{page}")
     public ModelAndView selectComm(@PathVariable("id") int commNo, 
-                                   @PathVariable("page") int page, 
+                                   @PathVariable("page") int page,
                                    HttpSession session, 
                                    ModelAndView mv) {
-        // 현재 로그인한 사용자 정보 가져오기
         Users loginUser = (Users) session.getAttribute("loginUser");
-        String name = (loginUser != null) ? loginUser.getName() : null;
-
-        // 게시글 상세 조회
-        Comm c = commService.selectComm(commNo, name);
+        Integer userNo = (loginUser != null) ? loginUser.getUserNo() : null;
+        
+        
+        Comm c = commService.selectComm(commNo, userNo);
         ArrayList<Reply> list = commService.selectReplyList(commNo);
         
         int updatedLikeCount = commService.getLikeCount(commNo);
         c.setLikes(updatedLikeCount);
+        boolean isLiked = (userNo != null) && commService.checkUserLike(userNo, commNo) > 0;
+        
+        System.out.println("로그인된 사용자 번호: " + userNo);
+        System.out.println("게시글 번호: " + commNo);
+        System.out.println("좋아요 상태: " + isLiked);
 
         if (c == null) {
         	throw new Exception("실패");
@@ -218,6 +222,7 @@ public class CommController {
 
         mv.addObject("c", c).addObject("page", page).setViewName("comm/detail"); // ✅ 게시글 상세 페이지로 이동
         mv.addObject("list", list);
+        mv.addObject("isLiked", isLiked);
 
         return mv;
     }
@@ -246,8 +251,8 @@ public class CommController {
 //    }
     
     @PostMapping("/updForm")
-    public String updateForm(@RequestParam("commNo") int commNo, @RequestParam("page") int page, Model model) {
-    	Comm c = commService.selectComm(commNo, null);
+    public String updateForm(@RequestParam("commNo") int commNo,@RequestParam("userNo") int userNo, @RequestParam("page") int page, Model model) {
+    	Comm c = commService.selectComm(commNo, userNo);
     	model.addAttribute("c", c).addAttribute("page", page);
     	return "comm/edit";
     }
