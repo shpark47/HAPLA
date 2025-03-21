@@ -16,7 +16,7 @@
 		<div th:if="${error}" class="error-message" style="color: red; margin-bottom: 10px;">
             <p th:text="${error}">오류 메시지가 여기에 표시됩니다.</p>
         </div>
-		<h1>힐링이 필요해</h1>
+		<h1>Travel Story</h1>
 		
 		<div class="search-categories">
 			<button class="active" data-category="전체">전체</button>
@@ -139,16 +139,5 @@
     </div>
 
 	<script src="/js/search.js"></script>
-	<script>
-// 	window.onbeforeunload = function() {
-// 		$('#loading').show();
-// 		$('body').css('oveflow', 'hidden');
-// 	}  //현재 페이지에서 다른 페이지로 넘어갈 때 표시해주는 기능
-// 	window.addEventListener('load', () => {
-// 		$('#loading').hide();
-// 		$('body').css('overflow', 'auto');
-// 	});
-	</script>
-	
 </body>
 </html>
