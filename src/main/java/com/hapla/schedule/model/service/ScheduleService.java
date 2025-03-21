@@ -5,7 +5,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import javax.management.RuntimeErrorException;
+
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.hapla.schedule.model.mapper.ScheduleMapper;
 import com.hapla.schedule.model.vo.Detail;
@@ -60,14 +63,18 @@ public class ScheduleService {
 		return scheduleMapper.getTripDetail(tripNo);
 	}
 
-	public void saveDetail(Detail detail) {
-		scheduleMapper.saveDetail(detail);
+	@Transactional	// 여러개의 데이터를 db에 저장할때 오류발생시 데이터 저장이 롤백되게 해줌
+	public void saveDetails(List<Detail> details, int userNo) {
+		Integer tripNo = scheduleMapper.getTripNoByUser(userNo);	// tripNo조회
+		
+		if(tripNo == null) {
+			 throw new IllegalArgumentException("사용자의 여행 정보를 찾을 수 없습니다.");	// tripNo 없으면 예외
+		}
+		// 여행 상세 정보 저장
+		for(Detail detail : details) {
+			detail.setTripNo(tripNo);
+			scheduleMapper.saveDetail(detail);		
+		}
 	}
-
-	public Trip selectOneTrip(Trip trip) {
-		return scheduleMapper.selectOneTrip(trip);
-	}
-
-
 
 }

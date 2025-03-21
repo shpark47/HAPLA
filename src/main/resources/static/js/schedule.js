@@ -13,10 +13,10 @@ function initMap() {
     // ✅ localStorage에서 선택한 도시 정보 가져오기
     const storedCity = localStorage.getItem("selectedCity");
 	
-    // 기본 지도 위치 설정 (초기값: 파리)
+    // 기본 지도 위치 설정
     mapOptions = {
         center: {lat: 37.5665, lng: 126.9780}, // 서울 기본 위치
-        zoom: 10
+        zoom: 12
     };
 
     // ✅ 저장된 도시 정보가 있으면 지도 위치 변경
@@ -322,7 +322,7 @@ function saveMemo() {
 	
 }
 
-	saveDetail(memoText, null);
+	//saveDetail(memoText, null);
 	document.getElementById("memo-text").value = "";
 
 // ✅ 메모 삭제 기능 추가
@@ -331,19 +331,61 @@ function removeMemo(button) {
 }
 
 
+function formatDate(dateInput) {
+    if (!dateInput) {
+        console.error("❌ formatDate 오류! 입력된 날짜 값이 없음:", dateInput);
+        return "";
+    }
+
+    // ✅ `dateInput`이 `Date 객체`라면 `toISOString()` 사용하여 변환
+    if (dateInput instanceof Date) {
+        return dateInput.toISOString().split("T")[0]; // YYYY-MM-DD 변환
+    }
+
+	// ✅ `dateInput`이 문자열이면 변환 시도
+	    const parsedDate = Date.parse(dateInput) ? new Date(dateInput) : null;
+
+	    if (!parsedDate || isNaN(parsedDate.getTime())) {
+	        console.error("❌ 날짜 변환 실패! rawSelectDate:", dateInput);
+	        alert("올바른 날짜를 선택하세요.");
+	        return "";
+	    }
+
+	    return parsedDate.toISOString().split("T")[0]; // YYYY-MM-DD 변환
+	}
+
+
 function saveDetail() {
+
+	
+	//event.preventDefault();
 	    // 현재 활성화된 날짜 항목 찾기
 	    const activeDateItem = document.querySelector(".date-item.active");
-        const selectDate = activeDateItem.previousElementSibling.querySelector('#selectDate').value;
-        console.log(selectDate)
-		const tripDate = localStorage.getItem("tripData");
-		document.querySelector('input[name="startDate"]').value=JSON.parse(tripDate).startDate;
-		document.querySelector('input[name="endDate"]').value=JSON.parse(tripDate).endDate;
-	    if (!activeDateItem) {
-	        alert("날짜를 먼저 선택하세요!");
+		
+		
+		// ✅ `#selectDate` 요소 찾기
+	    const dateInput = activeDateItem.previousElementSibling?.querySelector('#selectDate');
+
+	    // ✅ `dateInput`이 존재하는지 확인
+	    if (!dateInput) {
+	        console.error("❌ 날짜 입력 필드(#selectDate)를 찾을 수 없습니다!");
+	        alert("날짜를 선택할 수 없습니다. 새로고침 후 다시 시도하세요.");
 	        return;
 	    }
+		
+		
+		// 현재 선택된 날짜 가져오기
+		//const rawSelectDate = activeDateItem.previousElementSibling.querySelector('#selectDate').value;
+		//const rawSelectDate = dateInput.valueAsDate ? dateInput.valueAsDate.toISOString().split("T")[0] : dateInput.value;
+		const rawSelectDate = dateInput.value;
+		
+		const selectDate = formatDate(rawSelectDate);	
+		// 날짜 포맷 변환
+		console.log("rawSelectDate 값 : ",rawSelectDate);
+		console.log("rawSelectDate 데이터 타입:", typeof rawSelectDate);
+        console.log("선택된 날짜 : ", selectDate);
 	
+		
 	    // 1. addMemo 영역에서 메모 내용 추출하기
 	    let memoContent = "";
 	    const addMemoContainer = activeDateItem.querySelector(".addMemo");
@@ -351,79 +393,91 @@ function saveDetail() {
 	        // addMemo 영역 안에 여러 개의 메모 항목이 있을 경우
 	        const memoItems = addMemoContainer.querySelectorAll(".memo-item");
 	        let memos = [];
-	        for (let i = 0; i < memoItems.length; i++) {
-	            // 각 메모 항목 안의 memo-text 요소의 내용을 가져옴
-	            const memoTextElem = memoItems[i].querySelector(".memo-text");
-	            if (memoTextElem) {
-	                memos.push(memoTextElem.textContent.trim());
-	            }
-	        }
+	        memoItems.forEach(memoItem => {
+				const memoTextElem = memoItem.querySelector(".memo-text");
+				if(memoTextElem){
+					memos.push(memoTextElem.textContent.trim());
+				}
+			});
 	        memoContent = memos.join("\n"); // 줄바꿈으로 연결
 	    }
+		
 	
 	    // 2. addDetail 영역에서 장소의 placeId 추출하기
 	    let placeIds = [];
 	    const addDetailContainer = activeDateItem.querySelector(".addDetail");
 	    if (addDetailContainer) {
 	        const placeItems = addDetailContainer.querySelectorAll(".place-item");
-	        for (let i = 0; i < placeItems.length; i++) {
-	            const placeId = placeItems[i].getAttribute("data-place-id");
-	            if (placeId) {
-	                placeIds.push(placeId);
-	            }
-	        }
-	    }
-	    const placeIdStr = placeIds.length > 0 ? placeIds.join(",") : "";
-	
-	    // 3. 추출한 데이터를 hidden input에 할당 (폼 전송용)
-	    document.getElementById("content").value = memoContent;
-	    document.getElementById("placeId").value = placeIdStr;
-		document.getElementById("tripDate").value = tripDate;
-		
-	    console.log("저장할 메모:", memoContent);
-	    console.log("저장할 placeId:", placeIdStr);
-		
-		form.submit();
-		form.action='/schedule/saveDetail'
-	
-		
-			
-	/*
-	const tripDate = localStorage.getItem("tripData");
-	const content = document.getElementById("memo-text").value.trim();
-	document.querySelector('input[name="startDate"]').value=JSON.parse(tripDate).startDate;
-	document.querySelector('input[name="endDate"]').value=JSON.parse(tripDate).endDate;
-
-
-	//'addDetail'안의 placeId들을 가져오기
-	const placeItems = activeDateItem.querySelectorAll(".place-item");
-	let placeIds = [];
-	
-
-	
-	placeItems.forEach(item => {
-		const placeId = item.getAttribute("data-place-id");	// placeId 속성
-		if(placeId){
-			placeIds.push(placeId);
+	        placeItems.forEach(placeItem => {
+				const placeId = placeItem.getAttribute("data-place-id");
+				if(placeId){
+					placeIds.push(placeId);
+				}
+			});
 		}
-	});
-	
-	// placeId가 없을 경우 null로 설정
-	const placeIdStr = placeIds.length > 0 ? placeIds.join(",") : null;
-	const form = document.querySelector("form");
-	
-	// 'placeId'값들을 hidden input에 넣기
-	document.getElementById("tripDate").value = tripDate;
-	document.getElementById("content").value = content;
-	document.getElementById("placeId").value = placeIdStr;
-
-	console.log("🚀 저장할 데이터:", { tripNo, tripDate, content, placeIdStr });
-	
-
-		form.submit();
-		form.action='/schedule/saveDetail'
 		
-		*/
+		// ✅ 데이터 유효성 검사
+//		    if (!memoContent.trim()) {
+//		        alert("메모 내용을 입력하세요!");
+//		        return;
+//		    }
+//		    if (memoContent.length > 1000) {
+//		        alert("메모 내용이 너무 깁니다! (최대 1000자)");
+//		        return;
+//		    }
+//		    if (placeIds.length === 0) {
+//		        alert("장소를 최소 1개 이상 선택해야 합니다!");
+//		        return;
+//		    }
+//		    if (!selectDate) {
+//		        alert("날짜를 선택하세요!");
+//		        return;
+//		    }
+		
+		// 새 데이터 생성
+		const newDetail = {
+			selectDate: selectDate,
+			memoContent: memoContent || "",	// UTF-8 인코딩										//고침
+			placeIds: placeIds.length > 0 ? placeIds : [] // 장소가 없으면 빈 배열 저장				//고침
+		};
+		
+	    // 기존 localStorage에 저장된 데이터를 불러오기
+		let savedDetails = JSON.parse(localStorage.getItem("tripDetails")) || [];
+		
+//		console.log("서버로 보낼 데이터:", JSON.stringify(savedDetails));
+//		console.log(newDetail);
+		
+		// 기존 데이터를 유지하면서 새로운 데이터 추가
+		savedDetails.push(newDetail);
+		
+		// 업데이트된 데이터 localStorage에 저장
+		localStorage.setItem("tripDetails", JSON.stringify(savedDetails));
+		
+//		console.log("저장된 여행 데이터 : ", savedDetails);
+//		console.log(JSON.stringify(localStorage.getItem("tripDetails")));
+		
+		fetch('/schedule/saveDetail', {
+		    method: 'POST',
+			headers: {
+			       'Content-Type': 'application/json' // ✅ 올바른 Content-Type 설정
+			    },
+		    //body: JSON.stringify(savedDetails) // ✅ JSON 변환 후 전송
+			body: JSON.stringify({ details: savedDetails })
+		})
+		.then(response => response.text())
+		.then(message => {
+		    console.log("서버 응답:", message);
+		    alert(message); // ✅ 알림 추가 (저장 완료 메시지)
+		})
+		.catch(error => console.error("에러 발생:", error));
+	    
+		console.log("저장된 여행 데이터:", savedDetails);
+	    
+		//console.log("저장할 메모:", memoContent);
+	    //console.log("저장할 placeId:", placeIds.join(", "));
+		
+//		form.submit();
+//		form.action='/schedule/saveDetail'
 		}
 
 

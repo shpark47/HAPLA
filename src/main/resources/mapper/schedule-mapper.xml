@@ -1,39 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.hapla.schedule.model.mapper.ScheduleMapper">
-	
+<mapper
+	namespace="com.hapla.schedule.model.mapper.ScheduleMapper">
+
 	<!-- 일정 저장 -->
 	<insert id="saveTrip">
 		insert into trip
-		values (seq_trip.NEXTVAL, #{userNo}, default, #{startDate}, #{endDate}, sysdate, #{cityName})
+		values (seq_trip.NEXTVAL, #{userNo},
+		default, #{startDate}, #{endDate}, sysdate, #{cityName})
 	</insert>
-	
-	<!-- 
-	<insert id="saveTrip">
-		insert all
-		
-		into trip
-		values (seq_trip.NEXTVAL, #{userNo}, default, #{startDate}, #{endDate}, sysdate, #{cityName})
-		
-		into detail
-		values (seq_detail.NEXTVAL, seq_trip.NEXTVAL, default, default, default, sysdate)
-	 -->
-	 
-	 <!-- 날짜 범위에 맞는 일정 조회 -->
-	 <select id="selectScheduleByDateRange" resultType="Trip">
+
+	<!-- <insert id="saveTrip"> insert all into trip values (seq_trip.NEXTVAL, 
+		#{userNo}, default, #{startDate}, #{endDate}, sysdate, #{cityName}) into 
+		detail values (seq_detail.NEXTVAL, seq_trip.NEXTVAL, default, default, default, 
+		sysdate) -->
+
+	<!-- 날짜 범위에 맞는 일정 조회 -->
+	<select id="selectScheduleByDateRange" resultType="Trip">
 	 <![CDATA[
 	 	select *
 	 	from trip
 	 	where date >= #{startDate} and date <= #{endDAte}
 	 ]]>
-	 </select>
-	 
+	</select>
+
 	<select id="getMySchedule">
 		select *
 		from trip
 		where user_no = #{userNo}
-		order by CREATE_DATE desc
+		order by
+		CREATE_DATE desc
 	</select>
 
 	<select id="getTripDetail">
@@ -41,23 +38,36 @@
 		from detail
 		where trip_no = #{tripNo}
 	</select>
-	
+
 	<select id="getTripNo">
 		select *
 		from trip
 		where trip_no = #{tripNo}
 	</select>
-	
-	<insert id="saveDetail">
-		insert into detail(detail_no, trip_no, content, place_id, start_date, end_date)
-		values(seq_detail.NEXTVAL, #{tripNo}, #{content},#{placeId}, #{startDate}, #{endDate})
-	</insert>
-	<select id="selectOneTrip" resultType="Trip">
-		select *
-		from trip
-		where user_No = #{userNo} and
-			  start_date = #{startDate} and
-			  end_date = #{endDate} and
-			  city_Name = #{cityName}
+
+	<!-- 이미 존재하는 tripNo 조회 -->
+	<select id="getTripNoByUser" resultType="int" parameterType="int">
+		select trip_no from trip where user_no = #{userNo} order by CREATE_DATE desc limit 1
 	</select>
+
+	<!-- 조회한 tripNo를 이용해서 detail 저장 -->
+	<insert id="saveDetail">
+		insert into detail(detail_no, trip_no, content, place_id, select_date)
+		values(seq_detail.NEXTVAL, #{tripNo}, #{content}, #{placeId}, #{selectDate})
+	</insert>
+
+	<!--
+	<insert id="saveDetail" keyProperty="trip_no">
+		<selectKey resultType="int" keyProperty="tripNo"
+			order="BEFORE">
+			select seq_trip.NEXTVAL from dual
+		</selectKey>
+		insert into detail(detail_no, trip_no, content, place_id, select_date)
+		values(seq_detail.NEXTVAL, #{tripNo}, #{content},#{placeId},
+		#{selectDate})
+	</insert>
+
+	 <select id="selectOneTrip" resultType="Trip"> select * from trip where 
+		user_No = #{userNo} and start_date = #{startDate} and end_date = #{endDate} 
+		and city_Name = #{cityName} </select> -->
 </mapper>
