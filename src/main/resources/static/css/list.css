@@ -107,7 +107,7 @@ ul.pagination {
 /* ✅ 페이지 링크 스타일 */
 .pagination .page-link {
     text-decoration: none;
-    color: #007bff;
+    color: #ff7e5f;
     border: 1px solid #ddd;
     padding: 8px 12px;
     border-radius: 5px;
@@ -117,14 +117,14 @@ ul.pagination {
 
 /* ✅ 현재 페이지 스타일 */
 .pagination .page-item.active .page-link {
-    background-color: #007bff;
+    background: linear-gradient(to right, #ff7e5f, #f76c6c);
     color: white;
-    border: 1px solid #007bff;
+    border: 1px solid #ff7e5f;
 }
 
 /* ✅ 페이지 링크 hover 효과 */
 .pagination .page-link:hover {
-    background-color: #0056b3;
+    background: linear-gradient(to right, #ff7e5f, #f76c6c);
     color: white;
 }
 
@@ -217,4 +217,30 @@ ul.pagination {
     .searchDiv button {
         width: 100%;
     }
+}
+
+/* ✅ 목록 버튼 스타일 */
+.write-Button {
+	position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+	right: 200px;
+    width: 120px; /* 📌 가로 길이 고정 */
+    height: 40px; /* 📌 버튼 높이 조정 */
+    padding: 10px 20px;
+    background: linear-gradient(to right, #ff7e5f, #f76c6c);
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* ✅ 마우스 호버 시 */
+.write-Button:hover {
+    background: linear-gradient(to right, #f76c6c, #ff5e62);
+    box-shadow: 0 4px 8px rgba(247, 108, 108, 0.3);
 }

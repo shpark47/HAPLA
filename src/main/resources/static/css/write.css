@@ -91,12 +91,13 @@ header {
 }
 
 .save-button {
-	background: #007bff;
+	background: #ff7e5f;
 	color: white;
 }
 
 .cancel-button {
-	background: #ddd;
+	background: #fcd1c2;
+	color: white;
 }
 
 footer {
