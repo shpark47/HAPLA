@@ -1,4 +1,4 @@
-// ✅ 일정 페이지가 로드될 때 실행되는 함수
+	// 일정 페이지가 로드될 때 실행되는 함수
     function initMap() {
         // ✅ localStorage에서 선택한 도시 정보 가져오기
         const storedCity = localStorage.getItem("selectedCity");
@@ -9,18 +9,18 @@
             zoom: 12
         };
 
-        // ✅ 저장된 도시 정보가 있으면 지도 위치 변경
+        // 저장된 도시 정보가 있으면 지도 위치 변경
         if (storedCity) {
             const city = JSON.parse(storedCity);
             mapOptions.center = { lat: city.lat, lng: city.lng }; // 선택한 도시 좌표로 이동
             console.log(`📍 지도 위치 변경: ${city.name}, ${city.country}`);
         }
 
-        // ✅ Google 지도 생성
+        // Google 지도 생성
         new google.maps.Map(document.getElementById('map'), mapOptions);
     }
 
-		// 📅 캘린더 모달 자동 열기
+		// 캘린더 모달 자동 열기
 		document.addEventListener("DOMContentLoaded", function () {
 		    openCalendarModal();
 		    initDatePickers();
@@ -34,7 +34,7 @@
 		    document.getElementById("calendarModal").style.display = "none";
 		} 
 
-		// ✅ 날짜 선택 라이브러리 (Flatpickr) 적용
+		// 날짜 선택 라이브러리 (Flatpickr) 적용
 		function initDatePickers() {
 		    flatpickr("#startDate", {
 		        dateFormat: "Y-m-d",
