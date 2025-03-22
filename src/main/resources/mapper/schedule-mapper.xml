@@ -86,26 +86,47 @@
     	SELECT * FROM trip WHERE trip_no = #{tripNo}
 	</select>
 	
+<!-- 	<select id="selectDetailsByTripNo" resultType="Detail"> -->
+<!-- 	    SELECT d.* -->
+<!-- 	    FROM detail d -->
+<!-- 	    JOIN detail_memo dm ON d.detail_no = dm.detail_no -->
+<!-- 	    JOIN detail_place dp ON d.detail_no = dp.detail_no -->
+<!-- 	    WHERE d.trip_no = #{tripNo} -->
+<!-- 	</select> -->
+
 	<select id="selectDetailsByTripNo" resultType="Detail">
-	    SELECT d.*
-	    FROM detail d
-	    JOIN detail_memo dm ON d.detail_no = dm.detail_no
-	    JOIN detail_place dp ON d.detail_no = dp.detail_no
-	    WHERE d.trip_no = #{tripNo}
+    SELECT *
+	     FROM detail
+	     WHERE trip_no = #{tripNo}
+	     ORDER BY select_date
 	</select>
 	
-	<select id="selectMemosByTripNo" resultType="map">
-	    SELECT dm.detail_no AS key, dm.content AS value
-	    FROM detail_memo dm
-	    JOIN detail d ON dm.detail_no = d.detail_no
-	    WHERE d.trip_no = #{tripNo}
+<!-- 	<select id="selectMemosByTripNo" resultType="map"> -->
+<!-- 	    SELECT dm.detail_no AS key, dm.content AS value -->
+<!-- 	    FROM detail_memo dm -->
+<!-- 	    JOIN detail d ON dm.detail_no = d.detail_no -->
+<!-- 	    WHERE d.trip_no = #{tripNo} -->
+<!-- 	</select> -->
+
+	<select id="selectMemosByTripNo" resultType="DetailMemo">
+	    SELECT dm.detail_no, dm.content
+	      FROM detail_memo dm
+	      JOIN detail d ON dm.detail_no = d.detail_no
+	     WHERE d.trip_no = #{tripNo}
 	</select>
 
-	<select id="selectPlacesByTripNo" resultType="map">
-	    SELECT dp.detail_no AS key, dp.place_id AS value
-	    FROM detail_place dp
-	    JOIN detail d ON dp.detail_no = d.detail_no
-	    WHERE d.trip_no = #{tripNo}
+<!-- 	<select id="selectPlacesByTripNo" resultType="map"> -->
+<!-- 	    SELECT dp.detail_no AS key, dp.place_id AS value -->
+<!-- 	    FROM detail_place dp -->
+<!-- 	    JOIN detail d ON dp.detail_no = d.detail_no -->
+<!-- 	    WHERE d.trip_no = #{tripNo} -->
+<!-- 	</select> -->
+
+	<select id="selectPlacesByTripNo" resultType="DetailPlace">
+	    SELECT dp.detail_no, dp.place_id
+	      FROM detail_place dp
+	      JOIN detail d ON dp.detail_no = d.detail_no
+	     WHERE d.trip_no = #{tripNo}
 	</select>
 	
 	<delete id="deleteTrip" parameterType="int">
