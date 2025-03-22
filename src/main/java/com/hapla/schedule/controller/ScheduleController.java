@@ -1,6 +1,7 @@
 package com.hapla.schedule.controller;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.hapla.schedule.model.service.ScheduleService;
 import com.hapla.schedule.model.vo.Detail;
+import com.hapla.schedule.model.vo.DetailMemo;
+import com.hapla.schedule.model.vo.DetailPlace;
 import com.hapla.schedule.model.vo.Trip;
 import com.hapla.users.model.vo.Users;
 
@@ -100,18 +103,30 @@ public class ScheduleController {
 	    List<Detail> detailList = scheduleService.getDetailsByTripNo(tripNo);
 
 	    // 필요 시 memo, place도 가져오기
-	    Map<Integer, String> memoMap = scheduleService.getMemosByTripNo(tripNo);
-	    Map<Integer, List<String>> placeMap = scheduleService.getPlacesByTripNo(tripNo);
+	    List<DetailMemo> memoMap = scheduleService.getMemosByTripNo(tripNo);
+	    List<DetailPlace> placeMap = scheduleService.getPlacesByTripNo(tripNo);
 
 	    // 날짜 범위 생성
   		List<Date> dateRange = scheduleService.getDateRange(trip.getStartDate(), trip.getEndDate());
   		model.addAttribute("dateRange", dateRange); // 날짜 범위 추가
 	 	    
 	    
+  		// detailNo → content
+  		Map<String, String> memoMapByDetailNo = new HashMap<>();
+  		for (DetailMemo memo : memoMap) {
+  		    memoMapByDetailNo.put(String.valueOf(memo.getDetailNo()), memo.getContent());
+  		}
+
+  		// detailNo → placeId
+  		Map<String, String> placeMapByDetailNo = new HashMap<>();
+  		for (DetailPlace place : placeMap) {
+  		    placeMapByDetailNo.put(String.valueOf(place.getDetailNo()), place.getPlaceId());
+  		}
+  		
 	    model.addAttribute("trip", trip);
 	    model.addAttribute("detailList", detailList);
-	    model.addAttribute("memoMap", memoMap);
-	    model.addAttribute("placeMap", placeMap);
+	    model.addAttribute("memoMap", memoMapByDetailNo);
+	    model.addAttribute("placeMap", placeMapByDetailNo);
 	    model.addAttribute("trip", trip);
 	    model.addAttribute("tripList", trips); // 필요한 경우 전체 목록 추가
 

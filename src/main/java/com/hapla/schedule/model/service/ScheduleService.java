@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import com.hapla.schedule.model.mapper.ScheduleMapper;
 import com.hapla.schedule.model.vo.Detail;
+import com.hapla.schedule.model.vo.DetailMemo;
+import com.hapla.schedule.model.vo.DetailPlace;
 import com.hapla.schedule.model.vo.Trip;
 
 import lombok.RequiredArgsConstructor;
@@ -62,42 +64,64 @@ public class ScheduleService {
 		return scheduleMapper.getTripDetail(tripNo);
 	}
 
+	
+	
+	
+	
 //	public String saveDetails(List<Detail> details, Map<String, List<String>> placeMap, Map<String, String> memoMap) {
-//        int insertedCount = 0;
-//        System.out.println(" 저장된 detail : " + details);
-//        
-//        for (Detail detail : details) {
-//            // 1. DETAIL 테이블 저장 (자동 생성된 DETAIL_NO 가져오기)
-//        	System.out.println("✅ 저장된 detailNo = " + detail.getDetailNo());
-//            scheduleMapper.saveDetail(detail);
-//            int detailNo = detail.getDetailNo();
+//	    int insertedCount = 0;
+//	    System.out.println("✅ 저장할 Detail 리스트 (초기): " + details);
 //
-//            
-//            System.out.println("✅ 저장된 detailNo = " + detail.getDetailNo());
-//            
-//            // 2. MEMO 데이터 저장 (해당 날짜에 메모가 존재하면)
-//            if (memoMap.containsKey(detail.getSelectDate().toString())) {
-//                scheduleMapper.insertMemo(detailNo, memoMap.get(detail.getSelectDate().toString()));
-//            }
+//	    // 1. 날짜 기준으로 Detail 객체 통합
+//	    Map<String, Detail> mergedMap = new HashMap<>();
 //
-//            // 3. PLACE 데이터 저장 (해당 날짜에 장소가 존재하면)
-//            if (placeMap.containsKey(detail.getSelectDate().toString())) {
-//                for (String placeId : placeMap.get(detail.getSelectDate().toString())) {
-//                    scheduleMapper.insertPlace(detailNo, placeId);
-//                }
-//            }
+//	    for (Detail d : details) {
+//	        String dateKey = d.getSelectDate().toString();
 //
-//            insertedCount++;
-//        }
+//	        if (!mergedMap.containsKey(dateKey)) {
+//	            mergedMap.put(dateKey, d);
+//	        } else {
+//	            Detail existing = mergedMap.get(dateKey);
+//	            // placeId가 있으면 추가
+//	            if (d.getPlaceId() != null) {
+//	                existing.setPlaceId(d.getPlaceId());
+//	            }
+//	            // content가 있으면 추가
+//	            if (d.getContent() != null) {
+//	                existing.setContent(d.getContent());
+//	            }
+//	        }
+//	    }
 //
-//        return insertedCount > 0 ? "저장 성공!" : "저장 실패!";
-//    }
+//	    System.out.println("✅ 통합된 Detail 리스트: " + mergedMap.values());
+//
+//	    // 2. insert 수행
+//	    for (Detail detail : mergedMap.values()) {
+//	        scheduleMapper.saveDetail(detail);
+//	        int detailNo = detail.getDetailNo();
+//
+//	        // place 저장
+//	        if (detail.getPlaceId() != null) {
+//	            scheduleMapper.insertPlace(detailNo, detail.getPlaceId());
+//	        }
+//
+//	        // memo 저장
+//	        if (detail.getContent() != null) {
+//	            scheduleMapper.insertMemo(detailNo, detail.getContent());
+//	        }
+//
+//	        insertedCount++;
+//	    }
+//
+//	    return insertedCount > 0 ? "저장 성공!" : "저장 실패!";
+//	}
+
 	
 	public String saveDetails(List<Detail> details, Map<String, List<String>> placeMap, Map<String, String> memoMap) {
 	    int insertedCount = 0;
 	    System.out.println("✅ 저장할 Detail 리스트 (초기): " + details);
 
-	    // 1. 날짜 기준으로 Detail 객체 통합
+	    // 날짜별로 Detail 통합 (메모만 Detail에 저장, 장소는 별도 처리)
 	    Map<String, Detail> mergedMap = new HashMap<>();
 
 	    for (Detail d : details) {
@@ -107,11 +131,7 @@ public class ScheduleService {
 	            mergedMap.put(dateKey, d);
 	        } else {
 	            Detail existing = mergedMap.get(dateKey);
-	            // placeId가 있으면 추가
-	            if (d.getPlaceId() != null) {
-	                existing.setPlaceId(d.getPlaceId());
-	            }
-	            // content가 있으면 추가
+	            // 메모만 추가해줘! (장소는 추가하면 안돼!)
 	            if (d.getContent() != null) {
 	                existing.setContent(d.getContent());
 	            }
@@ -120,19 +140,22 @@ public class ScheduleService {
 
 	    System.out.println("✅ 통합된 Detail 리스트: " + mergedMap.values());
 
-	    // 2. insert 수행
+	    // 통합된 Detail 객체 저장
 	    for (Detail detail : mergedMap.values()) {
 	        scheduleMapper.saveDetail(detail);
 	        int detailNo = detail.getDetailNo();
+	        String dateKey = detail.getSelectDate().toString();
 
-	        // place 저장
-	        if (detail.getPlaceId() != null) {
-	            scheduleMapper.insertPlace(detailNo, detail.getPlaceId());
+	        // ✅ 여러 개의 장소(placeId) 저장하기
+	        if (placeMap.containsKey(dateKey)) {
+	            for (String placeId : placeMap.get(dateKey)) {
+	                scheduleMapper.insertPlace(detailNo, placeId);
+	            }
 	        }
 
-	        // memo 저장
-	        if (detail.getContent() != null) {
-	            scheduleMapper.insertMemo(detailNo, detail.getContent());
+	        // 메모 저장 (한 개)
+	        if (memoMap.containsKey(dateKey)) {
+	            scheduleMapper.insertMemo(detailNo, memoMap.get(dateKey));
 	        }
 
 	        insertedCount++;
@@ -140,7 +163,17 @@ public class ScheduleService {
 
 	    return insertedCount > 0 ? "저장 성공!" : "저장 실패!";
 	}
-
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	public List<Trip> getTripsByTripNo(int tripNo) {
 	    return scheduleMapper.selectTripByTripNo(tripNo);
 	}
@@ -149,12 +182,11 @@ public class ScheduleService {
 	    return scheduleMapper.selectDetailsByTripNo(tripNo);
 	}
 
-	public Map<Integer, String> getMemosByTripNo(int tripNo) {
-	    // detailNo → memo 형태의 Map
+	public List<DetailMemo> getMemosByTripNo(int tripNo) {
 	    return scheduleMapper.selectMemosByTripNo(tripNo);
 	}
 
-	public Map<Integer, List<String>> getPlacesByTripNo(int tripNo) {
+	public List<DetailPlace> getPlacesByTripNo(int tripNo) {
 	    // detailNo → List<place> 형태의 Map
 	    return scheduleMapper.selectPlacesByTripNo(tripNo);
 	}
