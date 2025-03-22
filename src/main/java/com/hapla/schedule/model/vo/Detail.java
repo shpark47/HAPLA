@@ -19,6 +19,7 @@ public class Detail {
     private Date selectDate;
     private Date startDate;
     private Date endDate;
+    private String placeName;
     
 
 //    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")

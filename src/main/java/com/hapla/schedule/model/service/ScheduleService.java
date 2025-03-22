@@ -140,4 +140,22 @@ public class ScheduleService {
 
 	    return insertedCount > 0 ? "저장 성공!" : "저장 실패!";
 	}
+
+	public Trip getTripByTripNo(int tripNo) {
+	    return scheduleMapper.selectTripByTripNo(tripNo);
+	}
+
+	public List<Detail> getDetailsByTripNo(int tripNo) {
+	    return scheduleMapper.selectDetailsByTripNo(tripNo);
+	}
+
+	public Map<Integer, String> getMemosByTripNo(int tripNo) {
+	    // detailNo → memo 형태의 Map
+	    return scheduleMapper.selectMemosByTripNo(tripNo);
+	}
+
+	public Map<Integer, List<String>> getPlacesByTripNo(int tripNo) {
+	    // detailNo → List<place> 형태의 Map
+	    return scheduleMapper.selectPlacesByTripNo(tripNo);
+	}
 }

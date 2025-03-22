@@ -2,6 +2,7 @@ package com.hapla.schedule.model.mapper;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -32,4 +33,14 @@ public interface ScheduleMapper {
 	void insertMemo(@Param("detailNo") int detailNo, @Param("content") String content);
     
 	void insertPlace(@Param("detailNo") int detailNo, @Param("placeId") String placeId);
+
+	Trip selectTripByTripNo(int tripNo);
+
+	List<Detail> selectDetailsByTripNo(int tripNo);
+
+	Map<Integer, String> selectMemosByTripNo(int tripNo);
+
+	Map<Integer, List<String>> selectPlacesByTripNo(int tripNo);
+	
+	
 }

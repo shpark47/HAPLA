@@ -40,10 +40,25 @@
 		CREATE_DATE desc
 	</select>
 
+<!-- 
 	<select id="getTripDetail">
 		select *
 		from detail
 		where trip_no = #{tripNo}
+	</select>
+ -->
+ 
+	 <select id="getTripDetail" parameterType="int" resultType="Detail">
+	    SELECT d.detail_no,
+	           d.trip_no,
+	           d.select_date,
+	           m.content,
+	           p.place_id
+	    FROM detail d
+	    LEFT JOIN detail_memo m ON d.detail_no = m.detail_no
+	    LEFT JOIN detail_place p ON d.detail_no = p.detail_no
+	    WHERE d.trip_no = #{tripNo}
+	    ORDER BY d.select_date
 	</select>
 
 	<select id="getTripNo">
@@ -83,5 +98,36 @@
 		insert into detail_place(detail_no, place_id)
 		values (#{detailNo}, #{placeId})
 	</insert>
+	
+<!-- 	
+	<select id="selectDetailByNo" parameterType="int" resultType="Detail">
+	    SELECT d.detail_no, d.trip_no, d.select_date, m.content, p.place_id
+	    FROM detail d
+	    LEFT JOIN detail_memo m ON d.detail_no = m.detail_no
+	    LEFT JOIN detail_place p ON d.detail_no = p.detail_no
+	    WHERE d.detail_no = #{detailNo}
+	</select>
+	 -->
+	 
+	<select id="selectTripByTripNo" resultType="Trip">
+	    SELECT * FROM trip WHERE trip_no = #{tripNo}
+	</select>
+	
+	<select id="selectDetailsByTripNo" resultType="Detail">
+	    SELECT * FROM detail WHERE trip_no = #{tripNo}
+	</select>
+	
+	<select id="selectMemosByTripNo" resultType="map">
+	    SELECT detail_no AS key, memo AS value
+	    FROM detail_memo
+	    WHERE trip_no = #{tripNo}
+	</select>
+	
+	<select id="selectPlacesByTripNo" resultMap="detailPlaceMap">
+	    SELECT detail_no, place
+	    FROM detail_place
+	    WHERE trip_no = #{tripNo}
+	</select>
+	
 	
 </mapper>
