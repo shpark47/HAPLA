@@ -188,6 +188,7 @@ window.onload = () => {
 		function onDelete(tripNo) {
 		    if (confirm("정말 삭제하시겠습니까?")) {
 		        window.location.href = `/schedule/delete/${tripNo}`;
+			}
 		}
 		
 		// 패널 닫기 버튼 기능 추가

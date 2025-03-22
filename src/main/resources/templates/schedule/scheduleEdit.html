@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>여행 일정</title>
-    <link rel="stylesheet" href="/css/schedule.css" type="text/css">
+    <link rel="stylesheet" href="/css/scheduleEdit.css" type="text/css">
 </head>
 <body>
 <div class="container">
-	<input type="hidden" name="detailNo" th:value="${detail.detailNo}">
+	<input type="hidden" id="tripNo" th:value="${trip.tripNo}"/>
     <!-- 🌍 왼쪽 사이드바 -->
     <div class="sidebar">
         <div class="sidebar-head">
@@ -20,18 +20,24 @@
         </div>
         <div class="sidebar-title">
             <span class="trip-title" id="tripTitle" th:text="${trip.cityName}"></span>
-            <span id="tripDates"></span>
+            <span id="tripDates" th:text="${#dates.format(trip.startDate, 'yyyy-MM-dd')} + ' ~ ' + ${#dates.format(trip.endDate, 'yyyy-MM-dd')}"></span>
         </div>
         <!-- ✅ 날짜별 일정 리스트 -->
-        <div class="date-list" id="dateList">
+        <div class="date-list">
             <div th:each="date : ${dateRange}" class="date-container">
                 <div class="plan-title">
-                    <input type="hidden" th:value="${#dates.format(date, 'yy/MM/dd')}" class="selectDate"/>
                     <span th:text="${#dates.format(date, 'M월 d일')}"></span>
                 </div>
-                <div th:each="detail : ${entry.value}" class="date-item">
-                    <div class="addDetail" th:text="${detail.placeId"}></div>
-                    <div class="addMemo" th:text="${detail.content}"></div>
+
+                <div th:each="detail : ${detailList}" 
+                     th:if="${#dates.format(detail.selectDate, 'yyyy-MM-dd')} == ${#dates.format(date, 'yyyy-MM-dd')}" 
+                     class="date-item">
+
+                    <input type="hidden" th:value="${detail.detailNo}" class="detailNo">
+
+                    <div class="addDetail" th:text="${placeMap[detail.detailNo]}"></div>
+                    <div class="addMemo" th:text="${memoMap[detail.detailNo]}"></div>
+
                     <div class="controls">
                         <div class="control-add" onclick="toggleControls(this)">
                             <span class="add-text">+추가</span>
@@ -73,7 +79,6 @@
             </div>
         </div>
 
-        <input type="hidden" id="tripNo" name="tripNo" th:value="${trip.tripNo}">
         <div class="save-btn">
             <button onclick="saveDetail()">저장</button>
         </div>
@@ -130,7 +135,7 @@
     <div id="map"></div>
 </div>
 
-<script src="/js/schedule.js"></script>
+<script src="/js/scheduleEdit.js"></script>
 
 <!-- Google Maps API -->
 <!-- <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAUKMdSgSqvtUy4wZvUxqA6I_c0Zk4InEU&callback=initMap"></script> -->
@@ -142,6 +147,8 @@
     window.trip = /*[[${trip}]]*/ null;
     window.dateRange = /*[[${dateRange}]]*/ [];
     window.detailList = /*[[${detailList}]]*/ [];
+    window.memoMap = /*[[${memoMap}]]*/ {};
+    window.placeMap = /*[[${placeMap}]]*/ {};
     /*]]>*/
 </script>
 

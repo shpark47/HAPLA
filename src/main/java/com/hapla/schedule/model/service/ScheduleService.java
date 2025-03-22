@@ -141,7 +141,7 @@ public class ScheduleService {
 	    return insertedCount > 0 ? "저장 성공!" : "저장 실패!";
 	}
 
-	public Trip getTripByTripNo(int tripNo) {
+	public List<Trip> getTripsByTripNo(int tripNo) {
 	    return scheduleMapper.selectTripByTripNo(tripNo);
 	}
 
@@ -158,4 +158,9 @@ public class ScheduleService {
 	    // detailNo → List<place> 형태의 Map
 	    return scheduleMapper.selectPlacesByTripNo(tripNo);
 	}
+
+	public int deleteTrip(int tripNo) {
+		return scheduleMapper.deleteTrip(tripNo);
+	}
+
 }
