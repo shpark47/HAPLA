@@ -52,7 +52,7 @@
 	
 	<insert id="insertReply">
 		insert into reply
-		values (seq_reply.nextval, #{userNo}, #{commNo}, #{replyContent}, sysdate, sysdate)
+		values (seq_reply.nextval, #{userNo}, #{commNo}, #{replyContent}, sysdate, sysdate, default)
 	</insert>
 	
 	<update id="updateComm">

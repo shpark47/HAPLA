@@ -180,7 +180,7 @@ body {
     width: 150px; /* 버튼 크기 조정 */
     margin: 10px auto;            /* 버튼을 중앙으로 정렬 */
     padding: 10px 20px;
-    background-color: #007bff; /* 📌 파란색 */
+    background: linear-gradient(to right, #83ced6, #91c5e6);
     color: white;
     font-size: 16px;
     font-weight: bold;
@@ -196,7 +196,7 @@ body {
     width: 150px;                 /* 버튼 너비 조정 */
     margin: 10px auto;            /* 버튼을 중앙으로 정렬 */
     padding: 10px 20px;
-    background-color: #007bff;    /* 기본 색상 - 파란색 */
+    background: linear-gradient(to right, #83ced6, #91c5e6);
     color: white;
     font-size: 16px;
     font-weight: bold;
@@ -209,12 +209,64 @@ body {
 
 /* ✅ 버튼 호버 효과 */
 .cancel-button:hover {
-    background-color: #0056b3;   /* 호버 시 진한 파란색 */
+    background: linear-gradient(to right, #83ced6, #91c5e6);
+    transform: scale(1.05);
+}
+
+.yes-button {
+    display: block;              /* 블록 요소로 설정하여 너비를 가득 채움 */
+    width: 150px;                 /* 버튼 너비 조정 */
+    margin: 10px auto;            /* 버튼을 중앙으로 정렬 */
+    padding: 10px 20px;
+    background: linear-gradient(to right, #83ced6, #91c5e6);
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.3s ease, transform 0.2s;
+}
+
+/* ✅ 버튼 호버 효과 */
+.yes-button:hover {
+    background: linear-gradient(to right, #83ced6, #91c5e6);
+    transform: scale(1.05);
+}
+
+.no-button {
+    display: block;              /* 블록 요소로 설정하여 너비를 가득 채움 */
+    width: 150px;                 /* 버튼 너비 조정 */
+    margin: 10px auto;            /* 버튼을 중앙으로 정렬 */
+    padding: 10px 20px;
+    background: linear-gradient(to right, #83ced6, #91c5e6);
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.3s ease, transform 0.2s;
+}
+
+.buttons {
+    display: flex;
+    align-items: center; /* 버튼들을 세로 중앙 정렬 */
+    gap: 10px; /* 버튼 간격 */
+    margin-bottom: 10px;
+    justify-content: flex-end; /* 📌 버튼을 오른쪽 정렬 */
+}
+
+/* ✅ 버튼 호버 효과 */
+.no-button:hover {
+    background: linear-gradient(to right, #83ced6, #91c5e6);
     transform: scale(1.05);
 }
 
 .deleteModal:hover {
-    background-color: #0056b3;   /* 호버 시 진한 파란색 */
+    background: linear-gradient(to right, #83ced6, #91c5e6);
     transform: scale(1.05);
 }
 

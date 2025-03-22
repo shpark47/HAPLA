@@ -181,14 +181,6 @@ body {
     transform: translateX(-50%);
 }
 
-
-
-
-
-
-
-
-
 .div{
 	margin-top:-50px;
 }
@@ -311,7 +303,7 @@ ul.pagination {
 /* ✅ 페이지 링크 스타일 */
 .pagination .page-link {
     text-decoration: none;
-    color: #007bff;
+    color: #91c5e6;
     border: 1px solid #ddd;
     padding: 8px 12px;
     border-radius: 5px;
@@ -320,14 +312,14 @@ ul.pagination {
 
 /* ✅ 현재 페이지 스타일 */
 .pagination .page-item.active .page-link {
-    background-color: #007bff;
+    background: linear-gradient(to right, #83ced6, #91c5e6);
     color: white;
-    border: 1px solid #007bff;
+    border: 1px solid #91c5e6;
 }
 
 /* ✅ hover 효과 */
 .pagination .page-link:hover {
-    background-color: #0056b3;
+    background: linear-gradient(to right, #83ced6, #91c5e6);
     color: white;
 }
 
