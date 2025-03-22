@@ -13,8 +13,6 @@ import com.hapla.schedule.model.vo.Trip;
 @Mapper
 public interface ScheduleMapper {
 
-	//Trip selectOneTrip(Trip trip);
-
 	void saveTrip(Trip trip);
 
 	List<Trip> getMySchedule(int userNo);
@@ -34,13 +32,15 @@ public interface ScheduleMapper {
     
 	void insertPlace(@Param("detailNo") int detailNo, @Param("placeId") String placeId);
 
-	Trip selectTripByTripNo(int tripNo);
+	List<Trip> selectTripByTripNo(int tripNo);
 
 	List<Detail> selectDetailsByTripNo(int tripNo);
 
 	Map<Integer, String> selectMemosByTripNo(int tripNo);
 
 	Map<Integer, List<String>> selectPlacesByTripNo(int tripNo);
+
+	int deleteTrip(int tripNo);
 	
 	
 }

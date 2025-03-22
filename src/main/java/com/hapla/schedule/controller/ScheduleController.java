@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 public class ScheduleController {
 
 	private final ScheduleService scheduleService;
+	private SqlSession session;
 
 	// 캘린더 페이지로 이동
 	@GetMapping("/calendar")
@@ -43,10 +45,7 @@ public class ScheduleController {
 
 		// 1. 서비스 호출하여 DB 저장
 		scheduleService.saveTrip(trip);
-		//Trip reTrip = scheduleService.selectOneTrip(trip);
-		//trip.setTripNo(reTrip.getTripNo());
-		//trip.setCreateDate(reTrip.getCreateDate());
-
+	
 		// 날짜 범위 생성
 		List<Date> dateRange = scheduleService.getDateRange(trip.getStartDate(), trip.getEndDate());
 		model.addAttribute("dateRange", dateRange); // 날짜 범위 추가
@@ -90,11 +89,13 @@ public class ScheduleController {
 	}
 	
 	// 일정 내용 수정
-	@GetMapping("/schedule/edit/{tripNo}")
-	public String editTrip(@PathVariable int tripNo, Model model) {
+	@GetMapping("/edit/{tripNo}")
+	public String editTrip(@PathVariable("tripNo") int tripNo, Model model) {
 	    // trip 정보
-	    Trip trip = scheduleService.getTripByTripNo(tripNo);
-
+		List<Trip> trips = scheduleService.getTripsByTripNo(tripNo);
+	    // 첫 번째 Trip을 선택하거나, 목록 전체를 모델에 추가
+	    Trip trip = trips.isEmpty() ? null : trips.get(0);
+		
 	    // trip에 속한 detail 리스트
 	    List<Detail> detailList = scheduleService.getDetailsByTripNo(tripNo);
 
@@ -102,12 +103,25 @@ public class ScheduleController {
 	    Map<Integer, String> memoMap = scheduleService.getMemosByTripNo(tripNo);
 	    Map<Integer, List<String>> placeMap = scheduleService.getPlacesByTripNo(tripNo);
 
+	    // 날짜 범위 생성
+  		List<Date> dateRange = scheduleService.getDateRange(trip.getStartDate(), trip.getEndDate());
+  		model.addAttribute("dateRange", dateRange); // 날짜 범위 추가
+	 	    
+	    
 	    model.addAttribute("trip", trip);
 	    model.addAttribute("detailList", detailList);
 	    model.addAttribute("memoMap", memoMap);
 	    model.addAttribute("placeMap", placeMap);
+	    model.addAttribute("trip", trip);
+	    model.addAttribute("tripList", trips); // 필요한 경우 전체 목록 추가
 
-	    return "schedule/scheduleEdit";
+	    return "/schedule/scheduleEdit";
+	}
+	
+	@GetMapping("/delete/{tripNo}")
+	public String deleteTrip(@PathVariable("tripNo") int tripNo) {
+	    scheduleService.deleteTrip(tripNo);
+	    return "redirect:/schedule/list";
 	}
 
 	
