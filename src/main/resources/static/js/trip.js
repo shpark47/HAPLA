@@ -44,7 +44,7 @@ function initCitySearch() {
         fields: ["name", "formatted_address", "geometry", "types"],
     });
 
-    // ✅ 도시 선택 시 이벤트
+    // 도시 선택 시 이벤트
     autocomplete.addListener("place_changed", function () {
         const place = autocomplete.getPlace();
         if (!place.geometry || !place.types) {
@@ -57,7 +57,7 @@ function initCitySearch() {
         let cityName = addressParts[0]; // 🔥 첫 번째 요소만 저장 (지역명)
 		const countryName = addressParts[addressParts.length - 1]; // 마지막 요소 = 국가명
 
-        // ✅ 국가명 없이 지역명만 저장하여 넘기기
+        // 국가명 없이 지역명만 저장하여 넘기기
         selectCity({
             name: cityName,
 			country: countryName,
@@ -176,17 +176,17 @@ function filterCities(searchTerm) {
 
 	    return li;
 	}
-// ✅ 도시 선택 시 실행되는 함수 (도시 정보 저장 & 페이지 이동)
-function selectCity(city) {
-    localStorage.setItem("selectedCity", JSON.stringify(city));
-    console.log(`📍 선택한 도시: ${city.name}, ${city.country}`);
-
-    // ✅ 일정 페이지로 이동 (기본 페이지가 /schedule/scheduleCalendar 인 경우)
-    window.location.href = "/schedule/calendar";
-}
-
-// ✅ 페이지 로드 후 Google Places API 초기화 실행
-window.onload = function () {
-    initCitySearch();
-    displayCityList();
-};
+	// 도시 선택 시 실행되는 함수 (도시 정보 저장 & 페이지 이동)
+	function selectCity(city) {
+	    localStorage.setItem("selectedCity", JSON.stringify(city));
+	    console.log(`📍 선택한 도시: ${city.name}, ${city.country}`);
+	
+	    // 일정 페이지로 이동 (기본 페이지가 /schedule/scheduleCalendar 인 경우)
+	    window.location.href = "/schedule/calendar";
+	}
+	
+	// 페이지 로드 후 Google Places API 초기화 실행
+	window.onload = function () {
+	    initCitySearch();
+	    displayCityList();
+	};

@@ -5,11 +5,23 @@
 	namespace="com.hapla.schedule.model.mapper.ScheduleMapper">
 
 	<!-- 일정 저장 -->
+	<!-- 
 	<insert id="saveTrip">
 		insert into trip
 		values (seq_trip.NEXTVAL, #{userNo},
 		default, #{startDate}, #{endDate}, sysdate, #{cityName})
 	</insert>
+	 -->
+	 
+	 <insert id="saveTrip" parameterType="Trip">
+	 	<selectKey keyProperty="tripNo" resultType="int" order="BEFORE">
+	 		select seq_trip.NEXTVAL FROM DUAL
+	 	</selectKey>
+	 	
+	 	insert into trip
+	 	values(#{tripNo}, #{userNo},
+		default, #{startDate}, #{endDate}, sysdate, #{cityName})
+	 </insert>
 
 	<!-- 날짜 범위에 맞는 일정 조회 -->
 	<select id="selectScheduleByDateRange" resultType="Trip">
@@ -48,7 +60,7 @@
 	<!-- 조회한 tripNo를 이용해서 detail 저장 -->
 	<insert id="saveDetail" parameterType="Detail">
 	    <selectKey resultType="int" keyProperty="detailNo" order="BEFORE">
-	        SELECT SEQ_DETAIL_NO.NEXTVAL FROM DUAL
+	        SELECT SEQ_DETAIL.NEXTVAL FROM DUAL
 	    </selectKey>
 	    INSERT INTO DETAIL (DETAIL_NO, TRIP_NO, SELECT_DATE)
 	    VALUES (#{detailNo}, #{tripNo}, #{selectDate})
