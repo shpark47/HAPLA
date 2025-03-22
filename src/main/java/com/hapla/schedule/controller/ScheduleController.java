@@ -2,6 +2,7 @@ package com.hapla.schedule.controller;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -78,12 +79,39 @@ public class ScheduleController {
 		Trip trip = scheduleService.getTripNo(tripNo);
 
 		// 여행 상세 일정 조회
-		// List<Detail> tripDetail = scheduleService.getTripDetail(trip.getTripNo());
-		scheduleService.getTripDetail(trip.getTripNo());
+		//scheduleService.getTripDetail(trip.getTripNo());
+		List<Detail> detailList = scheduleService.getTripDetail(tripNo);
+		
 //		System.out.println("trip : " + trip);
 		model.addAttribute("trip", trip); // 여행 정보 추가
-		// model.addAttribute("detail", tripDetail); // 일정 정보 추가
+		model.addAttribute("detailList", detailList); // 일정 정보 추가
 
 		return "/schedule/detail";
 	}
+	
+	// 일정 내용 수정
+	@GetMapping("/schedule/edit/{tripNo}")
+	public String editTrip(@PathVariable int tripNo, Model model) {
+	    // trip 정보
+	    Trip trip = scheduleService.getTripByTripNo(tripNo);
+
+	    // trip에 속한 detail 리스트
+	    List<Detail> detailList = scheduleService.getDetailsByTripNo(tripNo);
+
+	    // 필요 시 memo, place도 가져오기
+	    Map<Integer, String> memoMap = scheduleService.getMemosByTripNo(tripNo);
+	    Map<Integer, List<String>> placeMap = scheduleService.getPlacesByTripNo(tripNo);
+
+	    model.addAttribute("trip", trip);
+	    model.addAttribute("detailList", detailList);
+	    model.addAttribute("memoMap", memoMap);
+	    model.addAttribute("placeMap", placeMap);
+
+	    return "schedule/scheduleEdit";
+	}
+
+	
+	
+	
+	
 }
