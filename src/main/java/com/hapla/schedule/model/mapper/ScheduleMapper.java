@@ -2,12 +2,13 @@ package com.hapla.schedule.model.mapper;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.hapla.schedule.model.vo.Detail;
+import com.hapla.schedule.model.vo.DetailMemo;
+import com.hapla.schedule.model.vo.DetailPlace;
 import com.hapla.schedule.model.vo.Trip;
 
 @Mapper
@@ -36,9 +37,9 @@ public interface ScheduleMapper {
 
 	List<Detail> selectDetailsByTripNo(int tripNo);
 
-	Map<Integer, String> selectMemosByTripNo(int tripNo);
+	List<DetailMemo> selectMemosByTripNo(int tripNo);
 
-	Map<Integer, List<String>> selectPlacesByTripNo(int tripNo);
+	 List<DetailPlace> selectPlacesByTripNo(int tripNo);
 
 	int deleteTrip(int tripNo);
 	

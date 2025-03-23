@@ -19,7 +19,7 @@
                 </span>
         </div>
         <div class="sidebar-title">
-            <span class="trip-title" id="tripTitle" th:text="${trip.cityName}"></span>
+            <span class="trip-title" id="tripTitle" th:text="${trip.cityName}" th:attr="data-city=${trip.cityName}">></span>
             <span id="tripDates" th:text="${#dates.format(trip.startDate, 'yyyy-MM-dd')} + ' ~ ' + ${#dates.format(trip.endDate, 'yyyy-MM-dd')}"></span>
         </div>
         <!-- ✅ 날짜별 일정 리스트 -->
@@ -30,13 +30,20 @@
                 </div>
 
                 <div th:each="detail : ${detailList}" 
-                     th:if="${#dates.format(detail.selectDate, 'yyyy-MM-dd')} == ${#dates.format(date, 'yyyy-MM-dd')}" 
+                     th:if="${#dates.format(detail.selectDate, 'yyyy-MM-dd') == #dates.format(date, 'yyyy-MM-dd')}" 
                      class="date-item">
 
                     <input type="hidden" th:value="${detail.detailNo}" class="detailNo">
 
-                    <div class="addDetail" th:text="${placeMap[detail.detailNo]}"></div>
-                    <div class="addMemo" th:text="${memoMap[detail.detailNo]}"></div>
+                   	<div class="addDetail">
+					    <span class="place-name"
+					          th:each="placeId : ${placeMap[detail.detailNo]}"
+					          th:attr="data-place-id=${placeId}">
+					    </span>
+					</div>
+					<div class="addMemo" th:text="${memoMap[detail.detailNo + '']} ?: '메모 없음'"></div>
+
+
 
                     <div class="controls">
                         <div class="control-add" onclick="toggleControls(this)">

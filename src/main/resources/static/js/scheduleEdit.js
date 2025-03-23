@@ -57,87 +57,83 @@ window.onload = () => {
 
 		    const request = {
 		        placeId: placeId,
-		        fields: ['name'] // 장소 이름만 요청
+		        fields: ['name']
 		    };
 
-		    service.getDetails(request, (place, status) => {
-		        if (status === google.maps.places.PlacesServiceStatus.OK && place && place.name) {
-		            callback(place.name); // 성공 시 이름 전달
+		    service.getDetails(request, function(place, status) {
+		        if (status === google.maps.places.PlacesServiceStatus.OK && place) {
+		            callback(place.name);
 		        } else {
-		            callback("이름 불러오기 실패"); // 실패 시 대체 텍스트
+		            callback("이름 불러오기 실패");
 		        }
 		    });
 		}
 		
+		document.addEventListener("DOMContentLoaded", function () {
+		    document.querySelectorAll(".place-name").forEach(el => {
+		        const placeId = el.dataset.placeId;
+		        getPlaceNameById(placeId, function (placeName) {
+		            el.textContent = placeName || "이름 불러오기 실패";
+		        });
+		    });
+		});
+
+		
 		// 날짜 범위(start ~ end) 기준으로 일정 리스트를 생성하는 함수
 		function generateDateList(start, end) {
-		    const dateList = document.getElementById("dateList"); // HTML에 있는 일정 출력 영역
-		    dateList.innerHTML = ""; // 기존에 있던 일정들 초기화
+		    const dateList = document.getElementById("dateList");
+		    dateList.innerHTML = "";
 
-		    let startDate = new Date(start); // 시작 날짜 객체
-		    let endDate = new Date(end);     // 종료 날짜 객체
+		    let startDate = new Date(start);
+		    let endDate = new Date(end);
 
-		    // 시작일부터 종료일까지 반복
-		    while (startDate <= endDate) {
-		        const formattedDate = startDate.toISOString().split("T")[0]; // 날짜 포맷: yyyy-MM-dd
+			while (startDate <= endDate) {
+			    const formattedDate = startDate.toISOString().split("T")[0];
+			    const dailyDetails = window.detailList.filter(d => d.selectDate === formattedDate);
 
-		        // 이 날짜에 해당하는 detail 데이터 필터링
-		        const dailyDetails = window.detailList.filter(d => d.selectDate === formattedDate);
+			    if (dailyDetails.length > 0) {
+			        const dateContainer = document.createElement("div");
+			        dateContainer.classList.add("date-container");
 
-		        // 해당 날짜의 placeId 목록 (중복 제거, null 제거)
-		        const placeIds = [...new Set(dailyDetails.map(d => d.placeId).filter(Boolean))];
+			        const planDate = document.createElement("div");
+			        planDate.classList.add("plan-date");
+			        planDate.textContent = formattedDate;
+			        dateContainer.appendChild(planDate);
 
-		        // 해당 날짜에 저장된 메모가 있으면 가져오기 (없으면 기본 메시지)
-		        const memo = dailyDetails.find(d => d.content)?.content || "메모 없음";
+			        // ✅ 각 Detail 항목 하나씩 출력 (장소든 메모든)
+			        dailyDetails.forEach(detail => {
+			            const dateItem = document.createElement("div");
+			            dateItem.classList.add("date-item");
 
-		        // 일정 하나를 표시할 컨테이너 요소 생성
-		        const dateContainer = document.createElement("div");
-		        dateContainer.classList.add("date-container"); // 날짜별 일정 묶음
+			            const contentDiv = document.createElement("div");
+			            contentDiv.classList.add("plan-content");
 
-		        // 날짜 표시 요소
-		        const planDate = document.createElement("div");
-		        planDate.classList.add("plan-date");
-		        planDate.textContent = formattedDate;
+			            if (detail.placeId) {
+			                getPlaceNameById(detail.placeId, (placeName) => {
+			                    const placeEl = document.createElement("div");
+			                    placeEl.innerHTML = `<strong>📍 장소:</strong> ${placeName}`;
+			                    contentDiv.appendChild(placeEl);
+			                });
+			            }
 
-		        // 일정 내용 표시 영역
-		        const dateItem = document.createElement("div");
-		        dateItem.classList.add("date-item");
+			            if (detail.content) {
+			                const memoEl = document.createElement("div");
+			                memoEl.innerHTML = `<strong>📝 메모:</strong> ${detail.content}`;
+			                contentDiv.appendChild(memoEl);
+			            }
 
-		        // 메모 / 장소 내용을 담는 div
-		        const contentDiv = document.createElement("div");
-		        contentDiv.classList.add("plan-content");
+			            dateItem.appendChild(contentDiv);
+			            dateContainer.appendChild(dateItem);
+			        });
 
-				// ✅ 메모 DOM 요소 먼저 만들어두기
-				const memoEl = document.createElement("div");
-				memoEl.innerHTML = `<strong>📝 메모:</strong> ${memo}`;
-				contentDiv.appendChild(memoEl); // 메모는 마지막에 붙이기
+			        dateList.appendChild(dateContainer);
+			    }
 
-				// ✅ 장소 먼저 삽입 (메모 위에)
-				if (placeIds.length > 0) {
-				    placeIds.forEach(placeId => {
-				        getPlaceNameById(placeId, (placeName) => {
-				            const placeEl = document.createElement("div");
-				            placeEl.innerHTML = `<strong>📍 장소:</strong> ${placeName}`;
-				            // 📍 장소를 메모 위에 삽입
-				            contentDiv.insertBefore(placeEl, memoEl);
-				        });
-				    });
-				} else {
-				    const placeEl = document.createElement("div");
-				    placeEl.innerHTML = `<strong>📍 장소:</strong> 없음`;
-				    contentDiv.insertBefore(placeEl, memoEl); // 장소 없을 때도 메모 위로
-				}
+			    startDate.setDate(startDate.getDate() + 1);
+			}
 
-		        // 모든 요소 조립해서 DOM에 추가
-		        dateItem.appendChild(contentDiv);
-		        dateContainer.appendChild(planDate);
-		        dateContainer.appendChild(dateItem);
-		        dateList.appendChild(dateContainer);
-
-		        // 다음 날짜로 이동
-		        startDate.setDate(startDate.getDate() + 1);
-		    }
 		}
+
 		
 		document.addEventListener("DOMContentLoaded", function () {
 			    const trip = window.trip;
