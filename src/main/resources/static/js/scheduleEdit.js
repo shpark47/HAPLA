@@ -1,15 +1,20 @@
 let trip;
+let p = 0; // 패널 인덱스
+const sidePanel = [
+    document.getElementById('memo-panel'),
+    document.getElementById('stay-panel')
+];
 window.onload = () => {
 	trip = window.trip;
 	console.log("trip : " + trip.cityName);
 }
 
+
+
 		function initMap(){
 			// 'tripTitle'요소에서 'data-city'속성 가져오기
 			const cityElement = document.getElementById("tripTitle");
 			const cityName = cityElement ? cityElement.getAttribute("data-city") : null;
-			
-			console.log("선택한 도시 : " + cityName);
 			
 			// 기본 위치(서울)
 			let defaultLocation = { lat: 37.5665, lng:126.9780};
@@ -21,7 +26,6 @@ window.onload = () => {
 		        geocoder.geocode({ address: cityName }, function(results, status) {
 		            if (status == "OK") {
 		                defaultLocation = results[0].geometry.location;
-		                console.log("📌 변환된 좌표:", defaultLocation);
 
 		                // Google 지도 생성
 		                const map = new google.maps.Map(document.getElementById("map"), {
@@ -61,7 +65,7 @@ window.onload = () => {
 		    };
 
 		    service.getDetails(request, function(place, status) {
-		        if (status === google.maps.places.PlacesServiceStatus.OK && place) {
+		        if (status == google.maps.places.PlacesServiceStatus.OK && place) {
 		            callback(place.name);
 		        } else {
 		            callback("이름 불러오기 실패");
@@ -79,81 +83,122 @@ window.onload = () => {
 		});
 
 		
-		// 날짜 범위(start ~ end) 기준으로 일정 리스트를 생성하는 함수
+		// ✅ 일정 리스트 생성 함수
 		function generateDateList(start, end) {
 		    const dateList = document.getElementById("dateList");
 		    dateList.innerHTML = "";
 
 		    let startDate = new Date(start);
 		    let endDate = new Date(end);
+		    let isFirst = true;
 
-			while (startDate <= endDate) {
-			    const formattedDate = startDate.toISOString().split("T")[0];
-			    const dailyDetails = window.detailList.filter(d => d.selectDate === formattedDate);
+		    while (startDate <= endDate) {
+		        const formattedDate = startDate.toISOString().split("T")[0];
+		        const dailyDetails = window.detailList.filter(d => d.selectDate === formattedDate);
 
-			    if (dailyDetails.length > 0) {
-			        const dateContainer = document.createElement("div");
-			        dateContainer.classList.add("date-container");
+		        if (dailyDetails.length > 0) {
+		            const dateContainer = document.createElement("div");
+		            dateContainer.classList.add("date-container");
 
-			        const planDate = document.createElement("div");
-			        planDate.classList.add("plan-date");
-			        planDate.textContent = formattedDate;
-			        dateContainer.appendChild(planDate);
+		            const planDate = document.createElement("div");
+		            planDate.classList.add("plan-date");
+		            planDate.textContent = formattedDate;
+		            dateContainer.appendChild(planDate);
 
-			        // ✅ 각 Detail 항목 하나씩 출력 (장소든 메모든)
-			        dailyDetails.forEach(detail => {
-			            const dateItem = document.createElement("div");
-			            dateItem.classList.add("date-item");
+		            dailyDetails.forEach(detail => {
+		                const dateItem = document.createElement("div");
+		                dateItem.classList.add("date-item");
+		                if (isFirst) {
+		                    dateItem.classList.add("active");
+		                    isFirst = false;
+		                }
 
-			            const contentDiv = document.createElement("div");
-			            contentDiv.classList.add("plan-content");
+		                const hiddenInput = document.createElement("input");
+		                hiddenInput.type = "hidden";
+		                hiddenInput.classList.add("detailNo");
+		                hiddenInput.value = detail.detailNo;
+		                dateItem.appendChild(hiddenInput);
 
-			            if (detail.placeId) {
-			                getPlaceNameById(detail.placeId, (placeName) => {
-			                    const placeEl = document.createElement("div");
-			                    placeEl.innerHTML = `<strong>📍 장소:</strong> ${placeName}`;
-			                    contentDiv.appendChild(placeEl);
-			                });
-			            }
+		                const dateInput = document.createElement("input");
+		                dateInput.type = "hidden";
+		                dateInput.classList.add("selectDate");
+		                dateInput.value = detail.selectDate;
+		                dateItem.appendChild(dateInput);
 
-			            if (detail.content) {
-			                const memoEl = document.createElement("div");
-			                memoEl.innerHTML = `<strong>📝 메모:</strong> ${detail.content}`;
-			                contentDiv.appendChild(memoEl);
-			            }
+		                const addDetail = document.createElement("div");
+		                addDetail.classList.add("addDetail");
+		                const placeIds = toArray(window.placeMap[detail.detailNo]);
+		                placeIds.forEach(placeId => {
+		                    getPlaceNameById(placeId, (placeName) => {
+		                        const placeEl = document.createElement("div");
+		                        placeEl.classList.add("place-item");
+		                        placeEl.setAttribute("data-place-id", placeId);
+		                        placeEl.innerHTML = `
+		                            <span class="place-name">${placeName}</span>
+		                            <input type="hidden" value="${placeId}"/>
+		                            <button class="remove-btn" onclick="removePlace(this)">X</button>
+		                        `;
+		                        addDetail.appendChild(placeEl);
+		                    });
+		                });
+		                dateItem.appendChild(addDetail);
 
-			            dateItem.appendChild(contentDiv);
-			            dateContainer.appendChild(dateItem);
-			        });
+		                const addMemo = document.createElement("div");
+		                addMemo.classList.add("addMemo");
+		                const memos = toArray(window.memoMap[detail.detailNo]);
+		                memos.forEach(content => {
+		                    const memoEl = document.createElement("div");
+		                    memoEl.classList.add("memo-item");
+		                    memoEl.innerHTML = `
+		                        <span class="memo-text">${content}</span>
+		                        <button class="remove-btn" onclick="removeMemo(this)">X</button>
+		                    `;
+		                    addMemo.appendChild(memoEl);
+		                });
+		                dateItem.appendChild(addMemo);
 
-			        dateList.appendChild(dateContainer);
-			    }
+		                const template = document.getElementById("controls-template");
+		                if (template) {
+		                    const clone = template.content.cloneNode(true);
+		                    dateItem.appendChild(clone);
+		                }
 
-			    startDate.setDate(startDate.getDate() + 1);
-			}
+		                dateContainer.appendChild(dateItem);
+		            });
 
+		            dateList.appendChild(dateContainer);
+		        }
+
+		        startDate.setDate(startDate.getDate() + 1);
+		    }
+
+		    // ✅ 새로 생성된 .date-item들에 클릭 이벤트 바인딩
+		    document.querySelectorAll(".date-item").forEach(item => {
+		        item.addEventListener("click", function () {
+		            document.querySelectorAll(".date-item").forEach(el => el.classList.remove("active"));
+		            this.classList.add("active");
+		        });
+		    });
 		}
 
-		
+		function toArray(value) {
+		    if (Array.isArray(value)) return value;
+		    if (value === undefined || value === null) return [];
+		    return [value];
+		}
+
 		document.addEventListener("DOMContentLoaded", function () {
-			    const trip = window.trip;
-			
-			    if (trip && trip.startDate && trip.endDate) {
-			        const start = new Date(trip.startDate);
-			        const end = new Date(trip.endDate);
-			        generateDateList(start, end);
-			    }
-			});
-		
-		
-			
-			
+		    const trip = window.trip;
+		    if (trip && trip.startDate && trip.endDate) {
+		        const start = new Date(trip.startDate);
+		        const end = new Date(trip.endDate);
+		        generateDateList(start, end);
+		    }
+		});
 
         // 메뉴바 선택시 일정 목록으로 페이지 이동
         document.addEventListener("DOMContentLoaded", function(){
         	const menuBtn = document.getElementById("menuBtn");
-        	console.log(menuBtn);
-        	console.log(menuBtn);
         	
         	if(menuBtn){
         		menuBtn.addEventListener("click", function(){
@@ -162,19 +207,6 @@ window.onload = () => {
         	});
         }
         });
-
-		// 말풍선 메뉴 토글
-		document.getElementById("editBtn").addEventListener("click", function (e) {
-		    e.stopPropagation(); // 다른 클릭 막기
-		    const menu = document.getElementById("editMenu");
-		    menu.style.display = menu.style.display === "block" ? "none" : "block";
-		});
-
-		// 바깥 클릭하면 닫기
-		window.addEventListener("click", function () {
-		    const menu = document.getElementById("editMenu");
-		    if (menu) menu.style.display = "none";
-		});
 
 		// +추가 버튼 클릭시 control-btns 보이게 처리
 		function toggleControls(addButton) {
@@ -209,7 +241,7 @@ window.onload = () => {
 		        stayPanel.style.display = 'block';
 		        p = 1;
 		    }
-		    displayPlaceList(p, place);
+		    displayPlaceList(p, trip.cityName);
 		}
 
 		// Close 버튼 클릭 시, +추가 버튼으로 돌아가게 처리
@@ -265,35 +297,65 @@ window.onload = () => {
 		input.addEventListener("input", function () {
 		    const searchTerm = input.value.trim();
 		    if (input && input.value.trim() == "") {
-		        displayPlaceList(p, place); // 검색어가 없으면 인기 장소 출력
+		        displayPlaceList(p, trip.cityName); // 검색어가 없으면 인기 장소 출력
 		    } else {
-		        console.log('input!');
 		        filterPlaces(searchTerm);
 		    }
 		});
 
 
 		// 🌆 기본 장소 리스트 출력
-		function displayPlaceList(p, place) {
-		    filterPlaces(place)
-		    sidePanel[p].style.display = 'block';
+		function displayPlaceList(p) {
+		    const city = trip?.cityName || "서울";
+		    const geocoder = new google.maps.Geocoder();
+
+		    geocoder.geocode({ address: city }, function (results, status) {
+		        if (status === "OK" && results[0]) {
+		            const location = results[0].geometry.location; // ✅ 올바른 좌표 추출
+		            const service = new google.maps.places.PlacesService(document.createElement('div'));
+
+		            const request = {
+		                location: location,
+		                radius: 3000, // 또는 rankBy: google.maps.places.RankBy.PROMINENCE
+		                type: ['establishment']
+		            };
+
+		            service.nearbySearch(request, function (results, status) {
+		                if (status === google.maps.places.PlacesServiceStatus.OK) {
+		                    const resultsList = document.getElementById("search-results");
+		                    resultsList.innerHTML = "";
+
+		                    results.forEach(place => {
+		                        const li = document.createElement("li");
+		                        li.classList.add("place-item");
+		                        li.innerHTML = `<span class="place-icon">📍</span> <span class="place-text">${place.name}</span>`;
+		                        resultsList.appendChild(li);
+		                    });
+		                } else {
+		                    console.error("❌ nearbySearch 실패:", status);
+		                }
+		            });
+		        } else {
+		            console.error("❌ 도시 지오코딩 실패:", status);
+		        }
+		    });
 		}
 
 
+
 		// 🔍 장소 검색 기능 (검색 예측 결과 출력)
-		function filterPlaces(searchTerm, place) {
+		function filterPlaces(searchTerm) {
 		    const autocompleteService = new google.maps.places.AutocompleteService();
 
 		    autocompleteService.getPlacePredictions({
 		        input: searchTerm,
-		        location: place,
-		        rankby: 30000,
-		        types: ['museum', 'park', 'restaurant', 'lodging', 'tourist_attraction'] // 장소 유형 추가
+//		        types: ['museum', 'park', 'restaurant', 'lodging', 'tourist_attraction']
+		        types: ['establishment']
 		    }, function (predictions, status) {
 		        const resultsList = document.getElementById("search-results");
-		        resultsList.innerHTML = ""; // 기존 리스트 초기화
+		        resultsList.innerHTML = "";
 
-		        if (status != google.maps.places.PlacesServiceStatus.OK || !predictions) {
+		        if (status !== google.maps.places.PlacesServiceStatus.OK || !predictions) {
 		            console.error("장소 검색 결과가 없습니다.");
 		            return;
 		        }
@@ -304,6 +366,7 @@ window.onload = () => {
 		        });
 		    });
 		}
+
 
 		// 🌍 장소 리스트 아이템 생성 함수 (인기 장소와 검색 예측 모두 지원)
 		// 인기 장소 객체: { name, address, lat, lng }
@@ -321,35 +384,31 @@ window.onload = () => {
 		    const textSpan = document.createElement("span");
 		    textSpan.classList.add("place-text");
 
+		    // ✨ 1. 검색 예측 결과 (Autocomplete)
 		    if (item.description && item.place_id) {
-		        // 검색 예측 결과
 		        textSpan.textContent = item.description;
 		        li.onclick = function () {
-		            // place_id를 이용해 상세 정보를 가져옴
 		            const service = new google.maps.places.PlacesService(document.createElement("div"));
 		            service.getDetails({
 		                placeId: item.place_id,
-		                fields: ["name", "geometry", "place_id"] //vicinity : 짧은 주소
+		                fields: ["name", "geometry", "place_id"]
 		            }, function (place, status) {
-		                if (status !== google.maps.places.PlacesServiceStatus.OK || !place.geometry) {
-		                    console.error("장소 상세 정보를 가져오지 못했습니다.");
-		                    return;
-		                }
+		                if (status !== google.maps.places.PlacesServiceStatus.OK || !place.geometry) return;
+
 		                selectPlace({
 		                    name: place.name,
 		                    placeId: place.place_id,
 		                    lat: place.geometry.location.lat(),
-		                    lng: place.geometry.location.lng(),
-
+		                    lng: place.geometry.location.lng()
 		                });
 		            });
 		        };
 
-		    } else if (item.name && item.address) {
-		        // 인기 장소 객체
-		        textSpan.textContent = `${item.name}, ${item.address}`;
+		    // ✨ 2. 기본 인기 장소 (nearbySearch → 직접 만든 객체)
+		    } else if (item.name && item.placeId) {
+		        textSpan.textContent = `${item.name}${item.address ? ', ' + item.address : ''}`;
 		        li.onclick = function () {
-		            selectPlace(item);
+		            selectPlace(item); // 이건 바로 객체 넘겨도 돼
 		        };
 		    }
 
@@ -357,6 +416,7 @@ window.onload = () => {
 		    li.appendChild(textSpan);
 		    return li;
 		}
+
 		let places = [];
 		let placeMap = new Map();
 		let selDate, activeDateItem;
@@ -364,73 +424,64 @@ window.onload = () => {
 		function selectPlace(place) {
 		    console.log("선택한 장소:", place);
 
-		    // 현재 선택된 날짜('.date-item')찾기
-		    activeDateItem = document.querySelector(".date-item.active"); // 현재 활성화된 날짜
-		    selDate = activeDateItem.previousElementSibling.getElementsByClassName('selectDate')[0].value;
+		    const activeDateItem = document.querySelector(".date-item.active");
+		    if (!activeDateItem) {
+		        alert("날짜를 먼저 선택해주세요!");
+		        return;
+		    }
 
-		    if (placeMap.has(selDate)){
-		        let pla = placeMap.get(selDate);
-		        if(!pla.some(p => place.placeId.includes(p))){
-		            pla.push(place.placeId);
-		            // ✅ 선택한 날짜의 `addDetail` 요소 찾기 (없으면 생성)
-		            let addDetail = activeDateItem.querySelector(".addDetail");
-		            if (!addDetail) {
-		                addDetail = document.createElement("div");
-		                addDetail.classList.add("addDetail");
-		                activeDateItem.appendChild(addDetail); // `.date-item`에 추가
-		            }
+		    const selDateInput = activeDateItem.querySelector('.selectDate');
+		    if (!selDateInput) {
+		        console.error("❌ selectDate input not found in date item");
+		        return;
+		    }
 
-		            // ✅ 장소 정보 추가 (HTML 요소 생성)
-		            const placeItem = document.createElement("div");
-		            placeItem.classList.add("place-item");
-		            placeItem.setAttribute("data-place-id", place.placeId);
-		            placeItem.innerHTML = `
-			        <span class="place-name">${place.name}</span>
-			        <input type="hidden" value="${place.placeId}"/>
-			        <button class="remove-btn" onclick="removePlace(this)">X</button>
-			    `;
+		    const selDate = selDateInput.value;
 
-		            // `addDetail`에 장소 추가
-		            addDetail.appendChild(placeItem);
-		        }
-		        placeMap.set(selDate, pla);
-		    }else{
-		        places = [];
+		    let places = placeMap.get(selDate) || [];
+
+		    if (!places.includes(place.placeId)) {
 		        places.push(place.placeId);
 		        placeMap.set(selDate, places);
-		        // ✅ 선택한 날짜의 `addDetail` 요소 찾기 (없으면 생성)
+
 		        let addDetail = activeDateItem.querySelector(".addDetail");
 		        if (!addDetail) {
 		            addDetail = document.createElement("div");
 		            addDetail.classList.add("addDetail");
-		            activeDateItem.appendChild(addDetail); // `.date-item`에 추가
+		            activeDateItem.appendChild(addDetail);
 		        }
 
-		        // ✅ 장소 정보 추가 (HTML 요소 생성)
 		        const placeItem = document.createElement("div");
 		        placeItem.classList.add("place-item");
 		        placeItem.setAttribute("data-place-id", place.placeId);
 		        placeItem.innerHTML = `
-			        <span class="place-name">${place.name}</span>
-			        <input type="hidden" value="${place.placeId}"/>
-			        <button class="remove-btn" onclick="removePlace(this)">X</button>
-			    `;
+		            <span class="place-name">${place.name}</span>
+		            <input type="hidden" value="${place.placeId}"/>
+		            <button class="remove-btn" onclick="removePlace(this)">X</button>
+		        `;
 
-		        // `addDetail`에 장소 추가
 		        addDetail.appendChild(placeItem);
 		    }
 		}
 
+
 		// 장소 삭제 기능 추가
 		function removePlace(button) {
-		    let date = button.parentElement.parentElement.parentElement.previousElementSibling.querySelector('.selectDate').value;
-		    if (placeMap.has(date)){
-		        let places = placeMap.get(date);
-		        places = places.filter((e) => e !== button.previousElementSibling.value);
-		        placeMap.set(date, places);
+		    const placeItem = button.closest(".place-item");
+		    const placeId = placeItem.querySelector("input[type=hidden]").value;
+
+		    const dateItem = button.closest(".date-item");
+		    const selDate = dateItem.querySelector(".selectDate").value;
+
+		    if (placeMap.has(selDate)) {
+		        let places = placeMap.get(selDate);
+		        places = places.filter(id => id !== placeId);
+		        placeMap.set(selDate, places);
 		    }
-		    button.parentElement.remove();	// 부모 요소 (`place-item`) 삭제
+
+		    placeItem.remove();
 		}
+
 
 		document.querySelectorAll(".date-item").forEach(item => {
 		    item.addEventListener("click", function () {
@@ -446,8 +497,9 @@ window.onload = () => {
 		let memoMap = new Map();
 		function saveMemo() {
 		    activeDateItem = document.querySelector(".date-item.active"); // 현재 활성화된 날짜
-		    selDate = activeDateItem.previousElementSibling.getElementsByClassName('selectDate')[0].value;
-		    // 메모 입력값 가져오기
+		    //selDate = activeDateItem.previousElementSibling.getElementsByClassName('selectDate')[0].value;
+			selDate = activeDateItem.querySelector('.selectDate').value;
+			// 메모 입력값 가져오기
 		    const memoText = document.getElementById("memo-text").value.trim();
 
 		    if (memoText == "") {
@@ -493,51 +545,60 @@ window.onload = () => {
 
 		// ✅ 메모 삭제 기능 추가
 		function removeMemo(button) {
-		    let date = button.parentElement.parentElement.parentElement.previousElementSibling.querySelector('.selectDate').value;
-		    if (memoMap.has(date)){
-		        let memos = memoMap.get(date);
-		        memos = memos.filter((e) => e !== button.previousElementSibling.innerText);
-		        memoMap.set(date, memos);
+		    const memoItem = button.closest(".memo-item");
+		    const memoText = memoItem.querySelector(".memo-text").innerText;
+
+		    const dateItem = button.closest(".date-item");
+		    const selDate = dateItem.querySelector(".selectDate").value;
+
+		    if (memoMap.has(selDate)) {
+		        let memos = memoMap.get(selDate);
+		        memos = memos.filter(m => m !== memoText);
+		        memoMap.set(selDate, memos);
 		    }
-		    button.parentElement.remove(); // 부모 요소 (`memo-item`) 삭제
+
+		    memoItem.remove(); // DOM에서도 제거
 		}
 
-		function saveDetail() {
-		    const placeObj = Object.fromEntries(placeMap);
-		    const memoObj = Object.fromEntries(memoMap);
+		function editDetail() {
+		    const detailList = [];
+		    const placeObj = {};
+		    const memoObj = {};
 
-		    // const data = [placeObj, memoObj];
-			const data = {
-			        tripNo: parseInt(tripNo),
-			        datas: [placeObj, memoObj]
-			    };
+		    document.querySelectorAll(".date-item").forEach(item => {
+		        const detailNo = item.querySelector(".detailNo").value;
 
-		    fetch('/schedule/saveDetail', {
-		        method: 'POST',
+		        // detailList에 detailNo 추가
+		        detailList.push({ detailNo });
+
+		        // 장소 정보 수집
+		        const placeIds = Array.from(item.querySelectorAll(".addDetail .place-item input"))
+		                              .map(input => input.value);
+		        placeObj[detailNo] = placeIds;
+
+		        // 메모 정보 수집
+		        const memoTexts = Array.from(item.querySelectorAll(".addMemo .memo-text"))
+		                               .map(span => span.innerText);
+		        memoObj[detailNo] = memoTexts;
+		    });
+
+		    const data = {
+		        detailList: detailList,
+		        placeMap: placeObj,
+		        memoMap: memoObj
+		    };
+
+		    fetch('/schedule/updateDetail', {
+		        method: 'PUT',
 		        headers: {
-		            'Content-Type': 'application/json' // ✅ 올바른 Content-Type 설정
+		            'Content-Type': 'application/json'
 		        },
 		        body: JSON.stringify(data)
 		    })
 		        .then(response => response.text())
 		        .then(message => {
-		            console.log("서버 응답:", message);
-		            alert(message); // ✅ 알림 추가 (저장 완료 메시지)
+		            alert(message); // 수정 완료 알림
 		        })
-		        .catch(error => console.error("에러 발생:", error));
+		        .catch(error => console.error("수정 중 에러 발생:", error));
 		}
 
-
-		// 메뉴바 선택시 일정 목록으로 페이지 이동
-		document.addEventListener("DOMContentLoaded", function () {
-		    const menuBtn = document.getElementById("menuBtn");
-		    console.log(menuBtn);
-
-
-		    if (menuBtn) {
-		        menuBtn.addEventListener("click", function () {
-		            console.log("일정 목록 페이지로 이동")
-		            window.location.href = "/schedule/list";
-		        });
-		    }
-		});

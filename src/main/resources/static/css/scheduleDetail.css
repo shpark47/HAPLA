@@ -130,28 +130,29 @@ body {
     list-style: none;
 }
 
-/* .date-container {
+.date-container {
     margin-bottom: 10%;
 	margin-top: 5%;
 	curesor: pointer;
 }
- */
+
  
- /* ✅ 날짜별 컨테이너 */
-.date-container {
-    border: 1px solid #ddd;
-    border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 12px;
-    background-color: #fafafa;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    transition: background-color 0.3s ease;
-}
+/*  /* ✅ 날짜별 컨테이너 */ */
+/* .date-container { */
+/*     border: 1px solid #ddd; */
+/*     border-radius: 12px; */
+/*     padding: 16px; */
+/*     margin-bottom: 12px; */
+/*     background-color: #fafafa; */
+/*     box-shadow: 0 2px 6px rgba(0,0,0,0.05); */
+/*     transition: background-color 0.3s ease; */
+/* }
 
 .date-container:hover {
     background-color: #f0f8ff;
 }
-
+ */
+ 
 .plan-title {
     /* font-weight: bold; */
     margin-bottom: 3%;
