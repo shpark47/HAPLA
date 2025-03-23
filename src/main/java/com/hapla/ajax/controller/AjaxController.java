@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttributes;
@@ -136,6 +137,39 @@ public class AjaxController {
 	    // 최종 저장
 	    return scheduleService.saveDetails(detailList, placeMap, memoMap);
 	}
+	
+	@PutMapping("/schedule/updateDetail")
+	public String updateDetail(@RequestBody Map<String, Object> data) {
+	    List<Map<String, Object>> detailList = (List<Map<String, Object>>) data.get("detailList");
+	    Map<String, List<String>> placeMap = (Map<String, List<String>>) data.get("placeMap");
+	    Map<String, List<String>> memoMap = (Map<String, List<String>>) data.get("memoMap");
+
+	    for (Map<String, Object> detail : detailList) {
+	        int detailNo = Integer.parseInt(detail.get("detailNo").toString());
+
+	        // 기존 place, memo 삭제
+	        scheduleService.deletePlacesByDetailNo(detailNo);
+	        scheduleService.deleteMemosByDetailNo(detailNo);
+
+	        // 새로운 place 저장
+	        if (placeMap.containsKey(String.valueOf(detailNo))) {
+	            for (String placeId : placeMap.get(String.valueOf(detailNo))) {
+	                scheduleService.insertPlace(detailNo, placeId);
+	            }
+	        }
+
+	        // 새로운 memo 저장
+	        if (memoMap.containsKey(String.valueOf(detailNo))) {
+	            for (String content : memoMap.get(String.valueOf(detailNo))) {
+	                scheduleService.insertMemo(detailNo, content);
+	            }
+	        }
+	    }
+
+	    return "일정이 성공적으로 수정되었습니다.";
+	}
+
+	
 
 }
 

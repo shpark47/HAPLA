@@ -25,14 +25,7 @@ body {
     flex: 1;
     height: 100vh;
 }
-/* 🌍 왼쪽 사이드바 */
-/* .sidebar {
-    width: 20%;
-    background: white;
-    padding: 15px;
-    border-right: 1px solid #ddd;
-    overflow-y: auto;
-} */
+
 .sidebar {
     position: fixed; /* 사이드바를 왼쪽 고정 */
     left: 0;
@@ -62,12 +55,6 @@ body {
     /* border-radius: 10px; 스크롤바 배경의 둥근 모서리 */
 }
 
-
-/* .sidebar-head{
-	margin-bottom: 10%;
-}
- */
- 
 .sidebar-title{
 	margin-top: 5%;
 }
@@ -176,20 +163,6 @@ body {
     padding: 2px;
     margin: 3px;
 }
-
-/* button {
-    margin-top: 10px;
-    padding: 10px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-button:hover {
-    background-color: #45a049;
-} */
 
 .save-btn button {
     background-color: #5A97C7;

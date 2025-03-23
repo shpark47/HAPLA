@@ -31,14 +31,6 @@
 		CREATE_DATE desc
 	</select>
 
-<!-- 
-	<select id="getTripDetail">
-		select *
-		from detail
-		where trip_no = #{tripNo}
-	</select>
- -->
- 
 	 <select id="getTripDetail" parameterType="int" resultType="Detail">
 	    SELECT d.detail_no,
 	           d.trip_no,
@@ -85,14 +77,6 @@
 	<select id="selectTripByTripNo" resultType="Trip">
     	SELECT * FROM trip WHERE trip_no = #{tripNo}
 	</select>
-	
-<!-- 	<select id="selectDetailsByTripNo" resultType="Detail"> -->
-<!-- 	    SELECT d.* -->
-<!-- 	    FROM detail d -->
-<!-- 	    JOIN detail_memo dm ON d.detail_no = dm.detail_no -->
-<!-- 	    JOIN detail_place dp ON d.detail_no = dp.detail_no -->
-<!-- 	    WHERE d.trip_no = #{tripNo} -->
-<!-- 	</select> -->
 
 	<select id="selectDetailsByTripNo" resultType="Detail">
     SELECT *
@@ -101,26 +85,12 @@
 	     ORDER BY select_date
 	</select>
 	
-<!-- 	<select id="selectMemosByTripNo" resultType="map"> -->
-<!-- 	    SELECT dm.detail_no AS key, dm.content AS value -->
-<!-- 	    FROM detail_memo dm -->
-<!-- 	    JOIN detail d ON dm.detail_no = d.detail_no -->
-<!-- 	    WHERE d.trip_no = #{tripNo} -->
-<!-- 	</select> -->
-
 	<select id="selectMemosByTripNo" resultType="DetailMemo">
 	    SELECT dm.detail_no, dm.content
 	      FROM detail_memo dm
 	      JOIN detail d ON dm.detail_no = d.detail_no
 	     WHERE d.trip_no = #{tripNo}
 	</select>
-
-<!-- 	<select id="selectPlacesByTripNo" resultType="map"> -->
-<!-- 	    SELECT dp.detail_no AS key, dp.place_id AS value -->
-<!-- 	    FROM detail_place dp -->
-<!-- 	    JOIN detail d ON dp.detail_no = d.detail_no -->
-<!-- 	    WHERE d.trip_no = #{tripNo} -->
-<!-- 	</select> -->
 
 	<select id="selectPlacesByTripNo" resultType="DetailPlace">
 	    SELECT dp.detail_no, dp.place_id
@@ -132,5 +102,13 @@
 	<delete id="deleteTrip" parameterType="int">
 		DELETE FROM trip WHERE trip_no = #{tripNo}
 	</delete>
+
+	<delete id="deletePlacesByDetailNo">
+	    DELETE FROM detail_place WHERE detail_no = #{detailNo}
+	</delete>
 	
+	<delete id="deleteMemosByDetailNo">
+	    DELETE FROM detail_memo WHERE detail_no = #{detailNo}
+	</delete>
+
 </mapper>

@@ -65,9 +65,6 @@ public class ScheduleService {
 	}
 
 	
-	
-	
-	
 //	public String saveDetails(List<Detail> details, Map<String, List<String>> placeMap, Map<String, String> memoMap) {
 //	    int insertedCount = 0;
 //	    System.out.println("✅ 저장할 Detail 리스트 (초기): " + details);
@@ -164,16 +161,6 @@ public class ScheduleService {
 	    return insertedCount > 0 ? "저장 성공!" : "저장 실패!";
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	public List<Trip> getTripsByTripNo(int tripNo) {
 	    return scheduleMapper.selectTripByTripNo(tripNo);
 	}
@@ -193,6 +180,22 @@ public class ScheduleService {
 
 	public int deleteTrip(int tripNo) {
 		return scheduleMapper.deleteTrip(tripNo);
+	}
+
+	public void deletePlacesByDetailNo(int detailNo) {
+	    scheduleMapper.deletePlacesByDetailNo(detailNo);
+	}
+
+	public void deleteMemosByDetailNo(int detailNo) {
+	    scheduleMapper.deleteMemosByDetailNo(detailNo);
+	}
+
+	public void insertPlace(int detailNo, String placeId) {
+	    scheduleMapper.insertPlace(detailNo, placeId);
+	}
+
+	public void insertMemo(int detailNo, String content) {
+	    scheduleMapper.insertMemo(detailNo, content);
 	}
 
 }
