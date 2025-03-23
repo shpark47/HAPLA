@@ -121,6 +121,13 @@ body {
     font-size: 15px;
 }
 
+.plan-date{
+    font-weight: bold;
+    color: #34495e;
+    margin-bottom: 8px;
+    font-size: 16px;
+}
+
 .memo-item {
     display: flex;
     align-items: center;
@@ -313,20 +320,21 @@ ul#search-results li button.add-button {
     margin-bottom: 1%;
 }
 
-
-
 .remove-btn {
-    background: #ff4d4d;
-    color: white;
+    background: #e0e0e0;
+    color: #9c9c9c;
     border: none;
     padding: 5px 8px;
-    margin-left: 10px;
+    margin-left: 8px;
+    font-size: 13px;
     cursor: pointer;
-    border-radius: 3px;
+    border-radius: 25px;
+    transition: background-color 0.3s ease;
 }
 
 .remove-btn:hover {
-    background: #cc0000;
+    background: #cfcfcf;
+    color: #000;
 }
 
 /* 숙소(장소) 검색 패널 */
