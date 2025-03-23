@@ -42,6 +42,14 @@ public interface ScheduleMapper {
 	 List<DetailPlace> selectPlacesByTripNo(int tripNo);
 
 	int deleteTrip(int tripNo);
+
+	void deletePlacesByDetailNo(int detailNo);
 	
-	
+	void deleteMemosByDetailNo(int detailNo);
+
+	void insertDetail(Detail detail);
+
+	List<String> getPlaceIdsByDetailNo(int detailNo);
+
+	List<String> getMemosByDetailNo(int detailNo);
 }

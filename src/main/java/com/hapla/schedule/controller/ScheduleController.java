@@ -1,5 +1,6 @@
 package com.hapla.schedule.controller;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -109,20 +110,20 @@ public class ScheduleController {
 	    // 날짜 범위 생성
   		List<Date> dateRange = scheduleService.getDateRange(trip.getStartDate(), trip.getEndDate());
   		model.addAttribute("dateRange", dateRange); // 날짜 범위 추가
-	 	    
-	    
-  		// detailNo → content
-  		Map<String, String> memoMapByDetailNo = new HashMap<>();
-  		for (DetailMemo memo : memoMap) {
-  		    memoMapByDetailNo.put(String.valueOf(memo.getDetailNo()), memo.getContent());
-  		}
+	
+		Map<String, List<String>> memoMapByDetailNo = new HashMap<>();
+		for (DetailMemo memo : memoMap) {
+		    String detailNoStr = String.valueOf(memo.getDetailNo());
+		    memoMapByDetailNo.computeIfAbsent(detailNoStr, k -> new ArrayList<>()).add(memo.getContent());
+		}
+	
+		Map<String, List<String>> placeMapByDetailNo = new HashMap<>();
+		for (DetailPlace place : placeMap) {
+		    String detailNoStr = String.valueOf(place.getDetailNo());
+		    placeMapByDetailNo.computeIfAbsent(detailNoStr, k -> new ArrayList<>()).add(place.getPlaceId());
+		}
 
-  		// detailNo → placeId
-  		Map<String, String> placeMapByDetailNo = new HashMap<>();
-  		for (DetailPlace place : placeMap) {
-  		    placeMapByDetailNo.put(String.valueOf(place.getDetailNo()), place.getPlaceId());
-  		}
-  		
+	
 	    model.addAttribute("trip", trip);
 	    model.addAttribute("detailList", detailList);
 	    model.addAttribute("memoMap", memoMapByDetailNo);
