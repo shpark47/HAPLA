@@ -1,170 +1,181 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HAPLA 커뮤니티</title>
-    <link href="/css/detail.css" rel="stylesheet" type="text/css">
-    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HAPLA 커뮤니티</title>
+<link href="/css/detail.css" rel="stylesheet" type="text/css">
+<script src="https://code.jquery.com/jquery-3.7.1.js"
+	integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+	crossorigin="anonymous"></script>
 </head>
 <body>
-<div th:replace="~{common/header.html :: topbar}"></div>
-<main>
-    <section class="banner">
-        <img src="/img/communityBanner.png" alt="커뮤니티 배너">
-        <div class="overlay">
-            <h1>여행의 설렘을 함께 나누는 공간에서 당신의 정보를 공유해보세요</h1>
-        </div>
-    </section>
-    <section class="community">
-        <form class="needs-validation" method="POST" id="detailForm">
-        	<input type="hidden" name="userNo" id="userNo" th:value="${session.loginUser != null ? session.loginUser.userNo : ''}">
-            <input type="hidden" name="commNo" th:value="${c.commNo}">
-            <input type="hidden" name="page" th:value="${page}">
-            <h2 style="display: inline-block;">커뮤니티</h2>
-            <div class="buttons">
-	            <button id="likeBtn" class="btn btn-outline-danger btn-sm" style="margin-left: 10px;">
-				    <!-- 좋아요가 눌리지 않은 상태(빈 하트) -->
-				    <svg th:attr="style=${isLiked == false} ? 'display: inline;' : 'display: none;'" 
-				         fill="#fcfcfc" height="20px" width="20px" version="1.1" id="heart-outline" 
-				         xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
-				         viewBox="0 0 471.701 471.701" xml:space="preserve">
+	<div th:replace="~{common/header.html :: topbar}"></div>
+	<main>
+		<section class="banner">
+			<img src="/img/communityBanner.png" alt="커뮤니티 배너">
+			<div class="overlay">
+				<h1>여행의 설렘을 함께 나누는 공간에서 당신의 정보를 공유해보세요</h1>
+			</div>
+		</section>
+		<section class="community">
+			<form class="needs-validation" method="POST" id="detailForm">
+				<input type="hidden" name="userNo" id="userNo"
+					th:value="${session.loginUser != null ? session.loginUser.userNo : ''}">
+				<input type="hidden" name="commNo" th:value="${c.commNo}"> <input
+					type="hidden" name="page" th:value="${page}">
+				<h2 style="display: inline-block;">커뮤니티</h2>
+				<div class="buttons">
+					<button id="likeBtn" class="btn btn-outline-danger btn-sm"
+						style="margin-left: 10px;">
+						<!-- 좋아요가 눌리지 않은 상태(빈 하트) -->
+						<svg
+							th:attr="style=${isLiked == false} ? 'display: inline;' : 'display: none;'"
+							fill="#fcfcfc" height="20px" width="20px" version="1.1"
+							id="heart-outline" xmlns="http://www.w3.org/2000/svg"
+							xmlns:xlink="http://www.w3.org/1999/xlink"
+							viewBox="0 0 471.701 471.701" xml:space="preserve">
 				        <g>
-				            <path d="M433.601,67.001c-24.7-24.7-57.4-38.2-92.3-38.2s-67.7,13.6-92.4,38.3l-12.9,12.9l-13.1-13.1
+				            <path
+								d="M433.601,67.001c-24.7-24.7-57.4-38.2-92.3-38.2s-67.7,13.6-92.4,38.3l-12.9,12.9l-13.1-13.1
 				                c-24.7-24.7-57.6-38.4-92.5-38.4c-34.8,0-67.6,13.6-92.2,38.2c-24.7,24.7-38.3,57.5-38.2,92.4c0,34.9,13.7,67.6,38.4,92.3
 				                l187.8,187.8c2.6,2.6,6.1,4,9.5,4c3.4,0,6.9-1.3,9.5-3.9l188.2-187.5c24.7-24.7,38.3-57.5,38.3-92.4
 				                C471.801,124.501,458.301,91.701,433.601,67.001z M414.401,232.701l-178.7,178l-178.3-178.3c-19.6-19.6-30.4-45.6-30.4-73.3
 				                s10.7-53.7,30.3-73.2c19.5-19.5,45.5-30.3,73.1-30.3c27.7,0,53.8,10.8,73.4,30.4l22.6,22.6c5.3,5.3,13.8,5.3,19.1,0l22.4-22.4
 				                c19.6-19.6,45.7-30.4,73.3-30.4c27.6,0,53.6,10.8,73.2,30.3c19.6,19.6,30.3,45.6,30.3,73.3
-				                C444.801,187.101,434.001,213.101,414.401,232.701z"/>
+				                C444.801,187.101,434.001,213.101,414.401,232.701z" />
 				        </g>
 				    </svg>
-				    
-				    <!-- 좋아요가 눌린 상태(빨간색 하트) -->
-				    <svg th:attr="style=${isLiked == true} ? 'display: inline;' : 'display: none;'" 
-					     height="20px" width="20px" version="1.1" id="heart-fill" 
-					     xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
-					     viewBox="0 0 471.701 471.701" xml:space="preserve">
+
+						<!-- 좋아요가 눌린 상태(빨간색 하트) -->
+						<svg
+							th:attr="style=${isLiked == true} ? 'display: inline;' : 'display: none;'"
+							height="20px" width="20px" version="1.1" id="heart-fill"
+							xmlns="http://www.w3.org/2000/svg"
+							xmlns:xlink="http://www.w3.org/1999/xlink"
+							viewBox="0 0 471.701 471.701" xml:space="preserve">
 					    <g>
-					        <path fill="red" d="M433.601,67.001c-24.7-24.7-57.4-38.2-92.3-38.2s-67.7,13.6-92.4,38.3l-12.9,12.9l-13.1-13.1
+					        <path fill="red"
+								d="M433.601,67.001c-24.7-24.7-57.4-38.2-92.3-38.2s-67.7,13.6-92.4,38.3l-12.9,12.9l-13.1-13.1
 					            c-24.7-24.7-57.6-38.4-92.5-38.4c-34.8,0-67.6,13.6-92.2,38.2c-24.7,24.7-38.3,57.5-38.2,92.4c0,34.9,13.7,67.6,38.4,92.3
 					            l187.8,187.8c2.6,2.6,6.1,4,9.5,4c3.4,0,6.9-1.3,9.5-3.9l188.2-187.5c24.7-24.7,38.3-57.5,38.3-92.4
-					            C471.801,124.501,458.301,91.701,433.601,67.001z"/>
+					            C471.801,124.501,458.301,91.701,433.601,67.001z" />
 					    </g>
 					</svg>
-				    
-				    <span id="likeCount" th:text="${c != null ? c.likes : 0}"></span>
-				</button>
-				<button class="cancel-button" type="button" onclick="goBackAndRefresh();">목록</button>
-			</div>
-			
-            <table>
-                <tr>
-                    <th>제목</th>
-                    <td colspan="3" width="400px" th:text="${c != null ? c.title : '제목 없음'}"></td>
-                </tr>
-                <tr>
-                    <th width="50px">등록자</th>
-                    <td>[[${c.name}]]</td>
-                </tr>
-                <tr>
-                    <th width="50px">등록일</th>
-                    <td th:text="${c != null and c.createDate != null ? #dates.format(c.createDate, 'yyyy-MM-dd') : '날짜 없음'}"></td>
-                </tr>
-                <tr>
-                    <th>조회수</th>
-                    <td th:text="${c != null ? c.views : 0}"></td>
-                </tr>
-                <tr>
-                    <td colspan="9">[[${c.commContent}]]</td> <!-- ✅ 수정 -->
-                </tr>
-            </table>
 
-            <th:block th:if="${session.loginUser != null && session.loginUser.userNo == c.userNo}">
-                <button class="w-100 btn btn-success btn-lg" type="button" id="updateForm">수정</button>
-                <button class="w-100 btn btn-secondary btn-lg" type="button" id="deleteModal">삭제</button>
-            </th:block>
+						<span id="likeCount" th:text="${c != null ? c.likes : 0}"></span>
+					</button>
+					<button class="cancel-button" type="button"
+						onclick="goBackAndRefresh();">목록</button>
+				</div>
 
-            <div class="input-group">
-                <textarea class="form-control" rows="1" id="replyContent" style="resize:none;"></textarea>
-                <button class="btn btn-outline-success btn-lg" id="replySubmit" th:disabled="${session.loginUser == null}">SUBMIT
-                </button>
-            </div>
-            <br>
-			<table class="table">
-                <thead>
-                <tr>
-                    <th width="130px">작성자</th>
-                    <th>작성내용</th>
-                    <th width="90px">작성일자</th>
-                    <th></th>
-                    <th></th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="r: ${list}">
-                    <td>[[${r.name}]]</td>
-                    <td>
-					    <span th:text="${r.replyContent}"></span>
-<!-- 					    <th:block th:if="${session.loginUser != null && r.name != session.loginUser.name}"> -->
-<!-- 					        <input type="hidden" th:value="${r.replyNo}" name="replyNo"> -->
-<!-- 					        <button type="button" class="btn btn-sm btn-outline-primary reply-btn" id="rereply">답글쓰기</button> -->
-<!-- 					    </th:block> -->
-					</td>
-                    <td>[[${r.createDate}]]</td>
-                    <td width="50px">
-                        <th:block th:if="${session.loginUser ne null && r.name ne session.loginUser.name}">
-                            <input type="hidden" th:value="${r.replyNo}" name="replyNo">
-                            <button class="w-100 btn btn-success btn-lg" type="button" id="ask">신고</button>
-                        </th:block>
-                    </td>
-                    <td width="50px">
-                        <th:block th:if="${session.loginUser != null && r.name eq session.loginUser.name}">
-                            <input type="hidden" th:value="${r.replyNo}" name="replyNo">
-                            <span class="updel"> <!-- 수정 아이콘 (연필 모양) -->
-                						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                             fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16"><path
-                                                d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/></svg>
-                					</span>
+				<table>
+					<tr>
+						<th>제목</th>
+						<td colspan="3" width="400px"
+							th:text="${c != null ? c.title : '제목 없음'}"></td>
+					</tr>
+					<tr>
+						<th width="50px">등록자</th>
+						<td>[[${c.name}]]</td>
+					</tr>
+					<tr>
+						<th width="50px">등록일</th>
+						<td
+							th:text="${c != null and c.createDate != null ? #dates.format(c.createDate, 'yyyy-MM-dd') : '날짜 없음'}"></td>
+					</tr>
+					<tr>
+						<th>조회수</th>
+						<td th:text="${c != null ? c.views : 0}"></td>
+					</tr>
+					<tr>
+						<td colspan="9">[[${c.commContent}]]</td>
+						<!-- ✅ 수정 -->
+					</tr>
+				</table>
+				<div class="buttons">
+					<th:block
+						th:if="${session.loginUser != null && session.loginUser.userNo == c.userNo}">
+						<button class="updateForm" type="button" id="updateForm">수정</button>
+						<button class="deleteModal" type="button" id="deleteModal">삭제</button>
+					</th:block>
+				</div>
+
+				<div class="input-group">
+					<textarea class="form-control" rows="1" id="replyContent"
+						style="resize: none;"></textarea>
+					<button class="btn btn-outline-success btn-lg" id="replySubmit"
+						th:disabled="${session.loginUser == null}">SUBMIT</button>
+				</div>
+				<br>
+				<table class="table">
+					<thead>
+						<tr>
+							<th>작성자</th>
+							<th>작성내용</th>
+							<th>작성일자</th>
+							<th></th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="r: ${list}">
+							<td>[[${r.name}]]</td>
+							<td><span th:text="${r.replyContent}"></span></td>
+							<td>[[${r.createDate}]]</td>
+							<td><th:block
+									th:if="${session.loginUser ne null && r.name ne session.loginUser.name}">
+									<input type="hidden" th:value="${r.replyNo}" name="replyNo">
+									<button class="w-100 btn btn-success btn-lg" type="button"
+										id="ask">신고</button>
+								</th:block></td>
+							<td><th:block
+									th:if="${session.loginUser != null && r.name eq session.loginUser.name}">
+									<input type="hidden" th:value="${r.replyNo}" name="replyNo">
+									<span class="updel"> <!-- 수정 아이콘 (연필 모양) --> <svg
+											xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+											fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+											<path
+												d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z" /></svg>
+									</span>
                             &nbsp;
                             <span class="updel"> <!-- 삭제 아이콘 (쓰레기통 모양) -->
-                						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                             fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16"><path
-                                                d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/></svg>
-                					</span>
-                            <input type="hidden" th:value="${r.replyContent}"> <!-- 댓글 수정은 안 하고 원래 댓글로 돌려놓으려고 할 때 사용 -->
-                        </th:block>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+										<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+											fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
+											<path
+												d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5" /></svg>
+									</span>
+									<input type="hidden" th:value="${r.replyContent}">
+									<!-- 댓글 수정은 안 하고 원래 댓글로 돌려놓으려고 할 때 사용 -->
+								</th:block></td>
+						</tr>
+					</tbody>
+				</table>
 
-		</form>
-    </section>
-</main>
-<div th:replace="~{common/footer.html :: foot}"></div>
-<div class="modal fade" tabindex="-1" role="dialog" id="modalChoice">
-    <div class="modal-dialog modal-dialog-centered" role="document"> <!-- ✅ 중앙 정렬 클래스 추가 -->
-        <div class="modal-content rounded-3 shadow">
-            <div class="modal-body p-4 text-center">
-                <h3 class="mb-0">정말 삭제하시겠습니까?</h3>
-                <p class="mb-0">삭제 후 게시글은 되돌릴 수 없습니다.</p>
-            </div>
-            <div class="modal-footer flex-nowrap p-0">
-                <button type="button"
-                        class="btn btn-lg btn-link fs-6 text-decoration-none col-6 m-0 rounded-0 border-end"
-                        id="delete">
-                    <strong>네</strong>
-                </button>
-                <button type="button" class="btn btn-lg btn-link fs-6 text-decoration-none col-6 m-0 rounded-0"
-                        data-bs-dismiss="modal">아니오
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
+			</form>
+		</section>
+	</main>
+	<div th:replace="~{common/footer.html :: foot}"></div>
+	<div class="modal fade" tabindex="-1" role="dialog" id="modalChoice">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<!-- ✅ 중앙 정렬 클래스 추가 -->
+			<div class="modal-content rounded-3 shadow">
+				<div class="modal-body p-4 text-center">
+					<h3 class="mb-0">정말 삭제하시겠습니까?</h3>
+					<p class="mb-0">삭제 후 게시글은 되돌릴 수 없습니다.</p>
+				</div>
+				<div class="buttons" style="margin-right: 80px;">
+					<button type="button" class="yes-button" id="yes-button">
+						<strong>네</strong>
+					</button>
+					<button type="button" class="no-button" id="no-button"
+						data-bs-dismiss="modal">아니오</button>
+				</div>
+			</div>
+		</div>
+	</div>
 
-<script th:inline="javascript">
+	<script th:inline="javascript">
 	function goBackAndRefresh() {
 	    const backUrl = '/comm/list';
 	    window.location.href = backUrl + (backUrl.includes('?') ? '&' : '?') + 'refresh=true';
@@ -174,7 +185,7 @@
         const form = document.getElementById('detailForm');
         const updateButton = document.getElementById('updateForm'); // 수정 버튼
         const deleteButton = document.getElementById('deleteModal'); // 삭제 버튼
-        const deleteConfirm = document.getElementById('delete'); // 삭제 확인 버튼
+        const deleteConfirm = document.getElementById('yes-button'); // 삭제 확인 버튼
         const deleteModal = document.getElementById('modalChoice'); // 삭제 모달
         const closeModalButtons = document.querySelectorAll("[data-bs-dismiss='modal']"); // 취소 버튼들
 
@@ -251,10 +262,17 @@
 					tr.append(contentTd);
 					tr.innerHTML += '<td>' + r.updateDate + '</td>';
 					
+					const askTd = document.createElement('td');  
+
+					if (r.userNo != /*[[${session.loginUser != null ? session.loginUser.userNo : ''}]]*/1) {
+					    askTd.innerHTML = '<button class="w-100 btn btn-success btn-lg" type="button" id="ask">신고</button>';
+					}
+					tr.append(askTd);
+					
+					
 					const iconTd = document.createElement('td');  // <td></td>
-					iconTd.setAttribute('width', '100px');         // <td width="80px"></td>
-					if(r.replyWriter == /*[[${session.loginUser != null ? session.loginUser.userNo : ''}]]*/'user01'){
-						iconTd.innerHTML = '<span class="updel"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/></svg></span>&nbsp;&nbsp;<span class="updel"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16"><path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/></svg></span><input type="hidden" th:value="' + r.replyContent + '">';
+					if(r.userNo == /*[[${session.loginUser != null ? session.loginUser.userNo : ''}]]*/1){
+						iconTd.innerHTML = '<input type="hidden" value="'+ r.replyNo +'" name="replyId"><span class="updel"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/></svg></span>&nbsp;&nbsp;<span class="updel"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16"><path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/></svg></span><input type="hidden" th:value="' + r.replyContent + '">';
 					}
 					tr.append(iconTd);
 					
@@ -268,86 +286,92 @@
 	/*]]>*/
 	
 	tbody.addEventListener('click', e => {
-				const eventTarget = e.target;
-				const targetTagName = eventTarget.tagName.toLowerCase();
-				console.log(targetTagName);
-				let targetSVG = null;
-				switch(targetTagName){
-				case 'span': targetSVG = eventTarget.children[0]; break;
-				case 'svg': targetSVG = eventTarget;  break;
-				case 'path': targetSVG = eventTarget.parentElement;
-				}
-				
-				console.log(targetSVG);
-				
-				const myTd = targetSVG.parentElement.parentElement;
-                const contentTd = myTd.parentElement.children[1];   // 내용은 1번째 인덱스
-                const replyId = myTd.children[0].value;
-                
-                if(targetSVG != null){
-                   // console.log(targetSVG.className.baseVal.includes);
-                   if(targetSVG.className.baseVal.includes("pencil")){ // 클릭한 targetSVG가 연필일 때
-                      // 수정할 수 있는 view 전환
-                      
-//                       console.log(document.getElementsByClassName('bi-check-lg'));
-                      const beforeCheckArr = document.getElementsByClassName('bi-check-lg');
-					  if(beforeCheckArr.length > 0){
-						  // beforeCheckArr[0]   // 이전에 있었던 체크 또는 엑스 SVG
-						  const beforeCheckTd = beforeCheckArr[0].parentElement.parentElement;
-						  beforeCheckTd.parentElement.children[1].innerHTML = beforeCheckTd.children[3].value; // content 가 담겨져 있는 hidden
-						  beforeCheckTd.children[1].innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/></svg>';
-						  beforeCheckTd.children[2].innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16"><path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/></svg>';
-					  }
-                      
-                      contentTd.innerHTML = '<textarea rows="2" cols="30" style="resize:none;">' + contentTd.innerText + '</textarea>';
-                      myTd.children[1].innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16"><path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022"/></svg>';
-                      myTd.children[2].innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16"><path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/></svg>';
-                   }else if(targetSVG.className.baseVal.includes("trash")){ // 클릭한 targetSVG가 쓰레기통일 때
-                      if(confirm('정말 삭제하시겠습니까?')){
-                         $.ajax({
-                            url: '/comm/reply',
-                            type: 'delete',
-                            data: {replyNo : replyNo},
-                            success: data => {
-                                  console.log(data);
-                                  if(data == 1){
-                                     myTd.parentElement.remove();
-                                  }else{
-                                     alert('댓글 삭제 중 오류가 발생했습니다.')
-                                  }
-                            },
-                            error: data => console.log(data)
-                         });
-                      }
-                   } else if(targetSVG.className.baseVal.includes('check')){
-                	   // 수정 완료
-                	   $.ajax({
-                           url: '/comm/reply',
-                           type: 'put',
-                           data: {replyNo : replyNo, replyContent : contentTd.children[0].value},
-                		   success: data => {
-                			  console.log(data);
-                			  if(data == 1){
-                					contentTd.innerHTML = contentTd.children[0].value
-                    		  		myTd.children[1].innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/></svg>'
-                    		  		myTd.children[2].innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16"><path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/></svg>'
-                			  		myTd.children[3].value = contentTd.innerText;
-                			  } else {
-                				  alert("댓글 수정 중 오류가 발생했습니다.");
-                			  }
-                		   },
-                		   error: data => console.log(data)
-                	   });
-                   } else if(targetSVG.className.baseVal.includes('x')){
-                	   // 수정 취소 : 연필-삭제 view로 전환
-                	   contentTd.innerHTML = myTd.children[3].value;
-                   	   
-                       myTd.children[1].innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/></svg>';
-                       myTd.children[2].innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16"><path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/></svg>';
-                   }
-                } 
-                   
-             });
+	    const eventTarget = e.target;
+	    const targetTagName = eventTarget.tagName.toLowerCase();
+	    let targetSVG = null;
+	    switch(targetTagName){
+	        case 'span': targetSVG = eventTarget.children[0]; break;
+	        case 'svg': targetSVG = eventTarget;  break;
+	        case 'path': targetSVG = eventTarget.parentElement;
+	    }
+	
+	    const myTd = targetSVG.parentElement.parentElement;
+	    const contentTd = myTd.parentElement.children[1];   // 댓글 내용이 담긴 td
+	    const replyId = myTd.children[0].value;
+	
+	    if(targetSVG != null){
+	    	if(targetSVG.className.baseVal.includes("pencil")){ // 클릭한 targetSVG가 연필일 때
+            const beforeCheckArr = document.getElementsByClassName('bi-check-lg');
+		    if(beforeCheckArr.length > 0){
+		  		const beforeCheckTd = beforeCheckArr[0].parentElement.parentElement;
+		  		beforeCheckTd.parentElement.children[1].innerHTML = beforeCheckTd.children[3].value; // content 가 담겨져 있는 hidden
+		  		beforeCheckTd.children[1].innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/></svg>';
+		  		beforeCheckTd.children[2].innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16"><path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/></svg>';
+		  	}
+		     contentTd.innerHTML = '<textarea rows="2" cols="30" style="resize:none;">' + contentTd.innerText + '</textarea>';
+		     myTd.children[1].innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16"><path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022"/></svg>';
+		     myTd.children[2].innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16"><path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/></svg>';
+            } else if(targetSVG.className.baseVal.includes("trash")){ 
+	            if(confirm('정말 삭제하시겠습니까?')){
+	                $.ajax({
+	                    url: '/comm/reply',
+	                    type: 'delete',
+	                    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+	                    data: { replyNo: replyId },
+	                    success: function(data) {
+	                        if (data == 1) {
+	                            alert('댓글이 성공적으로 삭제되었습니다.');
+	                            myTd.parentElement.remove();
+	                        } else {
+	                            alert('댓글 삭제 중 오류가 발생했습니다.');
+	                        }
+	                    },
+	                    error: function(data) {
+	                        alert('서버와의 통신 중 오류가 발생했습니다.');
+	                    }
+	                });
+	            }
+	        } else if(targetSVG.className.baseVal.includes('check')){
+	        	console.log("체크 버튼 클릭 확인");
+
+	            const replyContent = contentTd.children[0].value.trim();
+	            const replyNo = replyId;
+
+	            if (!replyContent) {
+	                alert("댓글 내용을 입력해주세요.");
+	                return;
+	            }
+
+	            console.log("보내는 데이터 확인: ", {replyNo: replyNo, replyContent: replyContent});
+	      	   // 수정 완료
+	      	   $.ajax({
+	                 url: '/comm/reply',
+	                 type: 'put',
+	                 data: {replyNo : replyNo, replyContent : contentTd.children[0].value},
+	      		   	 success: data => {
+	      			  console.log(data);
+	      			  if(data == 1){
+	      					contentTd.innerHTML = contentTd.children[0].value
+	          		  		myTd.children[1].innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/></svg>'
+	          		  		myTd.children[2].innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16"><path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/></svg>'
+	      			  		myTd.children[3].value = contentTd.innerText;
+	      			  } else {
+	      				  alert("댓글 수정 중 오류가 발생했습니다.");
+	      			  }
+	      		   },
+	      		   error: data => console.log(data)
+	      	   });
+	         } else if(targetSVG.className.baseVal.includes('x')){
+	      	   // 수정 취소 : 연필-삭제 view로 전환
+	      	   contentTd.innerHTML = myTd.children[3].value;
+	         	   
+	             myTd.children[1].innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/></svg>';
+	             myTd.children[2].innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16"><path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/></svg>';
+	         }
+	      } 
+	         
+	   });
+
 	
 	
 	
@@ -359,7 +383,7 @@
 	    const likeIcon = document.querySelector("#likeBtn svg path");
 
 	    likeBtn.addEventListener("click", function(event) {
-	        if (!userNo) { // ✅ 로그인 여부 확인
+	        if (!userNo) { // 로그인 여부 확인
 	            alert("좋아요를 누르려면 로그인이 필요합니다.");
 	            return;
 	        }

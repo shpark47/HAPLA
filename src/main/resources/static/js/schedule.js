@@ -373,7 +373,11 @@ function saveDetail() {
     const placeObj = Object.fromEntries(placeMap);
     const memoObj = Object.fromEntries(memoMap);
 
-    const data = [placeObj, memoObj];
+    // const data = [placeObj, memoObj];
+	const data = {
+	        tripNo: parseInt(tripNo),
+	        datas: [placeObj, memoObj]
+	    };
 
     fetch('/schedule/saveDetail', {
         method: 'POST',

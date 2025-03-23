@@ -48,6 +48,7 @@ public class ReviewAjaxController {
 
 	@PutMapping("reply")
 	public int updateReply(@ModelAttribute Reply r) {
+		System.out.println("수정 요청 - replyNo: " + r.getReplyNo() + ", replyContent: " + r.getReplyContent());
 		int result = commService.updateReply(r);
 		return result;
 	}

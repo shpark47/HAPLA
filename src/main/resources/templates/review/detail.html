@@ -101,16 +101,13 @@
                 <h3 class="mb-0">정말 삭제하시겠습니까?</h3>
                 <p class="mb-0">삭제된 리뷰는 되돌릴 수 없습니다.</p>
             </div>
-            <div class="modal-footer flex-nowrap p-0">
-                <button type="button"
-                        class="btn btn-lg btn-link fs-6 text-decoration-none col-6 m-0 rounded-0 border-end"
-                        id="delete">
-                    <strong>네</strong>
-                </button>
-                <button type="button" class="btn btn-lg btn-link fs-6 text-decoration-none col-6 m-0 rounded-0"
-                        data-bs-dismiss="modal">아니오
-                </button>
-            </div>
+            <div class="buttons">
+				<button type="button" class="yes-button" id="yes-button">
+					<strong>네</strong>
+				</button>
+				<button type="button" class="no-button" id="no-button"
+					data-bs-dismiss="modal">아니오</button>
+			</div>
         </div>
     </div>
 </div>
@@ -169,7 +166,7 @@
 	window.addEventListener('load', () => {
         const form = document.getElementById('detailForm');
         const deleteButton = document.getElementById('deleteModal'); // 삭제 버튼
-        const deleteConfirm = document.getElementById('delete'); // 삭제 확인 버튼
+        const deleteConfirm = document.getElementById('yes-button'); // 삭제 확인 버튼
         const deleteModal = document.getElementById('modalChoice'); // 삭제 모달
         const closeModalButtons = document.querySelectorAll("[data-bs-dismiss='modal']"); // 취소 버튼들
 

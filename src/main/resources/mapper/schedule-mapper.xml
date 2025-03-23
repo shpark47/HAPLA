@@ -3,13 +3,16 @@
 
 <mapper
 	namespace="com.hapla.schedule.model.mapper.ScheduleMapper">
-
-	<!-- 일정 저장 -->
-	<insert id="saveTrip">
-		insert into trip
-		values (seq_trip.NEXTVAL, #{userNo},
+ 
+	 <insert id="saveTrip" parameterType="Trip">
+	 	<selectKey keyProperty="tripNo" resultType="int" order="BEFORE">
+	 		select seq_trip.NEXTVAL FROM DUAL
+	 	</selectKey>
+	 	
+	 	insert into trip
+	 	values(#{tripNo}, #{userNo},
 		default, #{startDate}, #{endDate}, sysdate, #{cityName})
-	</insert>
+	 </insert>
 
 	<!-- 날짜 범위에 맞는 일정 조회 -->
 	<select id="selectScheduleByDateRange" resultType="Trip">
@@ -28,10 +31,25 @@
 		CREATE_DATE desc
 	</select>
 
+<!-- 
 	<select id="getTripDetail">
 		select *
 		from detail
 		where trip_no = #{tripNo}
+	</select>
+ -->
+ 
+	 <select id="getTripDetail" parameterType="int" resultType="Detail">
+	    SELECT d.detail_no,
+	           d.trip_no,
+	           d.select_date,
+	           m.content,
+	           p.place_id
+	    FROM detail d
+	    LEFT JOIN detail_memo m ON d.detail_no = m.detail_no
+	    LEFT JOIN detail_place p ON d.detail_no = p.detail_no
+	    WHERE d.trip_no = #{tripNo}
+	    ORDER BY d.select_date
 	</select>
 
 	<select id="getTripNo">
@@ -48,20 +66,12 @@
 	<!-- 조회한 tripNo를 이용해서 detail 저장 -->
 	<insert id="saveDetail" parameterType="Detail">
 	    <selectKey resultType="int" keyProperty="detailNo" order="BEFORE">
-	        SELECT SEQ_DETAIL_NO.NEXTVAL FROM DUAL
+	        SELECT SEQ_DETAIL.NEXTVAL FROM DUAL
 	    </selectKey>
 	    INSERT INTO DETAIL (DETAIL_NO, TRIP_NO, SELECT_DATE)
 	    VALUES (#{detailNo}, #{tripNo}, #{selectDate})
 	</insert>
 
-<!--	<insert id="saveDetail" keyProperty="trip_no">-->
-<!--		<selectKey resultType="int" keyProperty="tripNo"-->
-<!--			order="BEFORE">-->
-<!--			select seq_trip.NEXTVAL from dual-->
-<!--		</selectKey>-->
-<!--		insert into detail(detail_no, trip_no, content, place_id, select_date)-->
-<!--		values(seq_detail.NEXTVAL, #{tripNo}, #{selectDate})-->
-<!--	</insert>-->
 	<insert id="insertMemo">
 		insert into detail_memo(detail_no, content)
 		values (#{detailNo}, #{content})
@@ -71,5 +81,56 @@
 		insert into detail_place(detail_no, place_id)
 		values (#{detailNo}, #{placeId})
 	</insert>
+		 
+	<select id="selectTripByTripNo" resultType="Trip">
+    	SELECT * FROM trip WHERE trip_no = #{tripNo}
+	</select>
+	
+<!-- 	<select id="selectDetailsByTripNo" resultType="Detail"> -->
+<!-- 	    SELECT d.* -->
+<!-- 	    FROM detail d -->
+<!-- 	    JOIN detail_memo dm ON d.detail_no = dm.detail_no -->
+<!-- 	    JOIN detail_place dp ON d.detail_no = dp.detail_no -->
+<!-- 	    WHERE d.trip_no = #{tripNo} -->
+<!-- 	</select> -->
+
+	<select id="selectDetailsByTripNo" resultType="Detail">
+    SELECT *
+	     FROM detail
+	     WHERE trip_no = #{tripNo}
+	     ORDER BY select_date
+	</select>
+	
+<!-- 	<select id="selectMemosByTripNo" resultType="map"> -->
+<!-- 	    SELECT dm.detail_no AS key, dm.content AS value -->
+<!-- 	    FROM detail_memo dm -->
+<!-- 	    JOIN detail d ON dm.detail_no = d.detail_no -->
+<!-- 	    WHERE d.trip_no = #{tripNo} -->
+<!-- 	</select> -->
+
+	<select id="selectMemosByTripNo" resultType="DetailMemo">
+	    SELECT dm.detail_no, dm.content
+	      FROM detail_memo dm
+	      JOIN detail d ON dm.detail_no = d.detail_no
+	     WHERE d.trip_no = #{tripNo}
+	</select>
+
+<!-- 	<select id="selectPlacesByTripNo" resultType="map"> -->
+<!-- 	    SELECT dp.detail_no AS key, dp.place_id AS value -->
+<!-- 	    FROM detail_place dp -->
+<!-- 	    JOIN detail d ON dp.detail_no = d.detail_no -->
+<!-- 	    WHERE d.trip_no = #{tripNo} -->
+<!-- 	</select> -->
+
+	<select id="selectPlacesByTripNo" resultType="DetailPlace">
+	    SELECT dp.detail_no, dp.place_id
+	      FROM detail_place dp
+	      JOIN detail d ON dp.detail_no = d.detail_no
+	     WHERE d.trip_no = #{tripNo}
+	</select>
+	
+	<delete id="deleteTrip" parameterType="int">
+		DELETE FROM trip WHERE trip_no = #{tripNo}
+	</delete>
 	
 </mapper>

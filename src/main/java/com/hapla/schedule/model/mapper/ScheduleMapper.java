@@ -7,12 +7,12 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.hapla.schedule.model.vo.Detail;
+import com.hapla.schedule.model.vo.DetailMemo;
+import com.hapla.schedule.model.vo.DetailPlace;
 import com.hapla.schedule.model.vo.Trip;
 
 @Mapper
 public interface ScheduleMapper {
-
-	//Trip selectOneTrip(Trip trip);
 
 	void saveTrip(Trip trip);
 
@@ -32,4 +32,16 @@ public interface ScheduleMapper {
 	void insertMemo(@Param("detailNo") int detailNo, @Param("content") String content);
     
 	void insertPlace(@Param("detailNo") int detailNo, @Param("placeId") String placeId);
+
+	List<Trip> selectTripByTripNo(int tripNo);
+
+	List<Detail> selectDetailsByTripNo(int tripNo);
+
+	List<DetailMemo> selectMemosByTripNo(int tripNo);
+
+	 List<DetailPlace> selectPlacesByTripNo(int tripNo);
+
+	int deleteTrip(int tripNo);
+	
+	
 }
