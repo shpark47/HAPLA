@@ -109,7 +109,7 @@ window.onload = () => {
 
 				// ✅ 메모 DOM 요소 먼저 만들어두기
 				const memoEl = document.createElement("div");
-				memoEl.innerHTML = `<strong>📝 메모:</strong> ${memo}`;
+				memoEl.innerHTML = `<strong> 메모:</strong> ${memo}`;
 				contentDiv.appendChild(memoEl); // 메모는 마지막에 붙이기
 
 				// ✅ 장소 먼저 삽입 (메모 위에)
@@ -117,14 +117,14 @@ window.onload = () => {
 				    placeIds.forEach(placeId => {
 				        getPlaceNameById(placeId, (placeName) => {
 				            const placeEl = document.createElement("div");
-				            placeEl.innerHTML = `<strong>📍 장소:</strong> ${placeName}`;
+				            placeEl.innerHTML = `<strong> 장소:</strong> ${placeName}`;
 				            // 📍 장소를 메모 위에 삽입
 				            contentDiv.insertBefore(placeEl, memoEl);
 				        });
 				    });
 				} else {
 				    const placeEl = document.createElement("div");
-				    placeEl.innerHTML = `<strong>📍 장소:</strong> 없음`;
+				    placeEl.innerHTML = `<strong> 장소:</strong> 없음`;
 				    contentDiv.insertBefore(placeEl, memoEl); // 장소 없을 때도 메모 위로
 				}
 

@@ -111,4 +111,20 @@
 	    DELETE FROM detail_memo WHERE detail_no = #{detailNo}
 	</delete>
 
+	<insert id="insertDetail" parameterType="Detail">
+    <selectKey keyProperty="detailNo" resultType="int" order="BEFORE">
+        SELECT SEQ_DETAIL.NEXTVAL FROM DUAL
+    </selectKey>
+	    INSERT INTO DETAIL (DETAIL_NO, TRIP_NO, SELECT_DATE)
+	    VALUES (#{detailNo}, #{tripNo}, #{selectDate})
+	</insert>
+
+	<select id="getPlaceIdsByDetailNo" resultType="string">
+	    SELECT PLACE_ID FROM DETAIL_PLACE WHERE DETAIL_NO = #{detailNo}
+	</select>
+	
+	<select id="getMemosByDetailNo" resultType="string">
+	    SELECT CONTENT FROM DETAIL_MEMO WHERE DETAIL_NO = #{detailNo}
+	</select>
+
 </mapper>

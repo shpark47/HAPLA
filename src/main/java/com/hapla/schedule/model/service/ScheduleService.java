@@ -198,4 +198,17 @@ public class ScheduleService {
 	    scheduleMapper.insertMemo(detailNo, content);
 	}
 
+	public void insertDetail(Detail detail) {
+		 scheduleMapper.insertDetail(detail);
+		
+	}
+
+	public List<String> getPlaceIdsByDetailNo(int detailNo) {
+		return scheduleMapper.getPlaceIdsByDetailNo(detailNo);
+	}
+
+	public List<String> getMemosByDetailNo(int detailNo) {
+		return scheduleMapper.getMemosByDetailNo(detailNo);
+	}
+
 }
