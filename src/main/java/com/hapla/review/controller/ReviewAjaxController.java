@@ -92,7 +92,8 @@ public class ReviewAjaxController {
 	}
 	
 	@PostMapping("/likes")
-	public ResponseEntity <Map<String, Object>> toggleLikes(@RequestParam("reviewNo") int reviewNo, @RequestParam("userNo") int userNo) {
+	public ResponseEntity <Map<String, Object>> toggleLikes(@RequestParam("reviewNo") int reviewNo,
+															@RequestParam("userNo") int userNo) {
 		Map<String, Object> response = new HashMap<>();
 
 	    try {
@@ -124,8 +125,6 @@ public class ReviewAjaxController {
 	        response.put("message", "서버 오류 발생: " + e.getMessage());
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 	    }
-	
-	
 	}
 	
 

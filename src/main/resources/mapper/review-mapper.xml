@@ -30,7 +30,7 @@
 	        SELECT seq_review.nextval FROM dual
 	    </selectKey>
 	    INSERT INTO review
-	    VALUES (#{reviewNo}, #{userNo}, #{title}, #{content}, #{rating}, SYSDATE, SYSDATE, #{when}, #{withWhom}, #{thumnail}, #{imageUrls})
+	    VALUES (#{reviewNo}, #{userNo}, #{title}, #{content}, #{rating}, SYSDATE, SYSDATE, #{when}, #{withWhom}, #{thumnail}, #{imageUrls}, default)
 	</insert>
 	
 	<select id="checkUserLike" resultType="int">
