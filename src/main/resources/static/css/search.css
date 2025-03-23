@@ -471,7 +471,15 @@ button.reset:hover, button.apply:hover {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	margin-bottom: 2rem;
+	margin-bottom: 4rem;
+}
+.inbound-info {
+	margin-top: 1rem;
+	margin-left: 1rem;
+}
+.outbound-info{
+	margin-top: 1rem;
+	margin-left: 1rem;
 }
 
 .flight-result-header select {
@@ -533,12 +541,19 @@ button.reset:hover, button.apply:hover {
 
 .flight-time {
 	font-size: 1.2em;
-	font-weight: bold;
+	font-weight: 400;
 }
 
 .airport-code {
-	color: #666;
+	color: black;
 	margin-top: 0.5rem;
+	font-weight: bold;
+	
+}
+
+.airline-info > span {
+	font-size: 18px;
+	font-weight: bold;
 }
 
 .duration {
@@ -613,7 +628,9 @@ button.reset:hover, button.apply:hover {
 	background-color: #fff;
 	padding: 20px;
 	border-radius: 8px;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	border-width: 1px;
+	border-style: solid;
+	border-color: #ccc;
 	margin-right: 20px;
 	align-self: flex-start;
 }
