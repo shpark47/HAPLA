@@ -301,11 +301,11 @@ const getTimeSlot = (timeStr) => {
 	return 'night';
 };
 
-let hasInbound = null;
+
 
 const applyFilter = (flightData) => {
-	console.log('applyFilter 함수 실행');
-
+	let hasInbound = null;
+	
 	const flightContainers = document.querySelectorAll('.flight-container');
 
 	// 경유 필터링 체크박스
@@ -315,7 +315,7 @@ const applyFilter = (flightData) => {
 	// 가는 날 출발 시간 필터링 체크박스
 	const outChecked = document.querySelectorAll('input[name="out-departure-time"]:checked');
 	const outSelectedOptions = Array.from(outChecked).map(input => input.value);
-	console.log(outSelectedOptions);
+	
 	// 오는 날 출발 시간 필터링 체크박스
 	const inChecked = document.querySelectorAll('input[name="in-departure-time"]:checked');
 	const inSelectedOptions = Array.from(inChecked).map(input => input.value);
@@ -323,11 +323,8 @@ const applyFilter = (flightData) => {
 	const airline = document.querySelectorAll('input[name="airline-filter"]:checked');
 	const airlineSelectedOptions = Array.from(airline).map(input => input.value);
 
-
-
 	flightContainers.forEach((flightContainer, index) => {
 		const flight = flightData[index] || {};
-		console.log(flight);
 		const outboundStops = parseInt(flightContainer.dataset.outboundStops || 0);
 		const inboundStops = parseInt(flightContainer.dataset.inboundStops || 0);
 
@@ -335,9 +332,6 @@ const applyFilter = (flightData) => {
 		const outboundTime = (flightContainer.dataset.outboundTime?.split('T')[1] || '').replace(/:/g, '');
 		const inboundTime = (flightContainer.dataset.inboundTime?.split('T')[1] || '').replace(/:/g, '');
 
-		console.log('airlineSelectedOptions : ' + airlineSelectedOptions);
-		console.log('outboundTime : ' + typeof (outboundTime));
-		console.log('inboundTime : ' + typeof (inboundTime));
 		hasInbound = flight['inboundDepartureTime'] != null; // 귀국 구간 존재 여부
 
 		// 기본적으로 보이도록 설정
@@ -377,7 +371,6 @@ const applyFilter = (flightData) => {
 		// 2. 가는 날 출발 시간 필터링
 		if (outSelectedOptions.length > 0 && !shouldHide) {
 			const outboundTimeSlot = getTimeSlot(outboundTime);
-			console.log('outboundTimeSlot : ' + outboundTimeSlot);
 			const timeMatch = outSelectedOptions.includes(outboundTimeSlot);
 			if (!timeMatch) {
 				shouldHide = true; // 시간대가 선택된 옵션과 맞지 않으면 숨김
@@ -387,7 +380,6 @@ const applyFilter = (flightData) => {
 		// 3. 오는 날 출발 시간 필터링 (왕복일 경우에만 적용)
 		if (hasInbound && inSelectedOptions.length > 0 && !shouldHide) {
 			const inboundTimeSlot = getTimeSlot(inboundTime);
-			console.log('inboundTimeSlot : ' + inboundTimeSlot);
 			const timeMatch = inSelectedOptions.includes(inboundTimeSlot);
 			if (!timeMatch) {
 				shouldHide = true; // 시간대가 선택된 옵션과 맞지 않으면 숨김

@@ -65,7 +65,7 @@ public class FlightController {
     private String TAGO_API_KEY;
     
     
-    
+// 조회해온 항공편 데이터에서 항공사 명을 한글로 띄워주기 위한 CSV 파일 로드 
     private final FlightService fService;
     	public List<AirlineInfo> loadCSV() {
     	List<AirlineInfo> airlineList = new ArrayList<>();
