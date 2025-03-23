@@ -2,6 +2,7 @@ package com.hapla.ajax.controller;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -138,38 +139,99 @@ public class AjaxController {
 	    return scheduleService.saveDetails(detailList, placeMap, memoMap);
 	}
 	
-	@PutMapping("/schedule/updateDetail")
-	public String updateDetail(@RequestBody Map<String, Object> data) {
+//	@PutMapping("/schedule/updateDetail")
+//	public String updateDetail(@RequestBody Map<String, Object> data) {
+//	    List<Map<String, Object>> detailList = (List<Map<String, Object>>) data.get("detailList");
+//	    Map<String, List<String>> placeMap = (Map<String, List<String>>) data.get("placeMap");
+//	    Map<String, List<String>> memoMap = (Map<String, List<String>>) data.get("memoMap");
+//
+//	    for (Map<String, Object> detail : detailList) {
+//	        int detailNo = Integer.parseInt(detail.get("detailNo").toString());
+//
+//	        // 기존 place, memo 삭제
+//	        scheduleService.deletePlacesByDetailNo(detailNo);
+//	        scheduleService.deleteMemosByDetailNo(detailNo);
+//
+//	        // 새로운 place 저장
+//	        if (placeMap.containsKey(String.valueOf(detailNo))) {
+//	            for (String placeId : placeMap.get(String.valueOf(detailNo))) {
+//	                scheduleService.insertPlace(detailNo, placeId);
+//	            }
+//	        }
+//
+//	        // 새로운 memo 저장
+//	        if (memoMap.containsKey(String.valueOf(detailNo))) {
+//	            for (String content : memoMap.get(String.valueOf(detailNo))) {
+//	                scheduleService.insertMemo(detailNo, content);
+//	            }
+//	        }
+//	    }
+//
+//	    return "일정이 성공적으로 수정되었습니다.";
+//	}
+	
+	@PutMapping("/schedule/editDetail")
+	public String editDetail(@RequestBody Map<String, Object> data) {
 	    List<Map<String, Object>> detailList = (List<Map<String, Object>>) data.get("detailList");
 	    Map<String, List<String>> placeMap = (Map<String, List<String>>) data.get("placeMap");
 	    Map<String, List<String>> memoMap = (Map<String, List<String>>) data.get("memoMap");
+	    Integer tripNo = (Integer) data.get("tripNo");
+
+	    Map<String, Integer> detailNoMap = new HashMap<>();
 
 	    for (Map<String, Object> detail : detailList) {
-	        int detailNo = Integer.parseInt(detail.get("detailNo").toString());
+	        String detailNoStr = detail.get("detailNo").toString();
+	        String selectDate = detail.get("selectDate").toString();
+	        int detailNo;
+
+	        if (!detailNoStr.matches("\\d+")) {
+	            Detail newDetail = new Detail();
+
+	            try {
+	                newDetail.setSelectDate(java.sql.Date.valueOf(selectDate));
+	            } catch (IllegalArgumentException e) {
+	                System.err.println("❌ 날짜 형식 오류: " + selectDate);
+	                continue;
+	            }
+
+	            newDetail.setTripNo(tripNo);
+	            scheduleService.insertDetail(newDetail);
+	            detailNo = newDetail.getDetailNo();
+	            detailNoMap.put(detailNoStr, detailNo);
+	        } else {
+	            detailNo = Integer.parseInt(detailNoStr);
+	        }
 
 	        // 기존 place, memo 삭제
 	        scheduleService.deletePlacesByDetailNo(detailNo);
 	        scheduleService.deleteMemosByDetailNo(detailNo);
+	        
+	        // ✅ 중복 방지를 위한 기존 값 조회
+	        List<String> existingPlaces = scheduleService.getPlaceIdsByDetailNo(detailNo);
+	        List<String> existingMemos = scheduleService.getMemosByDetailNo(detailNo);
 
-	        // 새로운 place 저장
-	        if (placeMap.containsKey(String.valueOf(detailNo))) {
-	            for (String placeId : placeMap.get(String.valueOf(detailNo))) {
-	                scheduleService.insertPlace(detailNo, placeId);
+	        // ✅ 장소 insert (중복 제거)
+	        List<String> places = placeMap.get(detailNoStr);
+	        if (places != null) {
+	            for (String placeId : places) {
+	                if (!existingPlaces.contains(placeId)) {
+	                    scheduleService.insertPlace(detailNo, placeId);
+	                }
 	            }
 	        }
 
-	        // 새로운 memo 저장
-	        if (memoMap.containsKey(String.valueOf(detailNo))) {
-	            for (String content : memoMap.get(String.valueOf(detailNo))) {
-	                scheduleService.insertMemo(detailNo, content);
+	        // ✅ 메모 insert (중복 제거)
+	        List<String> memos = memoMap.get(detailNoStr);
+	        if (memos != null) {
+	            for (String content : memos) {
+	                if (!existingMemos.contains(content)) {
+	                    scheduleService.insertMemo(detailNo, content);
+	                }
 	            }
 	        }
 	    }
 
 	    return "일정이 성공적으로 수정되었습니다.";
 	}
-
-	
-
 }
 

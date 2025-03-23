@@ -90,95 +90,88 @@ window.onload = () => {
 
 		    let startDate = new Date(start);
 		    let endDate = new Date(end);
-		    let isFirst = true;
 
 		    while (startDate <= endDate) {
 		        const formattedDate = startDate.toISOString().split("T")[0];
 		        const dailyDetails = window.detailList.filter(d => d.selectDate === formattedDate);
 
+		        const dateContainer = document.createElement("div");
+		        dateContainer.classList.add("date-container");
+
+		        const planDate = document.createElement("div");
+		        planDate.classList.add("plan-date");
+		        planDate.textContent = formattedDate;
+		        dateContainer.appendChild(planDate);
+
+		        // 날짜에 detail이 없더라도 1개의 date-item은 만들기
+		        const dateItem = document.createElement("div");
+		        dateItem.classList.add("date-item");
+
+		        // detail이 있을 경우 detailNo 사용 / 없을 경우 기본값
+		        //const detailNo = dailyDetails.length > 0 ? dailyDetails[0].detailNo : `new-${formattedDate}`;
+				const detailNo = dailyDetails.length > 0 ? dailyDetails[0].detailNo : "";
+				
+		        const hiddenInput = document.createElement("input");
+		        hiddenInput.type = "hidden";
+		        hiddenInput.classList.add("detailNo");
+		        hiddenInput.value = detailNo;
+		        dateItem.appendChild(hiddenInput);
+
+		        const dateInput = document.createElement("input");
+		        dateInput.type = "hidden";
+		        dateInput.classList.add("selectDate");
+		        dateInput.value = formattedDate;
+		        dateItem.appendChild(dateInput);
+
+		        const addDetail = document.createElement("div");
+		        addDetail.classList.add("addDetail");
+
+		        const addMemo = document.createElement("div");
+		        addMemo.classList.add("addMemo");
+
+		        // detail이 있는 경우 데이터 렌더링
 		        if (dailyDetails.length > 0) {
-		            const dateContainer = document.createElement("div");
-		            dateContainer.classList.add("date-container");
-
-		            const planDate = document.createElement("div");
-		            planDate.classList.add("plan-date");
-		            planDate.textContent = formattedDate;
-		            dateContainer.appendChild(planDate);
-
-		            dailyDetails.forEach(detail => {
-		                const dateItem = document.createElement("div");
-		                dateItem.classList.add("date-item");
-		                if (isFirst) {
-		                    dateItem.classList.add("active");
-		                    isFirst = false;
-		                }
-
-		                const hiddenInput = document.createElement("input");
-		                hiddenInput.type = "hidden";
-		                hiddenInput.classList.add("detailNo");
-		                hiddenInput.value = detail.detailNo;
-		                dateItem.appendChild(hiddenInput);
-
-		                const dateInput = document.createElement("input");
-		                dateInput.type = "hidden";
-		                dateInput.classList.add("selectDate");
-		                dateInput.value = detail.selectDate;
-		                dateItem.appendChild(dateInput);
-
-		                const addDetail = document.createElement("div");
-		                addDetail.classList.add("addDetail");
-		                const placeIds = toArray(window.placeMap[detail.detailNo]);
-		                placeIds.forEach(placeId => {
-		                    getPlaceNameById(placeId, (placeName) => {
-		                        const placeEl = document.createElement("div");
-		                        placeEl.classList.add("place-item");
-		                        placeEl.setAttribute("data-place-id", placeId);
-		                        placeEl.innerHTML = `
-		                            <span class="place-name">${placeName}</span>
-		                            <input type="hidden" value="${placeId}"/>
-		                            <button class="remove-btn" onclick="removePlace(this)">X</button>
-		                        `;
-		                        addDetail.appendChild(placeEl);
-		                    });
-		                });
-		                dateItem.appendChild(addDetail);
-
-		                const addMemo = document.createElement("div");
-		                addMemo.classList.add("addMemo");
-		                const memos = toArray(window.memoMap[detail.detailNo]);
-		                memos.forEach(content => {
-		                    const memoEl = document.createElement("div");
-		                    memoEl.classList.add("memo-item");
-		                    memoEl.innerHTML = `
-		                        <span class="memo-text">${content}</span>
-		                        <button class="remove-btn" onclick="removeMemo(this)">X</button>
+		            const placeIds = toArray(window.placeMap[dailyDetails[0].detailNo]);
+		            placeIds.forEach(placeId => {
+		                getPlaceNameById(placeId, (placeName) => {
+		                    const placeEl = document.createElement("div");
+		                    placeEl.classList.add("place-item");
+		                    placeEl.setAttribute("data-place-id", placeId);
+		                    placeEl.innerHTML = `
+		                        <span class="place-name">${placeName}</span>
+		                        <input type="hidden" value="${placeId}"/>
+		                        <button class="remove-btn" onclick="removePlace(this)">X</button>
 		                    `;
-		                    addMemo.appendChild(memoEl);
+		                    addDetail.appendChild(placeEl);
 		                });
-		                dateItem.appendChild(addMemo);
-
-		                const template = document.getElementById("controls-template");
-		                if (template) {
-		                    const clone = template.content.cloneNode(true);
-		                    dateItem.appendChild(clone);
-		                }
-
-		                dateContainer.appendChild(dateItem);
 		            });
 
-		            dateList.appendChild(dateContainer);
+		            const memos = toArray(window.memoMap[dailyDetails[0].detailNo]);
+		            memos.forEach(content => {
+		                const memoEl = document.createElement("div");
+		                memoEl.classList.add("memo-item");
+		                memoEl.innerHTML = `
+		                    <span class="memo-text">${content}</span>
+		                    <button class="remove-btn" onclick="removeMemo(this)">X</button>
+		                `;
+		                addMemo.appendChild(memoEl);
+		            });
 		        }
+
+		        dateItem.appendChild(addDetail);
+		        dateItem.appendChild(addMemo);
+
+		        const template = document.getElementById("controls-template");
+		        if (template) {
+		            const clone = template.content.cloneNode(true);
+		            dateItem.appendChild(clone);
+		        }
+
+		        dateContainer.appendChild(dateItem);
+		        dateList.appendChild(dateContainer);
 
 		        startDate.setDate(startDate.getDate() + 1);
 		    }
-
-		    // ✅ 새로 생성된 .date-item들에 클릭 이벤트 바인딩
-		    document.querySelectorAll(".date-item").forEach(item => {
-		        item.addEventListener("click", function () {
-		            document.querySelectorAll(".date-item").forEach(el => el.classList.remove("active"));
-		            this.classList.add("active");
-		        });
-		    });
 		}
 
 		function toArray(value) {
@@ -483,14 +476,12 @@ window.onload = () => {
 		}
 
 
-		document.querySelectorAll(".date-item").forEach(item => {
-		    item.addEventListener("click", function () {
-		        // 기존 'active'제거
+		document.getElementById("dateList").addEventListener("click", function (e) {
+		    const dateItem = e.target.closest(".date-item");
+		    if (dateItem) {
 		        document.querySelectorAll(".date-item").forEach(el => el.classList.remove("active"));
-
-		        // 클릭한 `date-item`에 `active` 추가
-		        this.classList.add("active");
-		    });
+		        dateItem.classList.add("active");
+		    }
 		});
 
 		let memos = [];
@@ -567,9 +558,9 @@ window.onload = () => {
 
 		    document.querySelectorAll(".date-item").forEach(item => {
 		        const detailNo = item.querySelector(".detailNo").value;
-
+				const selectDate = item.querySelector(".selectDate").value;
 		        // detailList에 detailNo 추가
-		        detailList.push({ detailNo });
+		        detailList.push({ detailNo, selectDate });
 
 		        // 장소 정보 수집
 		        const placeIds = Array.from(item.querySelectorAll(".addDetail .place-item input"))
@@ -583,12 +574,13 @@ window.onload = () => {
 		    });
 
 		    const data = {
+				tripNo: trip.tripNo,
 		        detailList: detailList,
 		        placeMap: placeObj,
 		        memoMap: memoObj
 		    };
 
-		    fetch('/schedule/updateDetail', {
+		    fetch('/schedule/editDetail', {
 		        method: 'PUT',
 		        headers: {
 		            'Content-Type': 'application/json'
