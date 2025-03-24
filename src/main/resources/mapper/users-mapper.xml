@@ -10,7 +10,7 @@
     </select>
 
     <insert id="join">
-        insert into users values(seq_users.nextval, #{name}, #{nickname}, #{email}, default, #{profile}, #{type}, default, #{tokenId})
+        insert into users values(seq_users.nextval, #{name}, #{nickname}, #{email}, default, #{profile}, #{type}, default, #{tokenId}, default)
     </insert>
 
     <select id="checkNickname">

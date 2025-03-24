@@ -12,7 +12,7 @@ document.getElementById("kakao-login-btn").addEventListener("click", function ()
         scope: "profile_nickname, profile_image", // 요청할 사용자 정보 범위 (닉네임, 프로필 이미지)
         success: function (authObj) {
             console.log("✅ 로그인 성공! 액세스 토큰:", authObj.access_token); // 로그인 성공 시 액세스 토큰 출력
-
+            document.getElementById('accessToken').value = authObj.access_token;
             // ✅ 액세스 토큰을 이용하여 사용자 정보 가져오기
             fetchUserInfo(authObj.access_token); // 사용자 정보를 가져오는 함수 호출
         },
@@ -82,7 +82,7 @@ function handleCredentialResponse(response) {
 
 // ✅ 구글 사용자 프로필 정보 가져오기
 function fetchUserProfile(token) {
-    fetch('http://localhost:8080/google-login/verify-token', { // 서버 엔드포인트로 토큰 검증 요청
+    fetch('http://192.168.40.15:8080/google-login/verify-token', { // 서버 엔드포인트로 토큰 검증 요청
         method: 'POST',
         headers: {
             'Content-Type': 'application/json' // 요청 헤더 설정
@@ -111,7 +111,8 @@ const checkUser = (id, type) => {
         },
         body: JSON.stringify({
             tokenId: id, // 사용자 ID
-            type: type // 로그인 타입
+            type: type, // 로그인 타입
+            accessToken: document.getElementById('accessToken').value
         }), // 요청 본문에 JSON 데이터 포함
     })
         .then((response) => response.json()) // 응답을 JSON으로 변환
@@ -121,6 +122,7 @@ const checkUser = (id, type) => {
                 updateModal(loginImage, loginName, loginType, tokenId); // 모달창 업데이트
             } else { // 이미 등록된 사용자일 경우
                 document.getElementById('loginModal').classList.add('hidden'); // 로그인 모달 숨김
+
                 location.reload(); // 페이지 새로고침
             }
         })

@@ -20,4 +20,5 @@ public class Users {
     private String type;
     private String tokenId;
     private String status;
+    private String accessToken;
 }

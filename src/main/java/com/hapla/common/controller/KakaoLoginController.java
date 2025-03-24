@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -22,7 +23,7 @@ public class KakaoLoginController {
     private String redirectUri;
 
     @GetMapping("/callback")
-    public ResponseEntity<Map<String, Object>> kakaoCallback(@RequestParam("code") String code) {
+    public ResponseEntity<Map<String, Object>> kakaoCallback(@RequestParam("code") String code, Model model) {
         // 1️⃣ 액세스 토큰 가져오기
         String accessToken = getAccessToken(code);
 
