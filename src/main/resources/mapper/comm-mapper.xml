@@ -8,7 +8,7 @@
 	<select id="selectCommList" resultType="com.hapla.comm.model.vo.Comm">
         SELECT comm.comm_no, comm.category_no, comm.user_no, comm.title, comm.comm_content, comm.views,
                comm.create_date, comm.update_date, comm.status,
-               category.category_name, users.name,
+               category.category_name, users.nickname,
                NVL(like_table.like_count, 0) AS likes
         FROM comm
         JOIN users ON comm.user_no = users.user_no
@@ -30,7 +30,7 @@
 	</insert>
 
 	<select id="selectComm" resultType="com.hapla.comm.model.vo.Comm">
-	    SELECT comm.*, users.name
+	    SELECT comm.*, users.nickname
 	    FROM comm
 	    	 JOIN users ON comm.user_no = users.user_no
 	    WHERE comm.status = 'Y' AND comm.comm_no = #{commNo}
@@ -43,7 +43,7 @@
 	</update>
 	
 	<select id="selectReplyList" resultType="com.hapla.comm.model.vo.Reply">
-		select reply.*, users.name
+		select reply.*, users.nickname
 		from reply
 			 join users on reply.user_no = users.user_no
 		where reply.comm_no = #{commNo}
@@ -100,23 +100,35 @@
     </select>
     
     <select id="searchCommList" resultType="com.hapla.comm.model.vo.Comm">
-        SELECT comm.comm_no, comm.category_no, comm.user_no, comm.title, comm.comm_content, comm.views,
-               comm.create_date, comm.update_date, comm.status,
-               category.category_name, users.name,
-               NVL(like_table.like_count, 0) AS likes
-        FROM comm
-        JOIN users ON comm.user_no = users.user_no
-        JOIN category ON comm.category_no = category.category_no
-        LEFT JOIN (SELECT comm_no, COUNT(*) AS like_count FROM clike GROUP BY comm_no) like_table
-               ON comm.comm_no = like_table.comm_no
-        WHERE comm.status = 'Y'
-        AND (#{category} IS NULL OR comm.category_no = #{category})  <!-- ✅ 카테고리 필터 -->
-    	AND (#{search} IS NULL OR comm.title LIKE '%' || #{search} || '%' OR comm.comm_content LIKE '%' || #{search} || '%')  <!-- ✅ 검색 필터 -->
-       ORDER BY comm.create_date DESC
-    </select>
+	    SELECT comm.comm_no, comm.category_no, comm.user_no, comm.title, comm.comm_content, comm.views,
+	           comm.create_date, comm.update_date, comm.status,
+	           category.category_name, users.nickname,
+	           NVL(like_table.like_count, 0) AS likes
+	    FROM comm
+	    JOIN users ON comm.user_no = users.user_no
+	    JOIN category ON comm.category_no = category.category_no
+	    LEFT JOIN (SELECT comm_no, COUNT(*) AS like_count FROM clike GROUP BY comm_no) like_table
+	           ON comm.comm_no = like_table.comm_no
+	    WHERE comm.status = 'Y'
+	    AND (
+	        #{category} IS NULL 
+	        OR #{category} = 0  <!-- ✅ 전체 선택 (0) 인 경우 모든 카테고리 포함 -->
+	        OR (#{category} = 1 AND comm.category_no IN (1, 2, 3, 4, 5))  <!-- ✅ 1번 선택지가 포함하는 범위 지정 -->
+	        OR comm.category_no = #{category}  <!-- ✅ 개별 카테고리 검색 -->
+	    )
+	    AND (
+	        #{search} IS NULL OR TRIM(#{search}) = ''  <!-- ✅ 검색어가 없거나 공백이면 전체 검색 -->
+	        OR comm.title LIKE '%' || #{search} || '%' 
+	        OR comm.comm_content LIKE '%' || #{search} || '%'
+	    )
+	    ORDER BY comm.create_date DESC
+	</select>
+
+
+
 
 	<select id="selectReply" resultType="com.hapla.comm.model.vo.Reply">
-		select reply.*, users.name
+		select reply.*, users.nickname
 		from reply
 			join users on reply.user_no users.user_no
 		where reply.reply_no = #{replyNo}

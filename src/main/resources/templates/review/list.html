@@ -30,7 +30,9 @@
     </form>
 
     <div class="container">
-        <h2>전체</h2>
+        <h2>
+    		전체<span th:text="'(' + ${listCount} + '건)'"></span>
+		</h2>
         <div class="reviews">
             <!-- 리뷰가 없을 경우 메시지 표시 -->
             <div th:if="${list == null or list.isEmpty()}">
@@ -42,7 +44,7 @@
                 <div class="review-info">
                     <h3 th:text="${r.title != null ? r.title : '제목 없음'}"></h3>
                     <div class="author">
-                        <span th:text="${r.name != null ? r.name : '익명'}"></span> • 
+                        <span th:text="${r.nickname != null ? r.nickname : '익명'}"></span> • 
                         <span th:text="${r.createDate != null ? #dates.format(r.createDate, 'yyyy/MM/dd') : '날짜 없음'}"></span>
                         
                     </div>

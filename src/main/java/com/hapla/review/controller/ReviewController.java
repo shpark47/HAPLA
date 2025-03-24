@@ -38,7 +38,7 @@ public class ReviewController {
 	@GetMapping("list")
 	public String selectList(
 	        @RequestParam(value = "page", defaultValue = "1") int currentPage,
-	        @RequestParam(value = "search", required = false) String search, // ✅ 검색어 추가,
+	        @RequestParam(value = "search", required = false) String search, // ✅ 검색어 추가
 	        Model model, HttpServletRequest request) {
 
 	    int boardLimit = 4;
@@ -66,10 +66,12 @@ public class ReviewController {
 	    model.addAttribute("list", list)
 	         .addAttribute("pi", pi)
 	         .addAttribute("search", search)
-	         .addAttribute("loc", request.getRequestURI());
+	         .addAttribute("listCount", listCount)
+	         .addAttribute("loc", request.getRequestURI() + "?search=" + (search != null ? search : ""));
 
 	    return "review/list";
 	}
+
 
 	
 	@GetMapping("write")
@@ -136,6 +138,11 @@ public class ReviewController {
 			}
 		}
 
+		 // ✅ 줄바꿈 문자 (\n)를 <br> 태그로 변환하여 저장
+	    if (r.getContent() != null) {
+	        r.setContent(r.getContent().replace("\n", "<br>"));
+	    }
+		
 		// 데이터 저장
 		int result = reviewService.insertReview(r);
 		if (result == 1) {

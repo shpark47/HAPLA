@@ -160,7 +160,7 @@ crossorigin="anonymous"></script>
 				</tr>
 				<tr>
 					<th width="50px">등록자</th>
-					<td>[[${c.name}]]</td>
+					<td>[[${c.nickname}]]</td>
 				</tr>
 				<tr>
 					<th width="50px">등록일</th>
@@ -172,7 +172,7 @@ crossorigin="anonymous"></script>
 					<td th:text="${c != null ? c.views : 0}"></td>
 				</tr>
 				<tr>
-					<td colspan="9">[[${c.commContent}]]</td>
+					<td colspan="9" th:utext="${c != null ? c.commContent : 0}"></td>
 					<!-- ✅ 수정 -->
 				</tr>
 			</table>
@@ -203,7 +203,7 @@ crossorigin="anonymous"></script>
 				</thead>
 				<tbody>
 					<tr th:each="r: ${list}" th:id="'reply-' + ${r.replyNo}">
-						<td>[[${r.name}]]</td>
+						<td>[[${r.nickname}]]</td>
 						<td><span th:text="${r.replyContent}"></span></td>
 						<td>[[${r.createDate}]]</td>
 						<td><th:block

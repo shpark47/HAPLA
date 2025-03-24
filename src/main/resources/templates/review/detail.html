@@ -22,7 +22,7 @@
 	        <div class="review-header">
 	            <img th:src="@{${r.profile != null ? r.profile : '/img/default-profile.png'}}" alt="리뷰 작성자 프로필" class="profile-img">
 	            <div>
-	                <p class="review-meta" th:text="${r.name}"></p>
+	                <p class="review-meta" th:text="${r.nickname}"></p>
                     <p class="review-meta" th:text="${#dates.format(r.createDate, 'yyyy/MM/dd')}"></p>
 	            </div>
 	        </div>
@@ -81,7 +81,7 @@
 			    </th:block>
 	        </div>
 			<div class="content">
-				<p class="content" th:text="${r.content}"></p>
+				<p class="content" th:utext="${r.content}"></p>
 			</div>
 			<div id="buttons" class="button-container">
 				<th:block th:if="${session.loginUser != null && session.loginUser.userNo == r.userNo}">

@@ -79,6 +79,46 @@ public class CommController {
 //        return "comm/list";
 //    }
     
+//    @GetMapping("list")
+//    public String selectList(
+//            @RequestParam(value = "page", defaultValue = "1") int currentPage,
+//            @RequestParam(value = "search", required = false) String search,
+//            @RequestParam(value = "category", required = false, defaultValue = "0") int category,
+//            Model model,
+//            HttpServletRequest request) {
+//
+//        int listCount;
+//        PageInfo pi;
+//        ArrayList<Comm> list;
+//
+////        // ✅ category가 "-"이면 전체 게시글을 조회하도록 NULL 처리
+////        if ("-".equals(category)) {
+////            category = 0;
+////        }
+//
+//        // ✅ 검색어가 있을 경우 검색된 게시글 개수 조회
+//        if (search != null && !search.trim().isEmpty()) {
+//            listCount = commService.getSearchListCount(search, category);
+//        } else {
+//            listCount = commService.getListCount(1, category);
+//        }
+//
+//        pi = Pagination.getPageInfo(currentPage, listCount, 5);
+//        list = commService.selectCommList(pi, 1, search, category);
+//        
+//        // 공지사항 목록 가져오기 (최신 3개)
+//        ArrayList<Notice> noticeList = adminService.selectRecent();
+//
+//        model.addAttribute("list", list)
+//             .addAttribute("pi", pi)
+//             .addAttribute("search", search) // 검색어 유지
+//             .addAttribute("category", category) // 카테고리 유지
+//             .addAttribute("loc", request.getRequestURI())
+//        	 .addAttribute("noticeList", noticeList);
+//
+//        return "comm/list";
+//    }
+    
     @GetMapping("list")
     public String selectList(
             @RequestParam(value = "page", defaultValue = "1") int currentPage,
@@ -91,11 +131,6 @@ public class CommController {
         PageInfo pi;
         ArrayList<Comm> list;
 
-//        // ✅ category가 "-"이면 전체 게시글을 조회하도록 NULL 처리
-//        if ("-".equals(category)) {
-//            category = 0;
-//        }
-
         // ✅ 검색어가 있을 경우 검색된 게시글 개수 조회
         if (search != null && !search.trim().isEmpty()) {
             listCount = commService.getSearchListCount(search, category);
@@ -105,16 +140,21 @@ public class CommController {
 
         pi = Pagination.getPageInfo(currentPage, listCount, 5);
         list = commService.selectCommList(pi, 1, search, category);
-        
+
         // 공지사항 목록 가져오기 (최신 3개)
         ArrayList<Notice> noticeList = adminService.selectRecent();
 
+        // ✅ 검색 및 카테고리 정보를 URL에 포함하여 전달하기 위한 URL 구성
+        String searchQuery = (search != null && !search.trim().isEmpty()) ? "&search=" + search : "";
+        String categoryQuery = (category != 0) ? "&category=" + category : "";
+        String loc = request.getRequestURI() + "?page=" + currentPage + searchQuery + categoryQuery;
+
         model.addAttribute("list", list)
              .addAttribute("pi", pi)
-             .addAttribute("search", search) // 검색어 유지
-             .addAttribute("category", category) // 카테고리 유지
-             .addAttribute("loc", request.getRequestURI())
-        	 .addAttribute("noticeList", noticeList);
+             .addAttribute("search", search)          // 검색어 유지
+             .addAttribute("category", category)      // 카테고리 유지
+             .addAttribute("loc", loc)                // 페이징 URL 유지
+             .addAttribute("noticeList", noticeList);
 
         return "comm/list";
     }
@@ -186,6 +226,10 @@ public class CommController {
 
         // 로그인한 사용자의 userNo를 Comm 객체에 설정
         c.setUserNo(loginUser.getUserNo());
+        
+        if (c.getCommContent() != null) {
+	        c.setCommContent(c.getCommContent().replace("\n", "<br>"));
+	    }
 
         int result = commService.insertComm(c);
         
