@@ -390,6 +390,7 @@ function saveDetail() {
         .then(message => {
             console.log("서버 응답:", message);
             alert(message); // ✅ 알림 추가 (저장 완료 메시지)
+			window.location.href = `/schedule/detail/${data.tripNo}`;
         })
         .catch(error => console.error("에러 발생:", error));
 }
