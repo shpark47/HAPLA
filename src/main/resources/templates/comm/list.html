@@ -152,7 +152,7 @@
                     <tr th:each="comm : ${list}" th:data-comm-no="${comm.commNo}">
                         <td>[[${comm.categoryName}]]</td>
                         <td>[[${comm.title}]]</td>
-                        <td>[[${comm.name}]]</td>
+                        <td>[[${comm.nickname}]]</td>
                         <td>[[${comm.likes}]]</td>
                         <td>[[${comm.views}]]</td>
                         <td>[[${#dates.format(comm.createDate, 'yyyy-MM-dd')}]]</td>

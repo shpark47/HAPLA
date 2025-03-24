@@ -1,5 +1,6 @@
 package com.hapla.review.controller;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,11 +34,49 @@ public class ReviewAjaxController {
 	private final CommService commService;
 	
 	@PostMapping("reply")
-	public ArrayList<Reply> insertReply(@ModelAttribute Reply r, HttpServletResponse response){
-		System.out.println(r);
-		int result = commService.insertReply(r);
-		ArrayList<Reply> list = commService.selectReplyList(r.getCommNo());
-		return list;
+	public ArrayList<Map<String, Object>> insertReply(@ModelAttribute Reply r, HttpServletResponse response){
+	    System.out.println(r);
+	    
+	    // 현재 시간 설정
+	    r.setCreateDate(new java.sql.Date(System.currentTimeMillis()));
+	    
+	    // DB에 저장 (댓글 등록)
+	    int result = commService.insertReply(r);
+	    
+	    // 날짜 포맷 설정
+	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+	    // 댓글 목록 조회
+	    ArrayList<Reply> list = commService.selectReplyList(r.getCommNo());
+	    
+	    // 변환된 리스트 담기
+	    ArrayList<Map<String, Object>> formattedList = new ArrayList<>();
+	    
+	    for (Reply reply : list) {
+	        Map<String, Object> replyMap = new HashMap<>();
+	        
+	        replyMap.put("replyNo", reply.getReplyNo());
+	        replyMap.put("userNo", reply.getUserNo());
+	        replyMap.put("commNo", reply.getCommNo());
+	        replyMap.put("name", reply.getName());
+	        replyMap.put("replyContent", reply.getReplyContent());
+	        
+	        // 포맷팅된 createDate 문자열로 변환
+	        replyMap.put("createDate", sdf.format(reply.getCreateDate()));
+	        
+	        // updateDate가 null이 아니면 포맷팅해서 넣기
+	        replyMap.put("updateDate", reply.getUpdateDate() != null ? sdf.format(reply.getUpdateDate()) : null);
+	        
+	        replyMap.put("nickname", reply.getNickname());
+	        replyMap.put("title", reply.getTitle());
+	        replyMap.put("id", reply.getId());
+	        replyMap.put("commTitle", reply.getCommTitle());
+	        replyMap.put("status", reply.getStatus());
+	        
+	        formattedList.add(replyMap);
+	    }
+	    
+	    return formattedList;  // 포맷팅된 리스트 반환
 	}
 	
 	@DeleteMapping("reply")

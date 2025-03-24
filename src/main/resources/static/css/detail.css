@@ -391,7 +391,7 @@ h2 {
 
 /* 칼럼 너비 설정 (퍼센트로 지정) */
 .table th:nth-child(1), .table td:nth-child(1) { width: 5%; }
-.table th:nth-child(2), .table td:nth-child(2) { width: 75%; }
+.table th:nth-child(2), .table td:nth-child(2) { width: 70%; }
 .table th:nth-child(3), .table td:nth-child(3) { width: 10%; }
-.table th:nth-child(4), .table td:nth-child(4) { width: 5%; }
+.table th:nth-child(4), .table td:nth-child(4) { width: 10%; }
 .table th:nth-child(5), .table td:nth-child(5) { width: 5%; }
