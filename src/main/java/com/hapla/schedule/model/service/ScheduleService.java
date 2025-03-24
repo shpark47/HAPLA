@@ -25,7 +25,12 @@ public class ScheduleService {
 	
 	// 일정 저장 메소드
 	public void saveTrip(Trip trip) {
-		scheduleMapper.saveTrip(trip);
+		Trip existing = scheduleMapper.findTripByFields(trip);
+	    if (existing == null) {
+	        scheduleMapper.saveTrip(trip);
+	    } else {
+	        trip.setTripNo(existing.getTripNo()); // 기존 trip 재사용
+	    }
 	}
 
 	// 일정 저장 메소드 (기본값)
