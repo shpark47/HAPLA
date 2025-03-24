@@ -23,6 +23,15 @@
 	 ]]>
 	</select>
 
+	<select id="findTripByFields" resultType="Trip" parameterType="Trip">
+	    SELECT *
+	    FROM trip
+	    WHERE user_no = #{userNo}
+	      AND start_date = #{startDate}
+	      AND end_date = #{endDate}
+	      AND city_name = #{cityName}
+	</select>
+	
 	<select id="getMySchedule">
 		select *
 		from trip

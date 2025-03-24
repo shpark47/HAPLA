@@ -52,4 +52,6 @@ public interface ScheduleMapper {
 	List<String> getPlaceIdsByDetailNo(int detailNo);
 
 	List<String> getMemosByDetailNo(int detailNo);
+
+	Trip findTripByFields(Trip trip);
 }
