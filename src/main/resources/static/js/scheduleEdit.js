@@ -590,6 +590,7 @@ window.onload = () => {
 		        .then(response => response.text())
 		        .then(message => {
 		            alert(message); // 수정 완료 알림
+					window.location.href = `/schedule/detail/${data.tripNo}`;
 		        })
 		        .catch(error => console.error("수정 중 에러 발생:", error));
 		}
