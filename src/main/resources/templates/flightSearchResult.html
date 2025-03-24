@@ -182,8 +182,8 @@
  				              data-outbound-time=${flight['outboundDepartureTime']}"> 
                     <div class="flight-info">
                         <div class="airline-info">
-                            <span  th:text="${flight['outboundKorAirlineName'] ?: flight['airlineNm']}" class="outbound-info"></span>
-                            <span  th:if="${flight['inboundAirline'] != null and flight['inboundAirline'] != flight['outboundAirline']}"
+                            <span class="outbound-info" th:text="${flight['outboundKorAirlineName'] ?: flight['airlineNm']}"></span>
+                            <span class="inbound-info" th:if="${flight['inboundAirline'] != null and flight['inboundAirline'] != flight['outboundAirline']}"
                                   th:text="${flight['inboundKorAirlineName']}" ></span>
                         </div>
                         <div class="flight-details">

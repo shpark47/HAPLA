@@ -475,7 +475,7 @@ button.reset:hover, button.apply:hover {
 }
 .inbound-info {
 	margin-top: 1rem;
-	margin-left: 1rem;
+	margin-left: 1rem ;
 }
 .outbound-info{
 	margin-top: 1rem;
@@ -513,6 +513,16 @@ button.reset:hover, button.apply:hover {
 	align-items: center;
 	min-width: 150px;
 }
+
+.outbound-info {
+    margin-top: -6rem;
+    margin-left: 3rem;
+}
+.inbound-info {
+    margin-top: 5rem;
+    margin-left: -8rem;
+}
+
 
 .airline-logo {
 	width: 40px;
@@ -552,6 +562,7 @@ button.reset:hover, button.apply:hover {
 }
 
 .airline-info > span {
+/* 	margin-left:3rem; */
 	font-size: 18px;
 	font-weight: bold;
 }
