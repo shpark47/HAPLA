@@ -383,105 +383,105 @@ public class AdminController {
 	    return response;
 	}
 	
-	@GetMapping("admin/accessStats")
-	public String accessStats(
-	        @RequestParam(value = "startDate", required = false) String startDate,
-	        @RequestParam(value = "endDate", required = false) String endDate,
-	        @RequestParam(value = "loginStatus", required = false, defaultValue = "all") String loginStatus,
-	        @RequestParam(value = "insertTestData", required = false, defaultValue = "false") boolean insertTestData,
-	        Model model) {
-	    
-	    try {
-//	        // 테스트 데이터 삽입 요청이 있으면 테스트 데이터 생성
-//	        if (insertTestData) {
-//	            aService.insertTestData();
+//	@GetMapping("admin/accessStats")
+//	public String accessStats(
+//	        @RequestParam(value = "startDate", required = false) String startDate,
+//	        @RequestParam(value = "endDate", required = false) String endDate,
+//	        @RequestParam(value = "loginStatus", required = false, defaultValue = "all") String loginStatus,
+//	        @RequestParam(value = "insertTestData", required = false, defaultValue = "false") boolean insertTestData,
+//	        Model model) {
+//	    
+//	    try {
+////	        // 테스트 데이터 삽입 요청이 있으면 테스트 데이터 생성
+////	        if (insertTestData) {
+////	            aService.insertTestData();
+////	        }
+//	        
+//	        // 날짜가 없으면 기본값 설정 (최근 7일)
+//	        if (startDate == null || endDate == null) {
+//	            LocalDate today = LocalDate.now();
+//	            LocalDate weekAgo = today.minusDays(6);
+//	            
+//	            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+//	            startDate = weekAgo.format(formatter);
+//	            endDate = today.format(formatter);
 //	        }
-	        
-	        // 날짜가 없으면 기본값 설정 (최근 7일)
-	        if (startDate == null || endDate == null) {
-	            LocalDate today = LocalDate.now();
-	            LocalDate weekAgo = today.minusDays(6);
-	            
-	            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-	            startDate = weekAgo.format(formatter);
-	            endDate = today.format(formatter);
-	        }
-	        
-	        System.out.println("조회 기간: " + startDate + " ~ " + endDate + ", 로그인 상태: " + loginStatus);
-	        
-	        // 요약 통계 데이터
-	        int todayVisitors = aService.getTodayVisitors();
-	        int weeklyVisitors = aService.getWeeklyVisitors();
-	        int monthlyVisitors = aService.getMonthlyVisitors();
-	        int totalVisitors = aService.getTotalVisitors();
-	        
-	        // 차트 데이터
-	        ArrayList<HashMap<String, Object>> weeklyData = aService.getWeeklyData(startDate, endDate, loginStatus);
-	        ArrayList<HashMap<String, Object>> hourlyData = aService.getHourlyData(startDate, endDate, loginStatus);
-	        HashMap<String, Object> loginStatusData = aService.getLoginStatusData(startDate, endDate);
-	        
-	        // 비로그인 사용자 통계
-	        HashMap<String, Object> visitorReturnData = aService.getVisitorReturnRate(startDate, endDate);
-//	        ArrayList<HashMap<String, Object>> popularPages = aService.getPopularPagesForNonLoggedUsers(startDate, endDate);
-	        
-	        // 월별 접속자 통계
-	        ArrayList<DailyStats> monthlyStats = aService.getMonthlyStats(startDate, endDate, loginStatus);
-	        
-	        // 데이터 로깅 (디버깅용)
-	        System.out.println("Today Visitors: " + todayVisitors);
-	        System.out.println("Weekly Visitors: " + weeklyVisitors);
-	        System.out.println("Monthly Visitors: " + monthlyVisitors);
-	        System.out.println("Total Visitors: " + totalVisitors);
-	        System.out.println("Weekly Data: " + weeklyData);
-	        System.out.println("Hourly Data: " + hourlyData);
-	        System.out.println("Login Status Data: " + loginStatusData);
-	        System.out.println("Visitor Return Data: " + visitorReturnData);
-	        System.out.println("Monthly Stats: " + monthlyStats);
-	        
-	        // 모델에 데이터 추가
-	        model.addAttribute("startDate", startDate);
-	        model.addAttribute("endDate", endDate);
-	        model.addAttribute("loginStatus", loginStatus);
-//	          endDate);
-	        model.addAttribute("loginStatus", loginStatus);
-	        
-	        model.addAttribute("todayVisitors", todayVisitors);
-	        model.addAttribute("weeklyVisitors", weeklyVisitors);
-	        model.addAttribute("monthlyVisitors", monthlyVisitors);
-	        model.addAttribute("totalVisitors", totalVisitors);
-	        
-	        model.addAttribute("weeklyData", weeklyData != null ? weeklyData : new ArrayList<>());
-	        model.addAttribute("hourlyData", hourlyData != null ? hourlyData : new ArrayList<>());
-	        model.addAttribute("loginStatusData", loginStatusData != null ? loginStatusData : new HashMap<>());
-	        
-	        model.addAttribute("visitorReturnData", visitorReturnData != null ? visitorReturnData : new HashMap<>());
-//	        model.addAttribute("popularPages", popularPages != null ? popularPages : new ArrayList<>());
-	        
-	        model.addAttribute("monthlyStats", monthlyStats != null ? monthlyStats : new ArrayList<>());
-	        
-	    } catch (Exception e) {
-	        System.err.println("접속 통계 조회 중 오류 발생: " + e.getMessage());
-	        e.printStackTrace();
-	        
-	        // 오류 발생 시 빈 데이터로 초기화
-	        model.addAttribute("startDate", startDate);
-	        model.addAttribute("endDate", endDate);
-	        model.addAttribute("loginStatus", loginStatus);
-	        model.addAttribute("todayVisitors", 0);
-	        model.addAttribute("weeklyVisitors", 0);
-	        model.addAttribute("monthlyVisitors", 0);
-	        model.addAttribute("totalVisitors", 0);
-	        model.addAttribute("weeklyData", new ArrayList<>());
-	        model.addAttribute("hourlyData", new ArrayList<>());
-	        model.addAttribute("loginStatusData", new HashMap<>());
-	        model.addAttribute("visitorReturnData", new HashMap<>());
-	        model.addAttribute("popularPages", new ArrayList<>());
-	        model.addAttribute("monthlyStats", new ArrayList<>());
-	        model.addAttribute("errorMessage", "통계 데이터를 불러오는 중 오류가 발생했습니다: " + e.getMessage());
-	    }
-	    
-	    return "admin/accessStats";
-	}
+//	        
+//	        System.out.println("조회 기간: " + startDate + " ~ " + endDate + ", 로그인 상태: " + loginStatus);
+//	        
+//	        // 요약 통계 데이터
+//	        int todayVisitors = aService.getTodayVisitors();
+//	        int weeklyVisitors = aService.getWeeklyVisitors();
+//	        int monthlyVisitors = aService.getMonthlyVisitors();
+//	        int totalVisitors = aService.getTotalVisitors();
+//	        
+//	        // 차트 데이터
+//	        ArrayList<HashMap<String, Object>> weeklyData = aService.getWeeklyData(startDate, endDate, loginStatus);
+//	        ArrayList<HashMap<String, Object>> hourlyData = aService.getHourlyData(startDate, endDate, loginStatus);
+//	        HashMap<String, Object> loginStatusData = aService.getLoginStatusData(startDate, endDate);
+//	        
+//	        // 비로그인 사용자 통계
+//	        HashMap<String, Object> visitorReturnData = aService.getVisitorReturnRate(startDate, endDate);
+////	        ArrayList<HashMap<String, Object>> popularPages = aService.getPopularPagesForNonLoggedUsers(startDate, endDate);
+//	        
+//	        // 월별 접속자 통계
+//	        ArrayList<DailyStats> monthlyStats = aService.getMonthlyStats(startDate, endDate, loginStatus);
+//	        
+//	        // 데이터 로깅 (디버깅용)
+//	        System.out.println("Today Visitors: " + todayVisitors);
+//	        System.out.println("Weekly Visitors: " + weeklyVisitors);
+//	        System.out.println("Monthly Visitors: " + monthlyVisitors);
+//	        System.out.println("Total Visitors: " + totalVisitors);
+//	        System.out.println("Weekly Data: " + weeklyData);
+//	        System.out.println("Hourly Data: " + hourlyData);
+//	        System.out.println("Login Status Data: " + loginStatusData);
+//	        System.out.println("Visitor Return Data: " + visitorReturnData);
+//	        System.out.println("Monthly Stats: " + monthlyStats);
+//	        
+//	        // 모델에 데이터 추가
+//	        model.addAttribute("startDate", startDate);
+//	        model.addAttribute("endDate", endDate);
+//	        model.addAttribute("loginStatus", loginStatus);
+////	          endDate);
+//	        model.addAttribute("loginStatus", loginStatus);
+//	        
+//	        model.addAttribute("todayVisitors", todayVisitors);
+//	        model.addAttribute("weeklyVisitors", weeklyVisitors);
+//	        model.addAttribute("monthlyVisitors", monthlyVisitors);
+//	        model.addAttribute("totalVisitors", totalVisitors);
+//	        
+//	        model.addAttribute("weeklyData", weeklyData != null ? weeklyData : new ArrayList<>());
+//	        model.addAttribute("hourlyData", hourlyData != null ? hourlyData : new ArrayList<>());
+//	        model.addAttribute("loginStatusData", loginStatusData != null ? loginStatusData : new HashMap<>());
+//	        
+//	        model.addAttribute("visitorReturnData", visitorReturnData != null ? visitorReturnData : new HashMap<>());
+////	        model.addAttribute("popularPages", popularPages != null ? popularPages : new ArrayList<>());
+//	        
+//	        model.addAttribute("monthlyStats", monthlyStats != null ? monthlyStats : new ArrayList<>());
+//	        
+//	    } catch (Exception e) {
+//	        System.err.println("접속 통계 조회 중 오류 발생: " + e.getMessage());
+//	        e.printStackTrace();
+//	        
+//	        // 오류 발생 시 빈 데이터로 초기화
+//	        model.addAttribute("startDate", startDate);
+//	        model.addAttribute("endDate", endDate);
+//	        model.addAttribute("loginStatus", loginStatus);
+//	        model.addAttribute("todayVisitors", 0);
+//	        model.addAttribute("weeklyVisitors", 0);
+//	        model.addAttribute("monthlyVisitors", 0);
+//	        model.addAttribute("totalVisitors", 0);
+//	        model.addAttribute("weeklyData", new ArrayList<>());
+//	        model.addAttribute("hourlyData", new ArrayList<>());
+//	        model.addAttribute("loginStatusData", new HashMap<>());
+//	        model.addAttribute("visitorReturnData", new HashMap<>());
+//	        model.addAttribute("popularPages", new ArrayList<>());
+//	        model.addAttribute("monthlyStats", new ArrayList<>());
+//	        model.addAttribute("errorMessage", "통계 데이터를 불러오는 중 오류가 발생했습니다: " + e.getMessage());
+//	    }
+//	    
+//	    return "admin/accessStats";
+//	}
 
 
 
