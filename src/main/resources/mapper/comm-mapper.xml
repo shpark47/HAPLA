@@ -115,6 +115,12 @@
        ORDER BY comm.create_date DESC
     </select>
 
+	<select id="selectReply" resultType="com.hapla.comm.model.vo.Reply">
+		select reply.*, users.name
+		from reply
+			join users on reply.user_no users.user_no
+		where reply.reply_no = #{replyNo}
+	</select>
 </mapper>
 
 

@@ -1,6 +1,5 @@
 package com.hapla.comm.controller;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import org.springframework.stereotype.Controller;
@@ -11,11 +10,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hapla.admin.model.service.AdminService;
+import com.hapla.admin.model.vo.Notice;
 import com.hapla.comm.model.service.CommService;
 import com.hapla.comm.model.vo.Comm;
 import com.hapla.comm.model.vo.Reply;
@@ -25,7 +23,6 @@ import com.hapla.exception.Exception;
 import com.hapla.users.model.vo.Users;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
@@ -34,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/comm")
 public class CommController {
     private final CommService commService;
+    private final AdminService adminService;
     
 //    @GetMapping("list")
 //	public String selectList(@RequestParam(value="page", defaultValue="1") int currentPage, Model model, HttpServletRequest request) {
@@ -107,18 +105,40 @@ public class CommController {
 
         pi = Pagination.getPageInfo(currentPage, listCount, 5);
         list = commService.selectCommList(pi, 1, search, category);
+        
+        // 공지사항 목록 가져오기 (최신 3개)
+        ArrayList<Notice> noticeList = adminService.selectRecent();
 
         model.addAttribute("list", list)
              .addAttribute("pi", pi)
              .addAttribute("search", search) // 검색어 유지
              .addAttribute("category", category) // 카테고리 유지
-             .addAttribute("loc", request.getRequestURI());
+             .addAttribute("loc", request.getRequestURI())
+        	 .addAttribute("noticeList", noticeList);
 
         return "comm/list";
     }
 
 
-
+ // 공지사항 상세 조회 (일반 사용자용)
+    @GetMapping("/notice/{noticeNo}/{page}")
+    public ModelAndView viewNotice(@PathVariable("noticeNo") int noticeNo, 
+                                  @PathVariable("page") int page,
+                                  HttpSession session, 
+                                  ModelAndView mv) {
+        
+        Notice notice = adminService.selectNotice(noticeNo);
+        
+        if (notice == null) {
+            throw new Exception("공지사항 조회에 실패했습니다.");
+        }
+        
+        mv.addObject("notice", notice)
+          .addObject("page", page)
+          .setViewName("comm/noticeDetail"); // 공지사항 전용 상세 페이지
+        
+        return mv;
+    }
     
 //    @GetMapping("list")
 //    public String selectList(

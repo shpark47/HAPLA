@@ -3,72 +3,258 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>공지사항 관리 - 여행 웹사이트 관리자 페이지</title>
-    <link href="/admin-css/notice.css" rel="stylesheet" type="text/css">
+    <title>여행 사이트 관리자 페이지 - 공지사항</title>
+    <link href="/admin-css/users.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <style>
+        .announcement-list table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .announcement-list th, .announcement-list td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .announcement-list th {
+            background-color: #f8fafc;
+            font-weight: 600;
+            color: #334155;
+        }
+        
+        .announcement-list tr:hover {
+            background-color: #f1f5f9;
+        }
+        
+        .announcement-list .title-cell {
+            cursor: pointer;
+            color: #1e40af;
+        }
+        
+        .announcement-list .title-cell:hover {
+            text-decoration: underline;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .status.active {
+            background-color: #10b981;
+            color: white;
+        }
+        
+        .status.inactive {
+            background-color: #e74a3b;
+            color: white;
+        }
+        
+        .action-btn {
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            margin-right: 0.25rem;
+        }
+        
+        .action-btn.edit {
+            background-color: #3b82f6;
+            color: white;
+        }
+        
+        .action-btn.delete {
+            background-color: #ef4444;
+            color: white;
+        }
+        
+        .add-btn {
+            padding: 0.5rem 1rem;
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .add-btn:hover {
+            background-color: #2563eb;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <h1>여행 웹사이트 관리자 페이지</h1>
-        </div>
-    </header>
-    <nav>
-        <div class="container">
-            <ul>
-             	<li><a href="../main">🏠 MAIN</a></li>
-                <li><a href="users">👥 사용자 조회</a></li>
-                <li><a href="stats">📊 통계 조회</a></li>
-                <li><a href="booking">🏨 예약 현황</a></li>
-                <li><a href="revenue">💰 매출 분석</a></li>
-                <li><a href="notice">📢 공지사항</a></li>
-                <li><a href="report">🚨 신고 관리</a></li>
+    <div class="container">
+        <!-- 사이드바 -->
+        <div class="sidebar">
+            <div class="logo" onclick="location.href='/main'">
+                <h2>HAPLA</h2>
+                <span>관리자</span>
+            </div>
+            <ul class="nav-menu">
+                <li>
+                    <a href="index"><i class="fas fa-chart-line"></i> <span>대시보드</span></a>
+                </li>
+                <li>
+                    <a href="members"><i class="fas fa-users"></i> <span>회원 조회</span></a>
+                </li>
+                <li>
+                    <a href="userStats"><i class="fas fa-user-chart"></i> <span>사용자 통계</span></a>
+                </li>
+                <li>
+                    <a href="accessStats"><i class="fas fa-chart-bar"></i> <span>접속 통계</span></a>
+                </li>
+                <li>
+                    <a href="notice" class="active"><i class="fas fa-bullhorn"></i> <span>공지사항</span></a>
+                </li>
+                <li>
+                    <a href="report"><i class="fas fa-flag"></i> <span>신고 관리</span></a>
+                </li>
+<!--                 <li> -->
+<!--                     <a href="payment"><i class="fas fa-credit-card"></i> <span>결제 관리</span></a> -->
+<!--                 </li> -->
+                <li>
+                    <a href="reservation"><i class="fas fa-calendar-check"></i> <span>예약 현황</span></a>
+                </li>
+                <li>
+                    <a href="../main"><i class="fas fa-sign-out-alt"></i> <span>로그아웃</span></a>
+                </li>
             </ul>
         </div>
-    </nav>
 
-    <div class="container">
-        <div class="card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2>📢 공지사항 관리</h2>
-                <button class="btn">+ 새 공지사항</button>
+        <!-- 메인 콘텐츠 -->
+        <div class="main-content">
+            <header>
+                <div class="header-left">
+                    <h1>공지사항</h1>
+                    <div class="breadcrumb">
+                        <span>HOME</span> / <span>공지사항</span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content-section">
+                <div class="section-header">
+                    <h2>공지사항 관리</h2>
+                    <button class="add-btn" id="add-btn">새 공지사항 작성</button>
+                </div>
+                <div class="announcement-list">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>번호</th>
+                                <th>제목</th>
+                                <th>작성일</th>
+                                <th>조회수</th>
+                                <th>상태</th>
+                                <th>관리</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="n : ${list}">
+                                <td th:text="${n.noticeNo}"></td>
+                                <td class="title-cell" th:text="${n.isImportant == 'Y' ? '[중요] ' + n.title : n.title}" th:data-id="${n.noticeNo}"></td>
+                                <td th:text="${#dates.format(n.createDate, 'yyyy-MM-dd')}"></td>
+                                <td th:text="${n.views}"></td>
+                                <td><span class="status" th:classappend="${n.status == 'Y' ? 'active' : 'inactive'}" th:text="${n.status == 'Y' ? '게시중' : '종료'}"></span></td>
+                                <td>
+                                    <button class="action-btn edit" th:data-id="${n.noticeNo}">수정</button>
+                                    <button class="action-btn delete" th:data-id="${n.noticeNo}">삭제</button>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(list)}">
+                                <td colspan="6">등록된 공지사항이 없습니다.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <!-- 페이징 -->
+                    <div class="pagination" th:if="${not #lists.isEmpty(list)}">            
+                        <!-- 이전 페이지 -->
+                        <a th:if="${pi.currentPage > 1}" 
+                           th:href="@{${loc}(page=${pi.currentPage-1})}"
+                           class="page-link">&lt;</a>
+        
+                        <!-- 페이지 번호 -->
+                        <th:block th:each="page : ${#numbers.sequence(pi.startPage, pi.endPage)}">
+                            <a th:if="${page != pi.currentPage}"
+                               th:href="@{${loc}(page=${page})}"
+                               th:text="${page}"
+                               class="page-link"></a>
+                            <span th:if="${page == pi.currentPage}"
+                                  th:text="${page}"
+                                  class="page-link active"></span>
+                        </th:block>
+        
+                        <!-- 다음 페이지 -->
+                        <a th:if="${pi.currentPage < pi.maxPage}"
+                           th:href="@{${loc}(page=${pi.currentPage+1})}"
+                           class="page-link">&gt;</a>
+                    </div>
+                </div>
             </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>번호</th>
-                        <th>제목</th>
-                        <th>작성일자</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>5</td>
-                        <td>고객 만족도 조사 참여 안내</td>
-                        <td>2023-05-25</td>
-                    </tr>
-<!--                     <tr> -->
-<!--                         <td>4</td> -->
-<!--                         <td>코로나19 관련 여행 정책 변경</td> -->
-<!--                         <td>2023-05-30</td> -->
-<!--                     </tr> -->
-<!--                     <tr> -->
-<!--                         <td>3</td> -->
-<!--                         <td>앱 업데이트 안내</td> -->
-<!--                         <td>2023-06-05</td> -->
-<!--                     </tr> -->
-<!--                     <tr> -->
-<!--                         <td>2</td> -->
-<!--                         <td>새로운 파트너십 안내</td> -->
-<!--                         <td>2023-06-10</td> -->
-<!--                     </tr> -->
-<!--                     <tr> -->
-<!--                         <td>1</td> -->
-<!--                         <td>여름 휴가 시즌 특별 할인</td> -->
-<!--                         <td>2023-06-15</td> -->
-<!--                     </tr> -->
-                </tbody>
-            </table>
         </div>
     </div>
+
+    <script th:inline="javascript">
+        // 공지사항 작성 넘어가는 버튼
+        document.getElementById('add-btn').addEventListener('click', () => {
+            location.href = '/admin/noticeWrite';
+        });
+        
+        // 수정 버튼 
+        document.querySelectorAll('.action-btn.edit').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation(); // 이벤트 버블링 방지
+                const noticeNo = this.getAttribute('data-id');
+                location.href = "/admin/noticeEdit/" + noticeNo;
+            });
+        });
+        
+        // 삭제 버튼
+        document.querySelectorAll('.action-btn.delete').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation(); // 이벤트 버블링 방지
+                const noticeNo = this.getAttribute('data-id');
+                if(confirm("공지사항을 삭제하시겠습니까?")) {
+                    $.ajax({
+                        url: 'deleteNotice',
+                        type: 'post',
+                        data: {noticeNo: noticeNo},
+                        success: function(response) {
+                            if(response.success) {
+                                alert("삭제되었습니다.");
+                                location.reload();
+                            } else {
+                                alert("삭제에 실패했습니다.");
+                            }
+                        },
+                        error: function(error) {
+                            console.log(error);
+                            alert("오류가 발생했습니다.");
+                        }
+                    });
+                }
+            });
+        });
+        
+        // 공지사항 상세 페이지로 이동 
+        document.querySelectorAll('.title-cell').forEach(cell => {
+            cell.addEventListener('click', function() {
+                const noticeNo = this.getAttribute('data-id');
+                const currentPage = /*[[${pi.currentPage}]]*/ 1;
+                location.href = '/admin/detail/' + noticeNo + '/' + currentPage;
+            });
+        });
+    </script>
 </body>
 </html>

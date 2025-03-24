@@ -19,6 +19,11 @@
             <a href="/comm/list">커뮤니티</a>
             <a onclick="openTripPlanModal()">여행 일정</a>
             <a href="/review/main">리뷰 작성</a>
+            
+             <th:block th:if="${session.loginUser != null and session.loginUser.isAdmin == 'Y'}">
+						    <a href="/admin/members">ADMIN</a>
+			</th:block>
+            
             <a href="#">문의하기</a>
             <a href="/users/logout">로그아웃</a>
         </div>

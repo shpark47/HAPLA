@@ -101,4 +101,8 @@ public class CommService {
 	public int getSearchListCount(String search, int category) {
 		return mapper.getSearchListCount(search, category);
 	}
+	
+	public Reply selectReply(int replyNo) {
+	    return mapper.selectReply(replyNo);
+	}
 }

@@ -19,4 +19,5 @@ public class Users {
     private String isAdmin;
     private String type;
     private String tokenId;
+    private String status;
 }

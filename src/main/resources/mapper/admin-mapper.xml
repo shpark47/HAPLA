@@ -1,96 +1,756 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hapla.admin.model.mapper.AdminMapper">
-    <select id="userListCount" resultType = "int">
+    <select id="userListCount">
     	select count(*)
     	from users
     	<where>
-    		<if test = "keyword != null and keyword != ''">
-    			nickname LIKE '%' || #{keyword} || '%'
-    		</if>
-    	</where>
-    </select>
-    
-    <select id="totalComm" resultType="int">
-    	select count(*)
-    	from comm c
-    		join users u on c.user_no = u.user_no
-    	<where>
-    		<if test = "keyword != null and keyword != ''">
-    			u.nickname LIKE '%' || #{keyword} || '%'
-    		</if>
-    	</where>
-    </select>
-    
-    <select id="totalReview" resultType = "int">
-    	select count(*)
-    	from review r
-    		join users u on r.user_no = u.user_no
-    	<where>
-    		<if test = "keyword != null and keyword != ''">
-    			u.nickname LIKE '%' || #{keyword} || '%'
-    		</if>
+    	<if test="keyword != null and keyword != ''">
+    		and nickname like '%' || #{keyword} || '%'
+    	</if>
     	</where>
     </select>
     
     <select id="selectUserList">
-    	select *
+    	select user_no, name, nickname, email, create_date
     	from users
     	<where>
-    		<if test = "keyword != null and keyword != ''">
-    			nickname LIKE '%' || #{keyword} || '%'
-    		</if>
+    	<if test="keyword != null and keyword != ''">
+    		and nickname like '%' || #{keyword} || '%'
+    	</if>
     	</where>
-    	order by create_date desc
+    	order by 
+    <choose>
+        <when test="order == 'old'">create_date asc</when>
+        <otherwise>create_date desc</otherwise>
+    </choose>
     </select>
     
-    <select id="userWrite" resultType = "int">
+    <select id="totalUsersCount">
+    	select count(*) from users 
+    </select>
+    
+    <select id="totalComm">
+    	select count(*) from comm
+    </select>
+    
+    <select id="totalReplyCount">
+    	select count(*) from reply
+    </select>
+    
+    <select id="totalReview">
+    	select count(*) from review
+    </select>
+    
+    <select id="commListCount" resultType="int">
     	select count(*)
-    	from users 
+    	from comm c
+    		join users u on c.user_no = u.user_no
     	<where>
-    		<if test = "keyword != null and keyword != ''">
-    			nickname LIKE '%' || #{keyword} || '%'
-    		</if>
+    		c.status = 'Y'
+    	<if test="nickname != null and nickname != ''">
+    		and u.nickname like '%' || #{nickname} || '%'
+    	</if>
     	</where>
     </select>
     
-    <select id="selectUserWriteList" resultType = "AdminUsers">
-    	select  distinct u.user_no, u.nickname, c.title, r.title, r.rating
-    	from users u
-    		left join comm c on u.user_no = c.user_no
-    		left join review r on u.user_no = r.user_no
+    <select id="replyListCount" resultType = "int">
+    	select count(*)
+    	from reply r
+    		join users u on r.user_no = u.user_no
     	<where>
-    		<if test = "keyword != null and keyword != ''">
-    			u.nickname LIKE '%' || #{keyword} || '%'
-    		</if>
+    		r.status = 'Y'
+    	<if test="nickname != null and nickname != ''">
+    		and u.nickname like '%' || #{nickname} || '%'
+    	</if>
     	</where>
-    	order by u.nickname asc
     </select>
     
-<!--     <select id="userReportCount"> -->
-<!--     	select count(*) -->
-<!--     	from users u -->
-<!--     		left join comm c on u.user_no = c.user_no -->
-<!--     		left join  -->
+    <select id="reviewListCount" resultType = "int">
+    	select count(*)
+    	from review r
+    		join users u on r.user_no = u.user_no
+    	<where>
+    		r.status ='Y'
+    	<if test="nickname != null and nickname != ''">
+    		and u.nickname like '%' || #{nickname} || '%'
+    	</if>
+    	</where>
+    </select>
+    
+    <select id="selectComm" resultType = "comm">
+    	select c.comm_no as id, c.title, c.views, c.create_date, u.nickname
+    	from comm c
+    		join users u on c.user_no = u.user_no
+    	<where>
+    		c.status = 'Y'
+    	<if test="nickname != null and nickname != ''">
+    		and u.nickname like '%' || #{nickname} || '%'
+    	</if>
+    	</where>
+    	order by 
+    <choose>
+        <when test="order == 'old'">c.create_date asc</when>
+        <otherwise>c.create_date desc</otherwise>
+    </choose>
+    </select>
+    
+    <select id="selectReply" resultType="reply">
+    select r.reply_no as id, r.reply_content as replyContent, r.create_date, u.nickname, 
+           c.title as title, c.comm_no as commNo
+    from reply r
+        join users u on r.user_no = u.user_no
+        join comm c on c.comm_no = r.comm_no
+    <where>
+    	r.status = 'Y'
+    <if test="nickname != null and nickname != ''">
+        and u.nickname like '%' || #{nickname} || '%'
+    </if>
+    </where>
+    order by 
+    <choose>
+        <when test="order == 'old'">r.create_date asc</when>
+        <otherwise>r.create_date desc</otherwise>
+    </choose>
+	</select>
+    
+     <select id="selectReview" resultType = "review">
+    	select r.review_no as id, r.title, r.create_date, r.rating, u.nickname
+    	from review r
+    		join users u on r.user_no = u.user_no
+    	<where>
+    		r.status = 'Y'
+    	<if test="nickname != null and nickname != ''">
+    		and u.nickname like '%' || #{nickname} || '%'
+    	</if>
+    	</where>
+    	order by 
+    <choose>
+        <when test="order == 'old'">r.create_date asc</when>
+        <otherwise>r.create_date desc</otherwise>
+    </choose>
+    </select>
+    
+    <delete id="deleteComm">
+    	delete from comm where comm_no = #{commNo}
+    </delete>
+    
+    <delete id="deleteReview">
+    	delete from review where review_no = #{reviewNo}
+    </delete>
+    
+    <delete id="deleteReply">
+    	delete from reply where reply_no = #{replyNo}
+    </delete>
+    
+    <select id="totalWait">
+    	select count(*) from report where report_status = 'W'
+    </select>
+    
+    <select id="totalAccept">
+    	select count(*) from report where report_status = 'A'
+    </select>
+    
+    <select id="totalReject">
+    	select count(*) from report where report_status = 'R'
+    </select>
+    
+    <select id="reportListCount">
+    	select count(*) from report
+    </select>
+    
+    <select id="noticeCount">
+    	select count(*)
+    	from notice
+    	where status = 'Y'
+    </select>
+    
+    <select id="selectNoticeList">
+    <![CDATA[
+    	select *
+    	from (select *
+    		  from notice
+    		  order by is_important desc, create_date desc)
+    	where rownum <= #{Row}	  
+    	]]>
+    </select>
+    
+    
+    
+    
+    
+    <insert id="insertNotice">
+    	insert into notice(notice_no,title,content,views,create_date,status,is_important) values(seq_notice.nextval,#{title},#{content},0,#{createDate},#{status},#{isImportant})
+    </insert>
+
+    
+    <select id="selectNotice" resultType = "Notice">
+    	select *
+    	from notice
+    	where notice_no = #{noticeNo} 
+    </select>
+    
+    <update id="updateViews">
+    	update notice
+    	set views = views + 1
+    	where notice_no = #{noticeNo}
+    </update>
+    
+    <update id="updateNotice">
+    	update notice
+    	set title = #{title}, content = #{content}, 
+    		update_date = sysdate, status = #{status}, is_important = #{isImportant}
+    	where notice_no = #{noticeNo}
+    </update>
+    
+    <update id="deleteNotice">
+    	update notice
+    	set status = 'N'
+    	where notice_no = #{noticeNo}
+    </update>
+    
+   
+    
+<!--     <select id="selectReportList" resultType="report"> -->
+<!--     	select report_no,report_title ,report_content ,reporter_no,violator_no,report_status,report_category, -->
+<!--     		reporter.nickname as reporterNickname, violator.nickname as violatorNickname -->
+<!--     	from report r -->
+<!--     		join users reporter on r.reporter_no = reporter.user_no -->
+<!--     		join users violator on r.violator_no = violator.user_no -->
 <!--     	<where> -->
-<!--     		<if test = "keyword != null and keyword != ''"> -->
-<!--     			u.nickname LIKE '%' || #{keyword} || '%' -->
-<!--     		</if> -->
-<!--     		<if test=""></if> -->
+<!--     	<if test="keyword != null and keyword != ''"> -->
+<!--     		and reporter.nickname like '%' || #{keyword} || '%' -->
+<!--     	</if> -->
 <!--     	</where> -->
+<!--     		order by -->
+<!--     	<choose> -->
+<!--     		<when test="order == 'old'">r.create_date asc</when> -->
+<!--     		<otherwise>r.create_date desc</otherwise> -->
+<!--     	</choose> -->
+<!--     </select> -->
+
+ <!-- 신고 목록 조회 - 3회 이상 신고된 항목만 조회-->
+   <select id="selectReportList" resultType="report">
+       select 
+           r.report_no, 
+           r.report_title, 
+           r.report_content, 
+           r.reporter_no, 
+           r.violator_no, 
+           r.report_status, 
+           r.report_category, 
+           r.content_no, 
+           r.create_date,
+           reporter.nickname as reporterNickname, 
+           violator.nickname as violatorNickname,
+           (select count(*) from report 
+            where report_category = r.report_category 
+            and content_no = r.content_no) as reportCount
+       from 
+           report r
+       join 
+           users reporter on r.reporter_no = reporter.user_no
+       join 
+           users violator on r.violator_no = violator.user_no
+       where 
+           (r.report_category, r.content_no) IN (
+               select report_category, content_no 
+               from report 
+               group by report_category, content_no 
+               having count(*) >= 3
+           )
+       <if test="keyword != null and keyword != ''">
+           and reporter.nickname like '%' || #{keyword} || '%'
+       </if>
+       order by
+       <choose>
+           <when test="order == 'old'">r.create_date asc</when>
+           <otherwise>r.create_date desc</otherwise>
+       </choose>
+   </select>
+    
+    
+    
+    <!-- update report set report_status = #{reportStatus} where report_no = #{reportNo} -->
+	<!-- v  = review, c = comm, r = reply 
+		A : accept,  W : wait , R : reject -->
+	<update id="updateStatus">
+		update report set report_status = #{reportStatus} where report_no = #{reportNo}
+	</update>
+	
+	 <update id="updateMember">
+    	update users
+    	set status = #{status}
+    	where user_no = #{userNo}
+    </update>
+	
+	<select id="getCommNo" resultType="int">
+		select content_no
+        from report
+        where report_no = #{reportNo}
+        and report_category = 'C'
+	</select>
+	
+	<select id="getReplyNo" resultType="int">
+        select content_no
+        from report
+        where report_no = #{reportNo}
+        and report_category = 'R'
+    </select>
+	
+	<update id="deleteCommReport">
+		update comm
+		set status = 'N'
+		where comm_no = #{commNo}
+	</update>
+	
+	<update id="deleteReplyReport">
+        update reply
+        set status = 'N'
+        where reply_no = #{replyNo}
+    </update>
+	
+	
+	<!-- 댓글이 속한 게시글 번호 조회 -->
+	<select id="getCommNoByReplyNo" resultType="int">
+	    select comm_no
+	    from reply
+	    where reply_no = #{replyNo}
+	</select>
+	
+	
+	
+	
+	
+	
+	
+	<!-- 시간대별 접속자 통계 -->
+<select id="getHourlyData" resultType="hashmap">
+<![CDATA[
+  SELECT 
+      hour,
+      NVL(count, 0) AS count
+  FROM (
+      SELECT 
+          TO_NUMBER(TO_CHAR(access_time, 'HH24')) AS hour_num,
+          TO_CHAR(access_time, 'HH24') AS hour,
+          COUNT(DISTINCT CASE 
+              WHEN user_id IS NOT NULL THEN TO_CHAR(user_id)
+              ELSE visitor_id 
+          END) AS count
+      FROM access_log
+      WHERE access_time >= TO_DATE(#{startDate}, 'YYYY-MM-DD')
+      AND access_time < TO_DATE(#{endDate}, 'YYYY-MM-DD') + 1
+]]>
+<if test="loginStatus == 'logged-in'">
+  AND user_id IS NOT NULL
+</if>
+<if test="loginStatus == 'not-logged-in'">
+  AND user_id IS NULL
+</if>
+<![CDATA[
+      GROUP BY TO_CHAR(access_time, 'HH24'), TO_NUMBER(TO_CHAR(access_time, 'HH24'))
+  ) hourly_data
+  RIGHT JOIN (
+      SELECT LPAD(LEVEL-1, 2, '0') AS hour
+      FROM DUAL
+      CONNECT BY LEVEL <= 24
+  ) all_hours
+  ON hourly_data.hour = all_hours.hour
+  ORDER BY all_hours.hour
+]]>
+</select>
+
+<!-- 일주일 접속자 통계 -->
+<select id="getWeeklyData" resultType="hashmap">
+<![CDATA[
+  SELECT 
+      day,
+      NVL(count, 0) AS count
+  FROM (
+      SELECT 
+          TO_CHAR(access_time, 'D') AS day_num,
+          CASE TO_CHAR(access_time, 'D')
+              WHEN '1' THEN '일'
+              WHEN '2' THEN '월'
+              WHEN '3' THEN '화'
+              WHEN '4' THEN '수'
+              WHEN '5' THEN '목'
+              WHEN '6' THEN '금'
+              WHEN '7' THEN '토'
+          END AS day,
+          COUNT(DISTINCT CASE 
+              WHEN user_id IS NOT NULL THEN TO_CHAR(user_id)
+              ELSE visitor_id 
+          END) AS count
+      FROM access_log
+      WHERE access_time >= TO_DATE(#{startDate}, 'YYYY-MM-DD')
+      AND access_time < TO_DATE(#{endDate}, 'YYYY-MM-DD') + 1
+]]>
+<if test="loginStatus == 'logged-in'">
+  AND user_id IS NOT NULL
+</if>
+<if test="loginStatus == 'not-logged-in'">
+  AND user_id IS NULL
+</if>
+<![CDATA[
+      GROUP BY TO_CHAR(access_time, 'D')
+  ) weekly_data
+  RIGHT JOIN (
+      SELECT 
+          LEVEL AS day_num,
+          CASE LEVEL
+              WHEN 1 THEN '일'
+              WHEN 2 THEN '월'
+              WHEN 3 THEN '화'
+              WHEN 4 THEN '수'
+              WHEN 5 THEN '목'
+              WHEN 6 THEN '금'
+              WHEN 7 THEN '토'
+          END AS day
+      FROM DUAL
+      CONNECT BY LEVEL <= 7
+  ) all_days
+  ON weekly_data.day = all_days.day
+  ORDER BY all_days.day_num
+]]>
+</select>
+
+<!-- 로그인/비로그인 사용자 비율 -->
+<select id="getLoginStatusData" resultType="hashmap">
+<![CDATA[
+  SELECT 
+      NVL(SUM(CASE WHEN user_id IS NOT NULL THEN 1 ELSE 0 END), 0) AS loggedIn,
+      NVL(SUM(CASE WHEN user_id IS NULL AND visitor_id IS NOT NULL THEN 1 ELSE 0 END), 0) AS notLoggedIn
+  FROM (
+      SELECT 
+          user_id,
+          visitor_id,
+          ROW_NUMBER() OVER (PARTITION BY CASE WHEN user_id IS NOT NULL THEN user_id ELSE visitor_id END ORDER BY access_time) AS rn
+      FROM access_log
+      WHERE access_time >= TO_DATE(#{startDate}, 'YYYY-MM-DD')
+      AND access_time < TO_DATE(#{endDate}, 'YYYY-MM-DD') + 1
+  )
+  WHERE rn = 1
+]]>
+</select>
+
+<!-- 비로그인 사용자 재방문율 조회 -->
+<select id="getVisitorReturnRate" resultType="hashmap">
+<![CDATA[
+  SELECT 
+      NVL(SUM(CASE WHEN visit_count = 1 THEN 1 ELSE 0 END), 0) AS firstTime,
+      NVL(SUM(CASE WHEN visit_count > 1 THEN 1 ELSE 0 END), 0) AS returning
+  FROM (
+      SELECT 
+          visitor_id, 
+          COUNT(DISTINCT TRUNC(access_time)) AS visit_count
+      FROM access_log
+      WHERE user_id IS NULL
+      AND visitor_id IS NOT NULL
+      AND access_time >= TO_DATE(#{startDate}, 'YYYY-MM-DD')
+      AND access_time < TO_DATE(#{endDate}, 'YYYY-MM-DD') + 1
+      GROUP BY visitor_id
+  )
+]]>
+</select>
+
+<!-- 월별 접속자 통계 -->
+<select id="getMonthlyStats" resultType="com.hapla.admin.model.vo.DailyStats">
+<![CDATA[
+  SELECT 
+      TO_CHAR(stats_date, 'YYYY-MM-DD') AS date,
+      NVL(visitor_count, 0) AS visitors,
+      NVL(page_view_count, 0) AS pageViews,
+      NVL(avg_duration, '0분 0초') AS avgDuration,
+      NVL(bounce_rate, 0) AS bounceRate
+  FROM (
+      SELECT 
+          TRUNC(access_time) AS stats_date,
+          COUNT(DISTINCT CASE 
+              WHEN user_id IS NOT NULL THEN TO_CHAR(user_id)
+              ELSE visitor_id 
+          END) AS visitor_count,
+          COUNT(*) AS page_view_count,
+          TO_CHAR(NUMTODSINTERVAL(AVG(NVL(session_duration, 0)), 'SECOND'), 'MI"분" SS"초"') AS avg_duration,
+          ROUND(SUM(CASE WHEN session_duration < 10 THEN 1 ELSE 0 END) / NULLIF(COUNT(*), 0) * 100, 2) AS bounce_rate
+      FROM access_log
+      WHERE access_time >= TO_DATE(#{startDate}, 'YYYY-MM-DD')
+      AND access_time < TO_DATE(#{endDate}, 'YYYY-MM-DD') + 1
+]]>
+<if test="loginStatus == 'logged-in'">
+  AND user_id IS NOT NULL
+</if>
+<if test="loginStatus == 'not-logged-in'">
+  AND user_id IS NULL
+</if>
+<![CDATA[
+      GROUP BY TRUNC(access_time)
+  ) stats
+  RIGHT JOIN (
+      SELECT TRUNC(TO_DATE(#{startDate}, 'YYYY-MM-DD') + LEVEL - 1) AS stats_date
+      FROM DUAL
+      CONNECT BY TRUNC(TO_DATE(#{startDate}, 'YYYY-MM-DD') + LEVEL - 1) <= TRUNC(TO_DATE(#{endDate}, 'YYYY-MM-DD'))
+  ) dates
+  ON stats.stats_date = dates.stats_date
+  ORDER BY dates.stats_date DESC
+]]>
+</select>
+
+<!-- 오늘 방문자 수 -->
+<select id="getTodayVisitors" resultType="int">
+<![CDATA[
+  SELECT 
+      COUNT(DISTINCT CASE 
+          WHEN user_id IS NOT NULL THEN TO_CHAR(user_id)
+          ELSE visitor_id 
+      END) AS visitors
+  FROM access_log
+  WHERE TRUNC(access_time) = TRUNC(SYSDATE)
+]]>
+</select>
+
+<!-- 주간 방문자 수 -->
+<select id="getWeeklyVisitors" resultType="int">
+<![CDATA[
+  SELECT 
+      COUNT(DISTINCT CASE 
+          WHEN user_id IS NOT NULL THEN TO_CHAR(user_id)
+          ELSE visitor_id 
+      END) AS visitors
+  FROM access_log
+  WHERE access_time >= TRUNC(SYSDATE) - 6
+  AND access_time < TRUNC(SYSDATE) + 1
+]]>
+</select>
+
+<!-- 월간 방문자 수 -->
+<select id="getMonthlyVisitors" resultType="int">
+<![CDATA[
+  SELECT 
+      COUNT(DISTINCT CASE 
+          WHEN user_id IS NOT NULL THEN TO_CHAR(user_id)
+          ELSE visitor_id 
+      END) AS visitors
+  FROM access_log
+  WHERE access_time >= TRUNC(SYSDATE, 'MM')
+  AND access_time < TRUNC(LAST_DAY(SYSDATE)) + 1
+]]>
+</select>
+
+<!-- 총 방문자 수 -->
+<select id="getTotalVisitors" resultType="int">
+<![CDATA[
+  SELECT 
+      COUNT(DISTINCT CASE 
+          WHEN user_id IS NOT NULL THEN TO_CHAR(user_id)
+          ELSE visitor_id 
+      END) AS visitors
+  FROM access_log
+]]>
+</select>
+
+<!-- 비로그인 사용자 인기 페이지 -->
+<select id="getPopularPagesForNonLoggedUsers" resultType="hashmap">
+<![CDATA[
+  SELECT 
+      page_id,
+      COUNT(*) AS views
+  FROM access_log
+  WHERE user_id IS NULL
+  AND access_time >= TO_DATE(#{startDate}, 'YYYY-MM-DD')
+  AND access_time < TO_DATE(#{endDate}, 'YYYY-MM-DD') + 1
+  GROUP BY page_id
+  ORDER BY views DESC
+  FETCH FIRST 10 ROWS ONLY
+]]>
+</select>
+
+
+
+    
+    
+    <!-- 비로그인 사용자 인기 페이지 조회 -->
+<!--     <select id="getPopularPagesForNonLoggedUsers" resultType="hashmap"> -->
+<!--     <![CDATA[ -->
+<!--         SELECT  -->
+<!--             page_id AS pageId,  -->
+<!--             COUNT(*) AS count, -->
+<!--             ROUND(COUNT(*) / ( -->
+<!--                 SELECT COUNT(*)  -->
+<!--                 FROM access_log  -->
+<!--                 WHERE user_id IS NULL -->
+<!--                 AND access_time >= TO_DATE(#{startDate}, 'YYYY-MM-DD') -->
+<!--                 AND access_time < TO_DATE(#{endDate}, 'YYYY-MM-DD') + 1 -->
+<!--             ) * 100, 2) AS percentage -->
+<!--         FROM access_log -->
+<!--         WHERE user_id IS NULL -->
+<!--         AND access_time >= TO_DATE(#{startDate}, 'YYYY-MM-DD') -->
+<!--         AND access_time < TO_DATE(#{endDate}, 'YYYY-MM-DD') + 1 -->
+<!--         GROUP BY page_id -->
+<!--         ORDER BY count DESC -->
+<!--         FETCH FIRST 10 ROWS ONLY -->
+<!--         ]]> -->
 <!--     </select> -->
     
-    <select id="selectCommList">
-    	select distinct u.user_no, u.nickname,r.title, ry.title,c.title, r.content, ry.content,c.content,    
-    	from users u
-    		left join comm c on u.user_no = c.user_no
-    		left join review r on u.user_no = r.user_no
-    		left join reply ry on u.user_no = ry.user_no 
-    	<where>
-    		<if test="keyword != null and keyword != ''">
-    		</if>
-    	</where>	
-    </select>
-    
-    
+<!-- 월별 접속자 통계 -->
+<!--     <select id="getMonthlyStats" resultType="com.hapla.admin.model.vo.DailyStats"> -->
+<!--         <![CDATA[ -->
+<!--         SELECT  -->
+<!--             TO_CHAR(stats_date, 'YYYY-MM-DD') AS date, -->
+<!--             visitor_count AS visitors, -->
+<!--             page_view_count AS pageViews, -->
+<!--             avg_duration AS avgDuration, -->
+<!--             bounce_rate AS bounceRate -->
+<!--         FROM ( -->
+<!--             SELECT  -->
+<!--                 TRUNC(access_time) AS stats_date, -->
+<!--                 COUNT(DISTINCT CASE  -->
+<!--                     WHEN user_id IS NOT NULL THEN user_id  -->
+<!--                     ELSE visitor_id  -->
+<!--                 END) AS visitor_count, -->
+<!--                 COUNT(*) AS page_view_count, -->
+<!--                 TO_CHAR(NUMTODSINTERVAL(AVG(session_duration), 'SECOND'), 'MI"분" SS"초"') AS avg_duration, -->
+<!--                 ROUND(SUM(CASE WHEN session_duration < 10 THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) AS bounce_rate -->
+<!--             FROM access_log -->
+<!--             WHERE access_time >= TO_DATE(#{startDate}, 'YYYY-MM-DD') -->
+<!--             AND access_time < TO_DATE(#{endDate}, 'YYYY-MM-DD') + 1 -->
+<!--             <if test="loginStatus == 'logged-in'"> -->
+<!--                 AND user_id IS NOT NULL -->
+<!--             </if> -->
+<!--             <if test="loginStatus == 'not-logged-in'"> -->
+<!--                 AND user_id IS NULL -->
+<!--             </if> -->
+<!--             GROUP BY TRUNC(access_time) -->
+<!--         ) -->
+<!--         ORDER BY stats_date DESC -->
+<!--         ]]> -->
+<!--     </select> -->
+
+
+<!-- 월별 접속자 통계 -->
+<!-- <select id="getMonthlyStats" resultType="com.hapla.admin.model.vo.DailyStats"> -->
+<!-- <![CDATA[ -->
+<!--     SELECT  -->
+<!--         TO_CHAR(stats_date, 'YYYY-MM-DD') AS date, -->
+<!--         visitor_count AS visitors, -->
+<!--         page_view_count AS pageViews, -->
+<!--         avg_duration AS avgDuration, -->
+<!--         bounce_rate AS bounceRate -->
+<!--     FROM ( -->
+<!--         SELECT  -->
+<!--             TRUNC(access_time) AS stats_date, -->
+<!--             COUNT(DISTINCT CASE  -->
+<!--                 WHEN user_id IS NOT NULL THEN TO_CHAR(user_id) -->
+<!--                 ELSE visitor_id  -->
+<!--             END) AS visitor_count, -->
+<!--             COUNT(*) AS page_view_count, -->
+<!--             TO_CHAR(NUMTODSINTERVAL(AVG(session_duration), 'SECOND'), 'MI''분'' SS''초''') AS avg_duration, -->
+<!--             ROUND(SUM(CASE WHEN session_duration < 10 THEN 1 ELSE 0 END) / NULLIF(COUNT(*), 0) * 100, 2) AS bounce_rate -->
+<!--         FROM access_log -->
+<!--         WHERE access_time >= TO_DATE(#{startDate}, 'YYYY-MM-DD') -->
+<!--         AND access_time < TO_DATE(#{endDate}, 'YYYY-MM-DD') + 1  ]]> -->
+<!--         <if test="loginStatus eq 'logged-in'"> -->
+<!--             AND user_id IS NOT NULL -->
+<!--         </if> -->
+<!--         <if test="loginStatus eq 'not-logged-in'"> -->
+<!--             AND user_id IS NULL -->
+<!--         </if> -->
+<!--         GROUP BY TRUNC(access_time)   -->
+<!--     ) -->
+<!--     ORDER BY stats_date DESC -->
+<!-- </select> -->
+
+
+ <!-- 월별 접속자 통계 --> 
+<!-- <select id="getMonthlyStats" resultType="com.hapla.admin.model.vo.DailyStats"> -->
+<!-- <![CDATA[ -->
+<!--     SELECT  -->
+<!--         TO_CHAR(stats_date, 'YYYY-MM-DD') AS date, -->
+<!--         visitor_count AS visitors, -->
+<!--         page_view_count AS pageViews, -->
+<!--         avg_duration AS avgDuration, -->
+<!--         bounce_rate AS bounceRate -->
+<!--     FROM ( -->
+<!--         SELECT  -->
+<!--             TRUNC(access_time) AS stats_date, -->
+<!--             COUNT(DISTINCT CASE  -->
+<!--                 WHEN user_id IS NOT NULL THEN user_id  -->
+<!--                 ELSE visitor_id  -->
+<!--             END) AS visitor_count, -->
+<!--             COUNT(*) AS page_view_count, -->
+<!--             TO_CHAR(NUMTODSINTERVAL(AVG(session_duration), 'SECOND'), 'MI\"분\" SS\"초\"') AS avg_duration, -->
+<!--             ROUND(SUM(CASE WHEN session_duration < 10 THEN 1 ELSE 0 END) / NULLIF(COUNT(*), 0) * 100, 2) AS bounce_rate -->
+<!--         FROM access_log -->
+<!--         WHERE access_time >= TO_DATE(#{startDate}, 'YYYY-MM-DD') -->
+<!--         AND access_time < TO_DATE(#{endDate}, 'YYYY-MM-DD') + 1 ]]> -->
+<!--         <if test="loginStatus eq 'logged-in'"> -->
+<!--             AND user_id IS NOT NULL -->
+<!--         </if> -->
+<!--         <if test="loginStatus eq 'not-logged-in'"> -->
+<!--             AND user_id IS NULL -->
+<!--         </if> -->
+<!--         GROUP BY TRUNC(access_time) -->
+<!--         ) -->
+<!--     ORDER BY stats_date DESC -->
+   
+<!-- </select> -->
+<!-- <select id="getMonthlyStats" resultType="com.hapla.admin.model.vo.DailyStats"> -->
+<!-- <![CDATA[ -->
+<!--     SELECT  -->
+<!--         TO_CHAR(stats_date, 'YYYY-MM-DD') AS date, -->
+<!--         visitor_count AS visitors, -->
+<!--         page_view_count AS pageViews, -->
+<!--         avg_duration AS avgDuration, -->
+<!--         bounce_rate AS bounceRate -->
+<!--     FROM ( -->
+<!--         SELECT  -->
+<!--             TRUNC(access_time) AS stats_date, -->
+<!--             COUNT(DISTINCT CASE  -->
+<!--                 WHEN user_id IS NOT NULL THEN user_id  -->
+<!--                 ELSE visitor_id  -->
+<!--             END) AS visitor_count, -->
+<!--             COUNT(*) AS page_view_count, -->
+<!--             TO_CHAR(NUMTODSINTERVAL(AVG(session_duration), 'SECOND'), 'MI"분" SS"초"') AS avg_duration, -->
+<!--             ROUND(SUM(CASE WHEN session_duration < 10 THEN 1 ELSE 0 END) / NULLIF(COUNT(*), 0) * 100, 2) AS bounce_rate -->
+<!--         FROM access_log -->
+<!--         WHERE access_time >= TO_DATE(#{startDate}, 'YYYY-MM-DD') -->
+<!--         AND access_time < TO_DATE(#{endDate}, 'YYYY-MM-DD') + 1   -->
+<!-- ]]> -->
+<!-- <if test="loginStatus == 'logged-in'"> -->
+<!--     <![CDATA[ AND user_id IS NOT NULL ]]> -->
+<!-- </if> -->
+<!-- <if test="loginStatus == 'not-logged-in'"> -->
+<!--     <![CDATA[ AND user_id IS NULL ]]> -->
+<!-- </if> -->
+<!-- <![CDATA[ -->
+<!--         GROUP BY TRUNC(access_time) -->
+<!--     ) -->
+<!--     ORDER BY stats_date DESC -->
+<!-- ]]> -->
+<!-- </select> -->
+
+
+
+
+
+<select id="selectRecent" resultType = "Notice">
+	<![CDATA[
+	select *
+	from (
+		select *
+		from notice
+		where status = 'Y'
+		order by is_important desc, create_date desc
+		)
+		where rownum <= 3
+		]]>
+	</select>
+
+
+	
+	
+	
+	
+	
 </mapper>
