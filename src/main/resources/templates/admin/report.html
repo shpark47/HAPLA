@@ -243,10 +243,7 @@
            const tr = this.closest("tr");
            const status = tr.querySelector(".status");
            const reportNo = this.getAttribute("data-reportno");
-           const newStatus = this.classList.contains('approve') ? 'A' : 'R';
-           
-           //console.log("신고 처리: 신고번호=", reportNo, "상태=", newStatus);
-           
+           const newStatus = this.classList.contains('approve') ? 'A' : 'R';      
 		$.ajax({
 			url : 'status',
 			type : 'post',
@@ -315,31 +312,26 @@
        commNo: 0,
        reportNo: 0
    };
-   
    // 신고된 게시글/댓글 보기 함수
    function viewReportedContent(category, contentNo, reportNo) {
        const contentDetails = document.getElementById("contentDetails");
        contentDetails.innerHTML = "<p>로딩 중...</p>";
        
        const modal = document.getElementById("viewContentModal");
-       modal.style.display = "block";
-       
+       modal.style.display = "block";  
        // 현재 콘텐츠 정보 저장
        currentContentInfo.category = category;
        currentContentInfo.contentNo = contentNo;
-       currentContentInfo.reportNo = reportNo;
-       
+       currentContentInfo.reportNo = reportNo;  
        // contentNo가 유효한지 확인
        if (!contentNo || contentNo <= 0) {
            contentDetails.innerHTML = `<div class="error-message">유효한 콘텐츠 번호가 필요합니다. (전달된 값: ${contentNo})</div>`;
            document.getElementById("goToContentBtn").style.display = "none";
            return;
        }
-       
        // 게시글/댓글 정보 가져오기
        $.ajax({
            url: '/report-viewer/content',
-           type: 'GET',
            data: {
                category: category,
                contentNo: contentNo
