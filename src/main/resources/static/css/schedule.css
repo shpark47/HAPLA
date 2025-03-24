@@ -55,6 +55,13 @@ body {
     /* border-radius: 10px; 스크롤바 배경의 둥근 모서리 */
 }
 
+.hapla-logo {
+    font-weight: bold;
+    color: #0099cc;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
 .sidebar-title{
 	margin-top: 5%;
 }
@@ -181,6 +188,7 @@ body {
     cursor: pointer;
     display: block;
     margin: auto;
+    margin-bottom: 10%;
 }
 
 .save-btn button:hover {

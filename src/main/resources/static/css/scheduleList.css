@@ -37,6 +37,13 @@ body {
     background-color: #ffffff;
 }
 
+.hapla-logo {
+    font-weight: bold;
+    color: #0099cc;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
 .title{
 	margin-top: 5%;
 	font-size: 20px;
