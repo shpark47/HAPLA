@@ -317,7 +317,7 @@ ul#search-results li button.add-button {
 }
 
 #memo-panel textarea {
-    width: 80%;
+	width: 91%;
     height: 200px;
     padding: 12px;
     border: 1px solid #ddd;
@@ -326,6 +326,25 @@ ul#search-results li button.add-button {
     font-size: 14px;
     margin-top: 5%;
     margin-bottom: 1%;
+}
+
+.saveMemo {
+    background-color: #5A97C7;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    font-size: 14px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.saveMemo:hover {
+    background-color: #4A87B7;
 }
 
 .remove-btn {
