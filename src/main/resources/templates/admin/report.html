@@ -1,112 +1,446 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>신고 관리 - 여행 웹사이트 관리자 페이지</title>
- <link href="/admin-css/report.css" rel="stylesheet" type="text/css">
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>여행 사이트 관리자 페이지 - 신고 관리</title>
+  <link href="/admin-css/users.css" rel="stylesheet" type="text/css">
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+<style>
+   .modal {
+       display: none;
+       position: fixed;
+       z-index: 1000;
+       left: 0;
+       top: 0;
+       width: 100%;
+       height: 100%;
+       overflow: auto;
+       background-color: rgba(0,0,0,0.4);
+   }
+   .modal-content {
+       background-color: #fefefe;
+       margin: 10% auto;
+       padding: 20px;
+       border: 1px solid #888;
+       width: 70%;
+       max-width: 800px;
+       border-radius: 5px;
+   }
+   .close-modal {
+       color: #aaa;
+       float: right;
+       font-size: 28px;
+       font-weight: bold;
+       cursor: pointer;
+   }
+   .close-modal:hover {
+       color: black;
+   }
+   .error-message {
+       color: red;
+       font-weight: bold;
+       padding: 10px;
+       border: 1px solid red;
+       background-color: #ffeeee;
+       border-radius: 4px;
+       margin-bottom: 15px;
+   }
+</style>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <h1>여행 웹사이트 관리자 페이지</h1>
-        </div>
-    </header>
+   <div class="container">
+       <!-- 사이드바 -->
+       <div class="sidebar">
+           <div class="logo" onclick="location.href='/main'">
+               <h2>HAPLA</h2>
+               <span>관리자</span>
+           </div>
+           <ul class="nav-menu">
+               <li>
+                   <a href="index"><i class="fas fa-chart-line"></i> <span>대시보드</span></a>
+               </li>
+               <li>
+                   <a href="members"><i class="fas fa-users"></i> <span>회원 조회</span></a>
+               </li>
+               <li>
+                   <a href="userStats"><i class="fas fa-user-chart"></i> <span>사용자 통계</span></a>
+               </li>
+               <li>
+                   <a href="accessStats"><i class="fas fa-chart-bar"></i> <span>접속 통계</span></a>
+               </li>
+               <li>
+                   <a href="notice"><i class="fas fa-bullhorn"></i> <span>공지사항</span></a>
+               </li>
+               <li>
+                   <a href="report"><i class="fas fa-flag"></i> <span>신고 관리</span></a>
+               </li>
+<!--                <li> -->
+<!--                    <a href="payment"><i class="fas fa-credit-card"></i> <span>결제 관리</span></a> -->
+<!--                </li> -->
+               <li>
+                   <a href="reservation"><i class="fas fa-calendar-check"></i> <span>예약 현황</span></a>
+               </li>
+               <li>
+                   <a href="../main"><i class="fas fa-sign-out-alt"></i> <span>로그아웃</span></a>
+               </li>
+           </ul>
+       </div>
 
-    <nav>
-        <div class="container">
-			<ul>
-			    <li><a href="../main">🏠 MAIN</a></li>
-                <li><a href="users">👥 사용자 조회</a></li>
-                <li><a href="stats">📊 통계 조회</a></li>
-                <li><a href="booking">🏨 예약 현황</a></li>
-                <li><a href="revenue">💰 매출 분석</a></li>
-                <li><a href="notice">📢 공지사항</a></li>
-                <li><a href="report">🚨 신고 관리</a></li>
-	        </ul>
-        </div>
-    </nav>
+       <!-- 메인 콘텐츠 -->
+       <div class="main-content">
+           <header>
+               <div class="header-left">
+                   <h1>신고 관리</h1>
+                   <div class="breadcrumb">
+                       <span>HOME</span> / <span>신고 관리</span>
+                   </div>
+               </div>
+           </header>
 
-    <div class="container">
-        <div class="card">
-            <h2>🚨 신고 관리</h2>
-            <table>
-                <tr>
-                    <th>신고 ID</th>
-                    <th>신고자</th>
-                    <th>피신고자</th>
-                    <th>신고 유형</th>
-<!--                     <th>신고 사유</th> -->
-					<th>신고 날짜</th>
-					<th>컨텐츠 제목</th>                   
-                    <th>컨텐츠 내용</th>
-                    <th>상태</th>
-                </tr>
-                <tr th:each = "report : ${list}">
-                    <td th:text = "${report.reportNo}"></td>
-                    <td th:text = "${report.reporterNo}"></td>
-                    <td th:text = "${report.violatorNo}"></td>
-                    <td th:text = "${report.reportCategory}"></td>
-                    <td th:text = "${report.reportDate}"></td>
-                    <td th:text = "${report.reportTitle}"></td>                    
-                    <td class="report-content" th:text = "${report.reportContent}"></td>
-                    <td th:text = "${report.reportStatus}"><span class="status status-pending"></span></td>
-                </tr>
-                
-            </table>
-				
-			<!-- 페이징 -->
-            <div class="pagination" th:if="${not #lists.isEmpty(list)}">            
-        <!-- 이전 페이지 -->
-               <a th:if="${pi.currentPage > 1}"
-                   th:href="@{${loc}(page=${pi.currentPage-1}, keyword=${keyword})}"
-                   class="page-link">&lt;</a>
-          <!-- 페이지 번호 -->
-                <th:block th:each="page : ${#numbers.sequence(pi.startPage, pi.endPage)}">
-                    <a th:if="${page != pi.currentPage}"
-                       th:href="@{${loc}(page=${page}, keyword=${keyword})}"
-                       th:text="${page}"
-                       class="page-link"></a>
-                    <span th:if="${page == pi.currentPage}"
-                          th:text="${page}"
-                          class="page-link active"></span>
-                </th:block>
+           <div class="content-section">
+               <div class="section-header">
+                   <h2>신고 관리</h2>
+               </div>
+               <div class="report-stats">
+                   <div class="stat-card">
+                       <h3>대기중</h3>
+                       <h2>[[${totalWait}]]</h2>
+                   </div>
+                   <div class="stat-card">
+                       <h3>처리완료</h3>
+                       <h2>[[${totalAccept}]]</h2>
+                   </div>
+                   <div class="stat-card">
+                       <h3>반려</h3>
+                       <h2>[[${totalReject}]]</h2>
+                   </div>
+               </div>
+               
+               <div class = "content-section">
+               	<div class="section-header">
+                   <h2>신고 조회</h2>
+                   <div class="search-filter">
+                       <input type="text" id = "keyword" placeholder="닉네임 검색" th:value="${keyword}">
+                       <select id = "order">
+                           <option value = "new" th:selected = "${order == 'new'}">최신순</option>
+                           <option value = "old" th:selected = "${order == 'old'}">오래된순</option>
+                       </select>
+                       <button class="search-btn" onclick ="searchUsers()">검색</button>
+                   </div>
+               </div>
+               <div class="report-list">
+                   <table>
+                       <thead>
+                           <tr>
+                               <th>번호</th>
+                               <th>신고 제목</th>
+                               <th>신고 내용</th>
+                               <th>신고자</th>
+                               <th>피신고자</th>
+                               <th>신고 카테고리</th>
+                               <th>상태</th>
+                               <th>관리</th>
+                           </tr>
+                       </thead>
+                       <tbody>
+                           <tr th:each = "r : ${list}">
+                               <td th:text = "${r.reportNo}"></td>
+                               <td th:text = "${r.reportTitle}"></td>
+                               <td th:text = "${r.reportContent}"></td>
+                               <td th:text = "${r.reporterNickname}"></td>
+                               <td th:text = "${r.violatorNickname}"></td>
+                               <td th:text="${r.reportCategory == 'C' ? '게시글' : (r.reportCategory == 'R' ? '댓글' : (r.reportCategory == 'V' ? '리뷰' : ''))}"></td>
+                               <td><span class="status pending" th:text = "${r.reportStatus == 'W' ? '대기중' : (r.reportStatus == 'A' ? '승인' : (r.reportStatus == 'R' ? '반려' : ''))}"></span></td>
+                               <td>
+                                   <button class="action-btn view" th:data-category="${r.reportCategory}" th:data-contentno="${r.contentNo}" th:data-reportno="${r.reportNo}">보기</button>
+                                   <button class="action-btn approve" th:if="${r.reportStatus == 'W'}" th:data-reportno="${r.reportNo}">승인</button>
+                                   <button class="action-btn reject" th:if="${r.reportStatus == 'W'}" th:data-reportno="${r.reportNo}">반려</button>
+                               </td>
+                           </tr>        
+                       </tbody>
+                   </table>
+                   
+                    <!-- 페이징 처리 -->
+                   <div class="pagination" th:if="${not #lists.isEmpty(list)}">
+				<!-- 이전 페이지 -->
+                       <a th:if="${pi.currentPage > 1}" th:href="@{${loc}(page=${pi.currentPage-1}, keyword=${keyword}, order=${order})}">&lt;</a>
+                    <!-- 현재 페이지 -->   
+                       <th:block th:each="p : ${#numbers.sequence(pi.startPage, pi.endPage)}">
+                           <a th:if="${p != pi.currentPage}" th:href="@{${loc}(page=${p}, keyword=${keyword},order = ${order})}" th:text="${p}"></a>
+                           <span th:if="${p == pi.currentPage}" th:text="${p}" class="active"></span>
+                       </th:block>
+                    <!-- 다음 페이지 -->   
+                       <a th:if="${pi.currentPage < pi.maxPage}" th:href="@{${loc}(page=${pi.currentPage+1}, keyword=${keyword}, order=${order})}">&gt;</a>
+                   </div>
+                   
+                   </div>
+               </div>
+           </div>
+       </div>
+   </div>
+   
+   <!-- 신고된 콘텐츠 보기 모달 -->
+   <div id="viewContentModal" class="modal">
+       <div class="modal-content">
+           <span class="close-modal">&times;</span>
+           <h2>신고된 콘텐츠 보기</h2>
+           <div id="contentDetails">
+               <!-- 콘텐츠 상세 내용이 여기에 로드됩니다 -->
+               <p>로딩 중...</p>
+           </div>
+           <div style="text-align: right; margin-top: 20px;">
+               <button id="goToContentBtn" style="padding: 8px 16px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; margin-right: 10px;">게시글로 이동</button>
+               <button id="closeViewModal" style="padding: 8px 16px; background-color: #ccc; border: none; border-radius: 4px; cursor: pointer;">닫기</button>
+           </div>
+       </div>
+   </div>
 
-                <!-- 다음 페이지 -->
-                <a th:if="${pi.currentPage < pi.maxPage}"
-                   th:href="@{${loc}(page=${pi.currentPage+1}, keyword=${keyword})}"
-                   class="page-link">&gt;</a>
-            </div>	
-				
-				
-			<div class="card">
-				<form class = "search-form">
-					<input type = "text" name="keyword" id = "userSearch">
-					<button type="submit">검색</button>
-				</form>
-				
-<!-- 									            <form class="search-form" onsubmit="searchUser(event)"> -->
-<!-- 									                <input type="text" id="userSearch"> -->
-<!-- 									                <button type="submit">검색</button> -->
-<!-- 									            </form> -->
-									            <div id="searchResult" class="card">
-									                <table>
-									                    <tr>
-									                        <th>닉네임</th>
-									                        <th>신고유형</th>
-									                    </tr>
-									                    <tr id="resultRow">
-									                        <td id="resultNickname">
-									                        	<span class = "no-data">검색 결과가 없습니다.</span>
-									                        </td>
-									                        <td id="resultCategory">
-									                        	<span class = "no-data">검색 결과가 없습니다.</span>
-									                        </td>
-									                    </tr>
-									                </table>
-									            </div>
-									        </div>
-        </div>
-    </div>
+   
+   
+   <script th:inline = "javascript">
+   window.onload = () => {
+   	const reportButton = document.querySelectorAll(".action-btn.approve, .action-btn.reject");
+   	const showButton = document.querySelectorAll(".action-btn.view");
+   	
+   	// 게시글/댓글 보기 버튼 이벤트
+   	showButton.forEach((btn)=> {
+   		btn.addEventListener("click", () => {
+   			const category = btn.getAttribute("data-category");
+   			const contentNo = parseInt(btn.getAttribute("data-contentno"));
+   			const reportNo = btn.getAttribute("data-reportno");
+   			
+   			// contentNo가 유효한지 확인
+   			if (!contentNo || isNaN(contentNo) || contentNo <= 0) {
+   			    alert("유효하지 않은 콘텐츠 번호입니다: " + contentNo);
+   			    return;
+   			}
+   			
+   			viewReportedContent(category, contentNo, reportNo);
+   		});
+   	});
+   	
+   	/*<![CDATA][*/
+   		const list = /*[[${list}]]*/null;
+   	/*]]>*/
+   	
+   	//console.log("신고 목록:", list);
+   	const pendings = document.querySelectorAll('.status.pending');
+       for(const pending of pendings) {
+       	//console.log(pending.textContent.trim());
+       	if(pending.textContent.trim() == '대기중') {
+       		pending.style.background = 'orange';
+       	}else if(pending.textContent.trim() == '승인') {
+       		pending.style.background = '#1cc88a';
+       	}else if(pending.textContent.trim()=='반려') {
+			pending.style.background = '#e74a3b';
+       	}
+       }
+       
+   	reportButton.forEach((btn) => {
+         btn.addEventListener("click", function () {
+           const tr = this.closest("tr");
+           const status = tr.querySelector(".status");
+           const reportNo = this.getAttribute("data-reportno");
+           const newStatus = this.classList.contains('approve') ? 'A' : 'R';
+           
+           //console.log("신고 처리: 신고번호=", reportNo, "상태=", newStatus);
+           
+		$.ajax({
+			url : 'status',
+			type : 'post',
+			data : {
+                reportStatus : newStatus,
+				reportNo : reportNo
+            },
+			success : data => {
+				console.log("신고 처리 결과:", data);
+				if(data == 'success') {
+				 if (this.classList.contains("approve")) {
+		              status.innerText = "승인"
+		              status.className = "status approved"
+		              status.style.background = "#1cc88a"
+		            } else if (this.classList.contains("reject")) {
+		              status.innerText = "반려"
+		              status.className = "status rejected"
+		              status.style.background = "#e74a3b";
+		            }
+				// 처리 완료된 신고는 버튼 비활성화
+		            tr.querySelectorAll(".action-btn.approve, .action-btn.reject").forEach((btn) => {
+		              btn.disabled = true;
+		              btn.remove();
+		            });
+				}
+			},
+			error : data => {
+                console.error("신고 처리 중 오류:", data);
+                alert("신고 처리 중 오류가 발생했습니다.");
+            }
+		});
+         });
+       });
+   	
+       searchUsers = () => {
+       	const keyword = document.getElementById('keyword').value;
+       	const order = document.getElementById('order').value;
+       	location.href = 'report?page=1&keyword=' + keyword + '&order=' + order;
+       }	
+       
+       // 모달 관련 초기화
+       const modal = document.getElementById("viewContentModal");
+       const closeModalBtn = document.querySelector(".close-modal");
+       const closeViewModalBtn = document.getElementById("closeViewModal");
+       const goToContentBtn = document.getElementById("goToContentBtn");
+       
+       closeModalBtn.onclick = function() {
+           modal.style.display = "none";
+       }
+       
+       closeViewModalBtn.onclick = function() {
+           modal.style.display = "none";
+       }
+       
+       window.onclick = function(event) {
+           if (event.target == modal) {
+               modal.style.display = "none";
+           }
+       }
+   }
+   
+// 전역 변수로 현재 보고 있는 콘텐츠 정보 저장
+   let currentContentInfo = {
+       category: '',
+       contentNo: 0,
+       commNo: 0,
+       reportNo: 0
+   };
+   
+   // 신고된 게시글/댓글 보기 함수
+   function viewReportedContent(category, contentNo, reportNo) {
+       const contentDetails = document.getElementById("contentDetails");
+       contentDetails.innerHTML = "<p>로딩 중...</p>";
+       
+       const modal = document.getElementById("viewContentModal");
+       modal.style.display = "block";
+       
+       // 현재 콘텐츠 정보 저장
+       currentContentInfo.category = category;
+       currentContentInfo.contentNo = contentNo;
+       currentContentInfo.reportNo = reportNo;
+       
+       // contentNo가 유효한지 확인
+       if (!contentNo || contentNo <= 0) {
+           contentDetails.innerHTML = `<div class="error-message">유효한 콘텐츠 번호가 필요합니다. (전달된 값: ${contentNo})</div>`;
+           document.getElementById("goToContentBtn").style.display = "none";
+           return;
+       }
+       
+       // 게시글/댓글 정보 가져오기
+       $.ajax({
+           url: '/report-viewer/content',
+           type: 'GET',
+           data: {
+               category: category,
+               contentNo: contentNo
+           },
+           dataType: 'json',
+           success: function(response) {
+               console.log("콘텐츠 조회 응답:", response);
+               
+               // 에러 메시지가 있는 경우
+               if (response.error) {
+                   contentDetails.innerHTML = `<div class="error-message">${response.error}</div>`;
+                   document.getElementById("goToContentBtn").style.display = "none";
+                   return;
+               }
+               
+               let html = '';
+               document.getElementById("goToContentBtn").style.display = "inline-block";
+               
+               if (category === 'C') {
+                   // 게시글인 경우
+                   currentContentInfo.commNo = response.commNo;
+                   
+                   html = `
+                       <h3>게시글 정보</h3>
+                       <p><strong>제목:</strong> ${response.title || '제목 없음'}</p>
+                       <p><strong>작성자:</strong> ${response.name || '작성자 정보 없음'}</p>
+                       <p><strong>작성일:</strong> ${response.createDate || '날짜 정보 없음'}</p>
+                       <p><strong>내용:</strong></p>
+                       <div style="padding: 10px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 20px;">
+                           ${response.commContent || '내용 없음'}
+                       </div>
+                   `;
+               } else if (category === 'R') {
+                   // 댓글인 경우
+                   currentContentInfo.commNo = response.commNo;
+                   
+                   html = `
+                       <h3>댓글 정보</h3>
+                       <p><strong>작성자:</strong> ${response.name || '작성자 정보 없음'}</p>
+                       <p><strong>작성일:</strong> ${response.createDate || '날짜 정보 없음'}</p>
+                       <p><strong>내용:</strong></p>
+                       <div style="padding: 10px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 20px;">
+                           ${response.replyContent || '내용 없음'}
+                       </div>
+                       <p><strong>원본 게시글:</strong> ${response.commTitle || '게시글 정보 없음'}</p>
+                   `;
+               }
+               
+               contentDetails.innerHTML = html;
+               
+               // 게시글로 이동 버튼 이벤트 설정
+               document.getElementById("goToContentBtn").onclick = function() {
+                   goToContent(category, currentContentInfo.commNo, currentContentInfo.contentNo);
+               };
+           },
+           error: function(xhr, status, error) {
+               console.error("콘텐츠 조회 중 오류:", xhr, status, error);
+               let errorMsg = "콘텐츠를 불러오는데 실패했습니다.";
+            
+               try {
+                   if (xhr.responseJSON && xhr.responseJSON.error) {
+                       errorMsg = xhr.responseJSON.error;
+                   } else if (xhr.responseText) {
+                       errorMsg += " 오류: " + xhr.responseText;
+                   } else {
+                       errorMsg += " 오류: " + error;
+                   }
+               } catch (e) {
+                   errorMsg += " 상세 오류 정보를 가져올 수 없습니다.";
+               }
+            
+               contentDetails.innerHTML = `<div class="error-message">${errorMsg}</div>`;
+               document.getElementById("goToContentBtn").style.display = "none";
+           }
+       });
+   }
+   
+   // 게시글로 이동 함수 
+   function goToContent(category, commNo, contentNo) {
+       if (category === 'C') {
+           // 게시글인 경우
+           if (!commNo) {
+               alert("게시글 정보를 찾을 수 없습니다.");
+               return;
+           }
+//            window.location.href = `/comm/detail?commNo=${commNo}&page=1`;
+				location.href = '/comm/' + commNo + '/' + '1';
+       } else if (category === 'R') {
+           // 댓글인 경우
+           if (!commNo) {
+               alert("원본 게시글 정보를 찾을 수 없습니다.");
+               return;
+           }
+           // 댓글이 있는 게시글로 이동
+//            window.location.href = `/comm/detail?commNo=${commNo}&page=1`;
+           location.href = '/comm/' + commNo + '/' + '1';
+       } else {
+           alert("지원하지 않는 콘텐츠 유형입니다.");
+       }
+   }
+   </script>
 </body>
 </html>
+
