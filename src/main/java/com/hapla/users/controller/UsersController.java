@@ -9,8 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +31,7 @@ import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
-@SessionAttributes("loginUser")
+@SessionAttributes({"loginUser", "token"})
 public class UsersController {
 
     private final UsersService usersService;
@@ -47,6 +46,7 @@ public class UsersController {
         json.put("user", u);
 
         session.setAttribute("loginUser", u);
+        session.setAttribute("token", user.getAccessToken());
 
         System.out.println(session.getAttribute("loginUser"));
 
@@ -67,9 +67,51 @@ public class UsersController {
     }
 
     @GetMapping("/users/logout")
-    public String logout(SessionStatus session) {
+    public String logout(SessionStatus session, Model model) {
+        String accessToken = (String) model.getAttribute("token");
+
+        if (accessToken == null) {
+            // 토큰이 없다면 로그인 페이지로 리다이렉트
+            return "redirect:/users/login";
+        }
+
+        // 카카오 로그아웃 처리
+        boolean result = kakaoLogout(accessToken);
+        if (result) {
+            System.out.println("카카오 로그아웃 성공");
+        } else {
+            System.out.println("카카오 로그아웃 실패");
+        }
+
+        // 세션 종료
         session.setComplete();
-        return "redirect:/";
+        return "redirect:/";  // 로그아웃 후 다시 로그인 페이지로 리다이렉트
+    }
+
+    private boolean kakaoLogout(String accessToken) {
+        final String KAKAO_LOGOUT_URL = "https://kapi.kakao.com/v1/user/logout";
+
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + accessToken); // 액세스 토큰을 Authorization 헤더에 설정
+        headers.setContentType(MediaType.APPLICATION_JSON); // 요청의 Content-Type을 JSON으로 설정
+
+        HttpEntity<String> request = new HttpEntity<>(headers);
+
+        try {
+            // POST 요청을 보내고 응답 받기
+            ResponseEntity<String> response = restTemplate.exchange(KAKAO_LOGOUT_URL, HttpMethod.POST, request, String.class);
+
+            if (response.getStatusCode() == HttpStatus.OK) {
+                return true;
+            } else {
+                System.out.println("카카오 로그아웃 실패");
+                return false;
+            }
+        } catch (Exception e) {
+            System.out.println("카카오 로그아웃 오류: " + e.getMessage());
+            return false;
+        }
     }
 
     // 환경 변수에서 R2 설정 가져오기
