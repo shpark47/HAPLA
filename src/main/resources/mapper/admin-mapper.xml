@@ -257,7 +257,7 @@
                select report_category, content_no 
                from report 
                group by report_category, content_no 
-               having count(*) >= 3
+               having count(*) >= 2
            )
        <if test="keyword != null and keyword != ''">
            and reporter.nickname like '%' || #{keyword} || '%'
