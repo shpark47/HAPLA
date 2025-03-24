@@ -12,7 +12,7 @@
     </select>
     
     <select id="selectUserList">
-    	select user_no, name, nickname, email, create_date
+    	select user_no, name, nickname, email, create_date, status
     	from users
     	<where>
     	<if test="keyword != null and keyword != ''">

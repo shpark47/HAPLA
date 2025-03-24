@@ -41,7 +41,18 @@ public class AdminController {
 	
 	
 	@GetMapping("/admin/index")
-	public String index() {
+	public String index(Model model) {
+		// 전체 데이터 조회
+				int totalUsers = aService.totalUsersCount();
+				int totalComm = aService.totalComm();
+				int totalReply = aService.totalReplyCount();
+				int totalReview = aService.totalReview();
+				
+				model.addAttribute("totalUsers", totalUsers);
+				model.addAttribute("totalComm", totalComm);
+				model.addAttribute("totalReply", totalReply);
+				model.addAttribute("totalReview", totalReview);
+		
 		return "/admin/index";
 	}
 	
@@ -178,7 +189,6 @@ public class AdminController {
 	@PostMapping("admin/status")
 	@ResponseBody
 	public String updateStatus(@ModelAttribute Report report, @RequestParam("reportNo") int reportNo, @RequestParam("reportStatus") String reportStatus) {
-	    try {
 	        report.setReportNo(reportNo);
 	        report.setReportStatus(reportStatus);
 	        
@@ -188,7 +198,7 @@ public class AdminController {
 	        // 승인된 경우 해당 게시글/댓글 삭제
 	        if (reportStatus.equals("A")) {
 	            // 신고 대상 카테고리 확인 후 삭제 처리
-	            Report reportDetail = aService.getReportDetail(reportNo);
+	            Report reportDetail = aService.getReportDetail(reportNo); // 신고 목록 조회(3회 이상 신고된 항목만 조회)
 	            if (reportDetail != null) {
 	                if ("C".equals(reportDetail.getReportCategory())) {
 	                    // 게시글인 경우
@@ -205,13 +215,9 @@ public class AdminController {
 	                }
 	            }
 	        }
-	        
 	        return result > 0 ? "success" : "fail";
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return "error";
 	    }
-	}
+	
 	// 공지사항 상세 페이지
 //	@GetMapping("admin/detail/{id}/{page}")
 //	public String detail(@PathVariable("id") int noticeNo, @PathVariable("page") int page, Model model) {
