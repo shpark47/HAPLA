@@ -28,4 +28,6 @@ public class Review {
 	private String withWhom;
 	private String thumnail;
 	private String imageUrls;
+	private String nickname;
+	private String id;
 }

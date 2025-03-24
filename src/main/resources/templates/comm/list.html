@@ -5,6 +5,80 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HAPLA 커뮤니티</title>
     <link href="/css/list.css" rel="stylesheet" type="text/css">
+    <style>
+        /* 공지사항 스타일 */
+        .notice-row {
+            background-color: #f8f9fa;
+            position: relative;
+        }
+        
+        .notice-row td {
+            padding: 15px 10px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .notice-row:hover {
+            background-color: #edf2f7;
+        }
+        
+        .notice-badge {
+            display: inline-block;
+            background-color: #306263;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        
+        .important-notice {
+            background-color: #f8f0e8;
+        }
+        
+        .important-badge {
+            display: inline-block;
+            background-color: #e53e3e;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+        
+        .notice-title {
+            font-weight: 600;
+            color: #1a202c;
+        }
+        
+        .important-title {
+            font-weight: 700;
+            color: #1a202c;
+        }
+        
+        /* 구분선 스타일 */
+        .notice-divider {
+            height: 2px;
+            background-color: #e2e8f0;
+            margin: 0;
+            border: none;
+        }
+    </style>
+    
 </head>
 <body>
     <!-- 헤더 포함 -->
@@ -54,6 +128,27 @@
                     </tr>
                 </thead>
                 <tbody>
+                <!-- 공지사항 목록 -->
+                    <tr th:each="notice : ${noticeList}" 
+                        th:class="${notice.isImportant == 'Y' ? 'notice-row important-notice' : 'notice-row'}"
+                        th:data-notice-no="${notice.noticeNo}">
+                        <td>
+                            <span th:class="${notice.isImportant == 'Y' ? 'important-badge' : 'notice-badge'}">공지</span>
+                        </td>
+                        <td>
+                            <span th:class="${notice.isImportant == 'Y' ? 'important-title' : 'notice-title'}" 
+                                  th:text="${notice.title}">공지사항 제목</span>
+                        </td>
+                        <td>관리자</td>
+                        <td>-</td>
+                        <td th:text="${notice.views}">0</td>
+                        <td th:text="${#dates.format(notice.createDate, 'yyyy-MM-dd')}">2023-01-01</td>
+                    </tr>
+                    
+<!--                     <tr th:if="${not #lists.isEmpty(noticeList)}"> -->
+<!--                         <td colspan="6" class="notice-divider"></td> -->
+<!--                     </tr> -->
+                    
                     <tr th:each="comm : ${list}" th:data-comm-no="${comm.commNo}">
                         <td>[[${comm.categoryName}]]</td>
                         <td>[[${comm.title}]]</td>
@@ -68,12 +163,12 @@
         
         <button class="write-Button" id="write-Button" type="button" onclick="location.href='/comm/write'">새 글 작성</button>
 
-        <!-- 🔹 페이지네이션 -->
+		<!-- 페이지 네이션 -->
         <div class="pagination-container">
             <ul class="pagination">
                 <!-- 이전 페이지 -->
                 <li class="page-item" th:classappend="${pi.currentPage == 1} ? 'disabled'">
-                    <a class="page-link" th:href="@{/comm/list(page=${pi.currentPage-1}, search=${search})}" aria-label="Previous">
+                    <a class="page-link" th:href="@{/comm/list(page=${pi.currentPage-1}, search=${search}, category=${category})}" aria-label="Previous">
                         <span aria-hidden="true">&laquo;</span>
                     </a>
                 </li>
@@ -81,12 +176,12 @@
                 <!-- 페이지 번호 -->
                 <li class="page-item" th:each="p : ${#numbers.sequence(pi.startPage, pi.endPage)}"
                     th:classappend="${p == pi.currentPage} ? 'active'">
-                    <a class="page-link" th:href="@{/comm/list(page=${p}, search=${search})}">[[${p}]]</a>
+                    <a class="page-link" th:href="@{/comm/list(page=${p}, search=${search}, category=${category})}">[[${p}]]</a>
                 </li>
 
                 <!-- 다음 페이지 -->
-                <li class="page-item" th:classappend="${pi.currentPage == pi.endPage} ? 'disabled'">
-                    <a class="page-link" th:href="@{/comm/list(page=${pi.currentPage+1}, search=${search})}" aria-label="Next">
+                <li class="page-item" th:classappend="${pi.currentPage == pi.maxPage} ? 'disabled'">
+                    <a class="page-link" th:href="@{/comm/list(page=${pi.currentPage+1}, search=${search}, category=${category})}" aria-label="Next">
                         <span aria-hidden="true">&raquo;</span>
                     </a>
                 </li>
@@ -116,6 +211,15 @@
                     alert('검색어를 입력하세요');
                     event.preventDefault();
                 }
+            });
+            
+            // 공지사항 클릭 시 상세 페이지 이동
+            document.querySelectorAll("tbody tr[data-notice-no]").forEach(row => {
+                row.addEventListener("click", function () {
+                    const noticeNo = this.getAttribute("data-notice-no");
+                    const currentPage = "[[${pi.currentPage}]]";
+                    location.href = `/comm/notice/` + noticeNo + `/` + currentPage;
+                });
             });
         });
     </script>

@@ -49,4 +49,6 @@ public interface CommMapper {
 
 	int getSearchListCount(@Param("search") String search, @Param("category") int category);
 
+	Reply selectReply(int replyNo);
+
 }

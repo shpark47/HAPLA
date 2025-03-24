@@ -1,5 +1,9 @@
 package com.hapla.admin.model.vo;
 
+import java.util.Date;
+
+
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,14 +15,15 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class AdminUsers {
-	private int userNo;
-	private String name;
-	private String nickname;
-	private String email;
-	private String createDate;
-	private String profile;
-	private String type;
+
+public class Notice {
+	
+	private int noticeNo;
+	private String title;
+	private String content;
+	private int views;
+	private Date createDate;
+	private Date updateDate;
 	private String status;
-	private String isAdmin;
+	private String isImportant;
 }
