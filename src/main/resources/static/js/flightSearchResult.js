@@ -474,9 +474,9 @@ document.addEventListener('DOMContentLoaded', function() {
 			flightDiv.innerHTML = `
                 <div class="flight-info">
                     <div class="airline-info">
-                        <span>${flight.outboundKorAirlineName != null ? flight.outboundKorAirlineName : flight.airlineNm} </span>
+                        <span class="${flight.inboundAirline != flight.outboundAirline ? 'outbound-info' : ''}">${flight.outboundKorAirlineName != null ? flight.outboundKorAirlineName : flight.airlineNm} </span>
                         ${flight.inboundAirline && flight.inboundAirline !== flight.outboundAirline
-					? `<span>${flight.inboundKorAirlineName}</span>` : ''}
+					? `<span class="${flight.inboundAirline != null ? 'inbound-info' : ''}">${flight.inboundKorAirlineName}</span>` : ''}
                     </div>
                     <div class="flight-details">
                         <div class="departure">
