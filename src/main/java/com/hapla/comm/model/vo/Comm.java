@@ -22,4 +22,6 @@ public class Comm {
     private String status;
     private String categoryName;
     private String name;
+    private String nickname;
+    private String id;
 }
