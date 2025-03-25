@@ -161,8 +161,8 @@ h1 {
 
 .traveler-selection {
 	position: absolute;
-/* 	top: 100%; */
-	left: 0;
+	top: 100%;
+	right: 20rem;
 	z-index: 1000;
 	background: #f9f9f9;
 	border: 1px solid #ccc;
