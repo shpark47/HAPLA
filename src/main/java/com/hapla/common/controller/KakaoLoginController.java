@@ -16,6 +16,7 @@ import java.util.Map;
 @RequestMapping("/oauth")
 public class KakaoLoginController {
 
+    // application.properties 또는 application.yml에서 설정된 Kakao API 클라이언트 ID와 리디렉트 URI 주입
     @Value("${kakao.client.id}")
     private String clientId;
 
@@ -23,7 +24,7 @@ public class KakaoLoginController {
     private String redirectUri;
 
     @GetMapping("/callback")
-    public ResponseEntity<Map<String, Object>> kakaoCallback(@RequestParam("code") String code, Model model) {
+    public ResponseEntity<Map<String, Object>> kakaoCallback(@RequestParam("code") String code) {
         // 1️⃣ 액세스 토큰 가져오기
         String accessToken = getAccessToken(code);
 
@@ -39,17 +40,21 @@ public class KakaoLoginController {
     }
 
     private String getAccessToken(String code) {
+        // 카카오 토큰 요청 URL
         String tokenUrl = "https://kauth.kakao.com/oauth/token";
-        String body = "grant_type=authorization_code" +
-                "&client_id=" + clientId +
-                "&redirect_uri=" + redirectUri +
-                "&code=" + code;
 
+        // 요청 바디 생성 (application/x-www-form-urlencoded 형식)
+        String body = "grant_type=authorization_code" + "&client_id=" + clientId + "&redirect_uri=" + redirectUri + "&code=" + code;
+
+        // HTTP 요청 헤더 설정
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
 
+        // 요청 엔터티 생성
         HttpEntity<String> entity = new HttpEntity<>(body, headers);
         RestTemplate restTemplate = new RestTemplate();
+
+        // 카카오 API로 POST 요청을 보내 액세스 토큰을 받아옴
         ResponseEntity<String> response = restTemplate.exchange(tokenUrl, HttpMethod.POST, entity, String.class);
 
         try {
@@ -66,13 +71,18 @@ public class KakaoLoginController {
     }
 
     private String getUserInfo(String accessToken) {
+        // 사용자 정보 요청 URL
         String userInfoUrl = "https://kapi.kakao.com/v2/user/me";
 
+        // HTTP 요청 헤더 설정 (Bearer 인증 방식 사용)
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + accessToken);
 
+        // 요청 엔터티 생성
         HttpEntity<String> entity = new HttpEntity<>(headers);
         RestTemplate restTemplate = new RestTemplate();
+
+        // GET 요청을 보내 사용자 정보를 받아옴
         ResponseEntity<String> response = restTemplate.exchange(userInfoUrl, HttpMethod.GET, entity, String.class);
 
         return response.getBody();
