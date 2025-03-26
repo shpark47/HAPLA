@@ -27,5 +27,22 @@
 
     <select id="selectPlaceId">
         select api_id from place where user_no = #{userNo}
-    </select>
+    </select>	
+	
+	<insert id="insertLog">
+<!-- 		insert into logs -->
+<!-- 		values(seq_logs.nextval, #{visitIp}, #{visitUserAgent}, sysdate,sysdate) -->
+<!-- 	</insert> -->
+
+insert into logs (logs_no, visit_ip, visit_useragent, visit_date, create_at)
+        values((SELECT NVL(MAX(logs_no), 0) + 1 FROM logs), #{visitIp}, #{visitUserAgent}, sysdate, sysdate)
+    </insert>
+
+	
+	<select id="selectAllLog" resultType="Dashboard">
+		select logs_no, visit_ip, visit_useragent, TO_CHAR(visit_date, 'YYYY-MM-DD') AS visit_date
+		from logs
+	</select>
+	
+	
 </mapper>

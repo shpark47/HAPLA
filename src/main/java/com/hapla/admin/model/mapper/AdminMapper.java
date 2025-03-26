@@ -9,6 +9,7 @@ import org.apache.ibatis.session.RowBounds;
 
 import com.hapla.admin.model.vo.AdminUsers;
 import com.hapla.admin.model.vo.DailyStats;
+import com.hapla.admin.model.vo.DashBoard;
 import com.hapla.admin.model.vo.Notice;
 import com.hapla.admin.model.vo.Report;
 import com.hapla.comm.model.vo.Comm;
@@ -81,28 +82,6 @@ public interface AdminMapper {
 
 	int updateMember(Users user);
 	
-	// 요약 통계
-	int getTodayVisitors();
-
-	int getWeeklyVisitors();
-
-	int getMonthlyVisitors();
-
-	int getTotalVisitors();
-
-	// 일주일 접속자 통계
-	ArrayList<HashMap<String, Object>> getWeeklyData(HashMap<String, Object> map);
-	// 시간대별 접속자 통계
-	ArrayList<HashMap<String, Object>> getHourlyData(HashMap<String, Object> map);
-	// 로그인/비로그인 사용자 비율
-	HashMap<String, Object> getLoginStatusData(HashMap<String, Object> map);
-	// 비로그인 사용자 재방문율 조회
-	HashMap<String, Object> getVisitorReturnRate(HashMap<String, Object> map);
-	// 비로그인 사용자 인기 페이지 조회
-//	ArrayList<HashMap<String, Object>> getPopularPagesForNonLoggedUsers(HashMap<String, Object> map);
-	// 월별 접속자 통계
-	ArrayList<DailyStats> getMonthlyStats(HashMap<String, Object> map);
-
 	
 	// 최신 공지사항 3개 조회
 	ArrayList<Notice> selectRecent();
@@ -112,5 +91,9 @@ public interface AdminMapper {
 	void deleteReplyReport(int replyNo);
 
 	int getCommNoByReplyNo(int replyNo);
+
+	ArrayList<DashBoard> userCount();
+
+	ArrayList<DashBoard> dailyUserCount();
 
 }
