@@ -232,10 +232,12 @@ body {
 .search-container {
     position: relative;
     padding: 16px;
+    right: 5%;
+    
 }
 
 .search-container input[type="text"] {
-    width: 86%;
+    width: 91%;
     padding: 12px 40px 12px 12px;
     border: 1px solid #ddd;
     border-radius: 8px;
@@ -246,7 +248,7 @@ body {
 /* 검색 아이콘 */
 .search-container .search-icon {
     position: absolute;
-    right: 7px;
+    left: 93%;
     top: 26px;
     cursor: pointer;
 }
