@@ -1,7 +1,5 @@
 package com.hapla.admin.controller;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -20,7 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.hapla.admin.model.service.AdminService;
 import com.hapla.admin.model.vo.AdminUsers;
-import com.hapla.admin.model.vo.DailyStats;
+import com.hapla.admin.model.vo.DashBoard;
 import com.hapla.admin.model.vo.Notice;
 import com.hapla.admin.model.vo.Report;
 import com.hapla.comm.model.vo.Comm;
@@ -30,6 +28,7 @@ import com.hapla.common.Pagination;
 import com.hapla.review.model.vo.Review;
 import com.hapla.users.model.vo.Users;
 
+import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
@@ -219,17 +218,6 @@ public class AdminController {
 	    }
 	
 	// 공지사항 상세 페이지
-//	@GetMapping("admin/detail/{id}/{page}")
-//	public String detail(@PathVariable("id") int noticeNo, @PathVariable("page") int page, Model model) {
-//	    Notice notice = aService.selectNotice(noticeNo);
-//	    if(notice == null) {
-//	        return "redirect:/admin/notice";
-//	    }
-//	    model.addAttribute("notice", notice);
-//	    model.addAttribute("page", page);
-//	    return "/admin/detail";
-//	}
-	// 공지사항 상세 페이지
 	@GetMapping("admin/detail/{id}/{page}")
 	public ModelAndView detail(@PathVariable("id") int noticeNo, @PathVariable("page") int page, ModelAndView mv) {
 	    Notice notice = aService.selectNotice(noticeNo);
@@ -251,59 +239,7 @@ public class AdminController {
 		return "/admin/notice";
 	}
 	
-	// 공지사항 수정
-//	@PostMapping("admin/noticeEdit/{id}")
-//	@PostMapping("admin/noticeEdit/{id}")
-//	@ResponseBody
-//	public String noticeEdit(@PathVariable("id") int noticeNo, @ModelAttribute Notice notice ) {
-//		notice.setNoticeNo(noticeNo);
-//		int result = aService.updateNotice(notice);
-//		return result > 0 ? "success" : "fail";
-//	}
-	
-			
-//	 // 공지사항 목록 페이지 (사용자용)
-//    @GetMapping("")
-//    public String noticeList(
-//            @RequestParam(defaultValue = "1") int page,
-//            @RequestParam(required = false) String keyword,
-//            Model model) {
-//        
-//        int listCount = noticeService.getNoticeCount();
-//        PageInfo pi = Pagination.getPageInfo(page, listCount, 10);
-//        
-//        ArrayList<Notice> list = noticeService.selectNoticeList(pi);
-//        ArrayList<Notice> latestNotices = noticeService.selectLatestNotices();
-//        
-//        model.addAttribute("list", list);
-//        model.addAttribute("latestNotices", latestNotices);
-//        model.addAttribute("pi", pi);
-//        model.addAttribute("keyword", keyword);
-//        
-//        return "notice/list";
-//    }
-//    
-    // 공지사항 상세 페이지 (사용자용)
-//    @GetMapping("/{noticeNo}")
-//    public String noticeDetail(@PathVariable int noticeNo, Model model) {
-//        Notice notice = aService.selectNotice(noticeNo);
-//        
-//        if (notice == null) {
-//            return "redirect:/notice";
-//        }
-//        
-////        ArrayList<Notice> latestNotices = aService.selectLatestNotices();
-//        
-//        // 현재 공지사항은 제외
-////        latestNotices.removeIf(n -> n.getNoticeNo() == noticeNo);
-//        
-//        model.addAttribute("notice", notice);
-////        model.addAttribute("latestNotices", latestNotices);
-//        
-//        return "notice/detail";
-//    }
 
-	
 
 	
 	// 공지사항 작성 뷰페이지 
@@ -311,12 +247,7 @@ public class AdminController {
 	public String noticeWriteView() {
 	   return "/admin/noticeWrite";
 	}
-	// 공지사항 작성 처리
-//	@PostMapping("admin/noticeWrite")
-//	public String noticeWrite(@ModelAttribute Notice notice) {
-//	    int result = aService.insertNotice(notice);
-//	    return "redirect:/admin/notice";
-//	}
+
 	
 	@PostMapping("admin/noticeWrite")
 	public String noticeWrite(@ModelAttribute Notice notice) {
@@ -356,14 +287,6 @@ public class AdminController {
 	    return map;
 	}	
 		
-//	}
-//	@PostMapping("admin/status")
-//	@ResponseBody
-//	public String updateStatus(@ModelAttribute Report report,@RequestParam("reportNo") int reportNo, @RequestParam("reportStatus")String reportStatus) {
-//		report.setReportNo(reportNo);
-//		report.setReportStatus(reportStatus);
-//		return aService.updateStatus(report);
-//	}
 
 	@GetMapping("/admin/getCommNoByReplyNo")
 	@ResponseBody
@@ -389,121 +312,14 @@ public class AdminController {
 	    return response;
 	}
 	
-//	@GetMapping("admin/accessStats")
-//	public String accessStats(
-//	        @RequestParam(value = "startDate", required = false) String startDate,
-//	        @RequestParam(value = "endDate", required = false) String endDate,
-//	        @RequestParam(value = "loginStatus", required = false, defaultValue = "all") String loginStatus,
-//	        @RequestParam(value = "insertTestData", required = false, defaultValue = "false") boolean insertTestData,
-//	        Model model) {
-//	    
-//	    try {
-////	        // 테스트 데이터 삽입 요청이 있으면 테스트 데이터 생성
-////	        if (insertTestData) {
-////	            aService.insertTestData();
-////	        }
-//	        
-//	        // 날짜가 없으면 기본값 설정 (최근 7일)
-//	        if (startDate == null || endDate == null) {
-//	            LocalDate today = LocalDate.now();
-//	            LocalDate weekAgo = today.minusDays(6);
-//	            
-//	            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-//	            startDate = weekAgo.format(formatter);
-//	            endDate = today.format(formatter);
-//	        }
-//	        
-//	        System.out.println("조회 기간: " + startDate + " ~ " + endDate + ", 로그인 상태: " + loginStatus);
-//	        
-//	        // 요약 통계 데이터
-//	        int todayVisitors = aService.getTodayVisitors();
-//	        int weeklyVisitors = aService.getWeeklyVisitors();
-//	        int monthlyVisitors = aService.getMonthlyVisitors();
-//	        int totalVisitors = aService.getTotalVisitors();
-//	        
-//	        // 차트 데이터
-//	        ArrayList<HashMap<String, Object>> weeklyData = aService.getWeeklyData(startDate, endDate, loginStatus);
-//	        ArrayList<HashMap<String, Object>> hourlyData = aService.getHourlyData(startDate, endDate, loginStatus);
-//	        HashMap<String, Object> loginStatusData = aService.getLoginStatusData(startDate, endDate);
-//	        
-//	        // 비로그인 사용자 통계
-//	        HashMap<String, Object> visitorReturnData = aService.getVisitorReturnRate(startDate, endDate);
-////	        ArrayList<HashMap<String, Object>> popularPages = aService.getPopularPagesForNonLoggedUsers(startDate, endDate);
-//	        
-//	        // 월별 접속자 통계
-//	        ArrayList<DailyStats> monthlyStats = aService.getMonthlyStats(startDate, endDate, loginStatus);
-//	        
-//	        // 데이터 로깅 (디버깅용)
-//	        System.out.println("Today Visitors: " + todayVisitors);
-//	        System.out.println("Weekly Visitors: " + weeklyVisitors);
-//	        System.out.println("Monthly Visitors: " + monthlyVisitors);
-//	        System.out.println("Total Visitors: " + totalVisitors);
-//	        System.out.println("Weekly Data: " + weeklyData);
-//	        System.out.println("Hourly Data: " + hourlyData);
-//	        System.out.println("Login Status Data: " + loginStatusData);
-//	        System.out.println("Visitor Return Data: " + visitorReturnData);
-//	        System.out.println("Monthly Stats: " + monthlyStats);
-//	        
-//	        // 모델에 데이터 추가
-//	        model.addAttribute("startDate", startDate);
-//	        model.addAttribute("endDate", endDate);
-//	        model.addAttribute("loginStatus", loginStatus);
-////	          endDate);
-//	        model.addAttribute("loginStatus", loginStatus);
-//	        
-//	        model.addAttribute("todayVisitors", todayVisitors);
-//	        model.addAttribute("weeklyVisitors", weeklyVisitors);
-//	        model.addAttribute("monthlyVisitors", monthlyVisitors);
-//	        model.addAttribute("totalVisitors", totalVisitors);
-//	        
-//	        model.addAttribute("weeklyData", weeklyData != null ? weeklyData : new ArrayList<>());
-//	        model.addAttribute("hourlyData", hourlyData != null ? hourlyData : new ArrayList<>());
-//	        model.addAttribute("loginStatusData", loginStatusData != null ? loginStatusData : new HashMap<>());
-//	        
-//	        model.addAttribute("visitorReturnData", visitorReturnData != null ? visitorReturnData : new HashMap<>());
-////	        model.addAttribute("popularPages", popularPages != null ? popularPages : new ArrayList<>());
-//	        
-//	        model.addAttribute("monthlyStats", monthlyStats != null ? monthlyStats : new ArrayList<>());
-//	        
-//	    } catch (Exception e) {
-//	        System.err.println("접속 통계 조회 중 오류 발생: " + e.getMessage());
-//	        e.printStackTrace();
-//	        
-//	        // 오류 발생 시 빈 데이터로 초기화
-//	        model.addAttribute("startDate", startDate);
-//	        model.addAttribute("endDate", endDate);
-//	        model.addAttribute("loginStatus", loginStatus);
-//	        model.addAttribute("todayVisitors", 0);
-//	        model.addAttribute("weeklyVisitors", 0);
-//	        model.addAttribute("monthlyVisitors", 0);
-//	        model.addAttribute("totalVisitors", 0);
-//	        model.addAttribute("weeklyData", new ArrayList<>());
-//	        model.addAttribute("hourlyData", new ArrayList<>());
-//	        model.addAttribute("loginStatusData", new HashMap<>());
-//	        model.addAttribute("visitorReturnData", new HashMap<>());
-//	        model.addAttribute("popularPages", new ArrayList<>());
-//	        model.addAttribute("monthlyStats", new ArrayList<>());
-//	        model.addAttribute("errorMessage", "통계 데이터를 불러오는 중 오류가 발생했습니다: " + e.getMessage());
-//	    }
-//	    
-//	    return "admin/accessStats";
-//	}
-
-
-
-
-	
-	
-//	@GetMapping("admin/accessStats") 
-//	public String accessStats() {
-//		return "/admin/accessStats";
-//	}
-	@GetMapping("admin/payment")
-	public String payment() {
-		return "/admin/payment";
+	@GetMapping("admin/Stats")
+	public String Stats(Model model) {
+		ArrayList<DashBoard> userCount = aService.userCount();
+		ArrayList<DashBoard> dailyUserCount = aService.dailyUserCount();
+		System.out.println("dailyUserCount=========" + dailyUserCount);
+		System.out.println("userCount======" + userCount);
+		model.addAttribute("userCount", userCount).addAttribute("dailyUserCount", dailyUserCount);
+		return "admin/Stats";
 	}
-	@GetMapping("/admin/reservation")
-	public String reservation() {
-		return "/admin/reservation";
-	}
+
 }

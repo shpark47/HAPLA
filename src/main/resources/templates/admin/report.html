@@ -57,35 +57,35 @@
                <h2>HAPLA</h2>
                <span>관리자</span>
            </div>
-           <ul class="nav-menu">
-               <li>
-                   <a href="index"><i class="fas fa-chart-line"></i> <span>대시보드</span></a>
-               </li>
-               <li>
-                   <a href="members"><i class="fas fa-users"></i> <span>회원 조회</span></a>
-               </li>
-               <li>
-                   <a href="userStats"><i class="fas fa-user-chart"></i> <span>사용자 통계</span></a>
-               </li>
-               <li>
-                   <a href="accessStats"><i class="fas fa-chart-bar"></i> <span>접속 통계</span></a>
-               </li>
-               <li>
-                   <a href="notice"><i class="fas fa-bullhorn"></i> <span>공지사항</span></a>
-               </li>
-               <li>
-                   <a href="report"><i class="fas fa-flag"></i> <span>신고 관리</span></a>
-               </li>
-<!--                <li> -->
-<!--                    <a href="payment"><i class="fas fa-credit-card"></i> <span>결제 관리</span></a> -->
-<!--                </li> -->
-               <li>
-                   <a href="reservation"><i class="fas fa-calendar-check"></i> <span>예약 현황</span></a>
-               </li>
-               <li>
-                   <a href="../main"><i class="fas fa-sign-out-alt"></i> <span>로그아웃</span></a>
-               </li>
-           </ul>
+            <ul class="nav-menu">
+            <li>
+                <a href="index"><i class="fas fa-chart-line"></i> <span>대시보드</span></a>
+            </li>
+            <li>
+                <a href="members"><i class="fas fa-users"></i> <span>회원 조회</span></a>
+            </li>
+            <li>
+                <a href="userStats"><i class="fas fa-user-chart"></i> <span>사용자 통계</span></a>
+            </li>
+            <li>
+                <a href="Stats" class="active"><i class="fas fa-chart-bar"></i> <span>접속 통계</span></a>
+            </li>
+            <li>
+                <a href="notice"><i class="fas fa-bullhorn"></i> <span>공지사항</span></a>
+            </li>
+            <li>
+                <a href="report"><i class="fas fa-flag"></i> <span>신고 관리</span></a>
+            </li>
+<!--             <li> -->
+<!--                 <a href="payment"><i class="fas fa-credit-card"></i> <span>결제 관리</span></a> -->
+<!--             </li> -->
+<!--             <li> -->
+<!--                 <a href="reservation"><i class="fas fa-calendar-check"></i> <span>예약 현황</span></a> -->
+<!--             </li> -->
+            <li>
+                <a href="../main"><i class="fas fa-sign-out-alt"></i> <span>로그아웃</span></a>
+            </li>
+        </ul>
        </div>
 
        <!-- 메인 콘텐츠 -->
@@ -252,7 +252,6 @@
 				reportNo : reportNo
             },
 			success : data => {
-				console.log("신고 처리 결과:", data);
 				if(data == 'success') {
 				 if (this.classList.contains("approve")) {
 		              status.innerText = "승인"
@@ -271,7 +270,6 @@
 				}
 			},
 			error : data => {
-                console.error("신고 처리 중 오류:", data);
                 alert("신고 처리 중 오류가 발생했습니다.");
             }
 		});

@@ -1,9 +1,11 @@
 package com.hapla.users.model.mapper;
 
+import com.hapla.admin.model.vo.DashBoard;
 import com.hapla.users.model.vo.Users;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 @Mapper
 public interface UsersMapper {
@@ -20,4 +22,8 @@ public interface UsersMapper {
     int deleteUser(int no);
 
     ArrayList<String> selectPlaceId(int userNo);
+
+	ArrayList<DashBoard> selectAllLog();
+
+	int insertLog(HashMap<String, String> map);
 }

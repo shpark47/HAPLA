@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.hapla.admin.model.mapper.AdminMapper;
 import com.hapla.admin.model.vo.AdminUsers;
 import com.hapla.admin.model.vo.DailyStats;
+import com.hapla.admin.model.vo.DashBoard;
 import com.hapla.admin.model.vo.Notice;
 import com.hapla.admin.model.vo.Report;
 import com.hapla.comm.model.vo.Comm;
@@ -114,7 +115,7 @@ public class AdminService {
 		case "review" :
 			return Arrays.asList("작성자","제목","작성일","별점","관리");
 		case "reply" :
-			return Arrays.asList("작성자","제목","작성일", "내용", "관리");
+			return Arrays.asList("작성자","게시글 제목","작성일", "댓글 내용", "관리");
 		default :
 			return Arrays.asList();
 		}
@@ -194,212 +195,6 @@ public class AdminService {
 		return mapper.updateMember(user);
 	}
 
-
-	public int getTodayVisitors() {
-		return mapper.getTodayVisitors();
-	}
-
-	public int getWeeklyVisitors() {
-		return mapper.getWeeklyVisitors();
-	}
-
-	public int getMonthlyVisitors() {
-		return mapper.getMonthlyVisitors();
-	}
-
-	public int getTotalVisitors() {
-		return mapper.getTotalVisitors();
-	}
-
-	public ArrayList<HashMap<String, Object>> getWeeklyData(String startDate, String endDate, String loginStatus) {
-	    try {
-	        HashMap<String, Object> map = new HashMap<>();
-	        map.put("startDate", startDate);
-	        map.put("endDate", endDate);
-	        map.put("loginStatus", loginStatus);
-	        
-	        ArrayList<HashMap<String, Object>> result = mapper.getWeeklyData(map);
-	        
-	        // 결과가 없으면 빈 배열 반환
-	        if (result == null) {
-	            result = new ArrayList<>();
-	        }
-	        
-	        // 데이터 로깅
-	        System.out.println("Weekly Data from DB: " + result);
-	        
-	        return result;
-	    } catch (Exception e) {
-	        System.err.println("주간 데이터 조회 중 오류 발생: " + e.getMessage());
-	        e.printStackTrace();
-	        
-	        // 오류 발생 시 기본 데이터 생성
-	        ArrayList<HashMap<String, Object>> defaultData = new ArrayList<>();
-	        String[] days = {"일", "월", "화", "수", "목", "금", "토"};
-	        
-	        for (String day : days) {
-	            HashMap<String, Object> dayData = new HashMap<>();
-	            dayData.put("day", day);
-	            dayData.put("count", 0);
-	            defaultData.add(dayData);
-	        }
-	        
-	        return defaultData;
-	    }
-	}
-
-	public ArrayList<HashMap<String, Object>> getHourlyData(String startDate, String endDate, String loginStatus) {
-	    try {
-	        HashMap<String, Object> map = new HashMap<>();
-	        map.put("startDate", startDate);
-	        map.put("endDate", endDate);
-	        map.put("loginStatus", loginStatus);
-	        
-	        ArrayList<HashMap<String, Object>> result = mapper.getHourlyData(map);
-	        
-	        // 결과가 없으면 빈 배열 반환
-	        if (result == null) {
-	            result = new ArrayList<>();
-	        }
-	        
-	        // 데이터 로깅
-	        System.out.println("Hourly Data from DB: " + result);
-	        
-	        return result;
-	    } catch (Exception e) {
-	        System.err.println("시간별 데이터 조회 중 오류 발생: " + e.getMessage());
-	        e.printStackTrace();
-	        
-	        // 오류 발생 시 기본 데이터 생성
-	        ArrayList<HashMap<String, Object>> defaultData = new ArrayList<>();
-	        
-	        for (int i = 0; i < 24; i++) {
-	            String hourStr = String.format("%02d", i);
-	            HashMap<String, Object> hourData = new HashMap<>();
-	            hourData.put("hour", hourStr);
-	            hourData.put("count", 0);
-	            defaultData.add(hourData);
-	        }
-	        
-	        return defaultData;
-	    }
-	}
-
-	public HashMap<String, Object> getLoginStatusData(String startDate, String endDate) {
-	    try {
-	        HashMap<String, Object> map = new HashMap<>();
-	        map.put("startDate", startDate);
-	        map.put("endDate", endDate);
-	        
-	        HashMap<String, Object> result = mapper.getLoginStatusData(map);
-	        
-	        // null 체크 및 기본값 설정
-	        if (result == null) {
-	            result = new HashMap<>();
-	        }
-	        
-	        // 키가 없거나 값이 null인 경우 기본값 0 설정
-	        if (!result.containsKey("loggedIn") || result.get("loggedIn") == null) {
-	            result.put("loggedIn", 0);
-	        }
-	        
-	        if (!result.containsKey("notLoggedIn") || result.get("notLoggedIn") == null) {
-	            result.put("notLoggedIn", 0);
-	        }
-	        
-	        // 데이터 로깅
-	        System.out.println("Login Status Data from DB: " + result);
-	        
-	        return result;
-	    } catch (Exception e) {
-	        System.err.println("로그인 상태 데이터 조회 중 오류 발생: " + e.getMessage());
-	        e.printStackTrace();
-	        
-	        HashMap<String, Object> defaultMap = new HashMap<>();
-	        defaultMap.put("loggedIn", 0);
-	        defaultMap.put("notLoggedIn", 0);
-	        return defaultMap;
-	    }
-	}
-
-	public HashMap<String, Object> getVisitorReturnRate(String startDate, String endDate) {
-	    try {
-	        HashMap<String, Object> map = new HashMap<>();
-	        map.put("startDate", startDate);
-	        map.put("endDate", endDate);
-	        
-	        HashMap<String, Object> result = mapper.getVisitorReturnRate(map);
-	        
-	        // null 체크 및 기본값 설정
-	        if (result == null) {
-	            result = new HashMap<>();
-	        }
-	        
-	        // 키가 없거나 값이 null인 경우 기본값 0 설정
-	        if (!result.containsKey("firstTime") || result.get("firstTime") == null) {
-	            result.put("firstTime", 0);
-	        }
-	        
-	        if (!result.containsKey("returning") || result.get("returning") == null) {
-	            result.put("returning", 0);
-	        }
-	        
-	        // 데이터 로깅
-	        System.out.println("Visitor Return Data from DB: " + result);
-	        
-	        return result;
-	    } catch (Exception e) {
-	        System.err.println("방문자 재방문율 조회 중 오류 발생: " + e.getMessage());
-	        e.printStackTrace();
-	        
-	        HashMap<String, Object> defaultMap = new HashMap<>();
-	        defaultMap.put("firstTime", 0);
-	        defaultMap.put("returning", 0);
-	        return defaultMap;
-	    }
-	}
-
-	public ArrayList<DailyStats> getMonthlyStats(String startDate, String endDate, String loginStatus) {
-	    try {
-	        HashMap<String, Object> map = new HashMap<>();
-	        map.put("startDate", startDate);
-	        map.put("endDate", endDate);
-	        map.put("loginStatus", loginStatus);
-	        
-	        ArrayList<DailyStats> result = mapper.getMonthlyStats(map);
-	        
-	        // 결과가 없으면 빈 배열 반환
-	        if (result == null) {
-	            result = new ArrayList<>();
-	        }
-	        
-	        // 데이터 로깅
-	        System.out.println("Monthly Stats from DB: " + result);
-	        
-	        return result;
-	    } catch (Exception e) {
-	        System.err.println("월별 통계 조회 중 오류 발생: " + e.getMessage());
-	        e.printStackTrace();
-	        return new ArrayList<>();
-	    }
-	}
-
-
-
-
-//	public ArrayList<HashMap<String, Object>> getPopularPagesForNonLoggedUsers(String startDate, String endDate) {
-//    try {
-//        HashMap<String, Object> map = new HashMap<>();
-//        map.put("startDate", startDate);
-//        map.put("endDate", endDate);
-//        return mapper.getPopularPagesForNonLoggedUsers(map);
-//    } catch (Exception e) {
-//        System.err.println("인기 페이지 조회 중 오류 발생: " + e.getMessage());
-//        e.printStackTrace();
-//        return new ArrayList<>();
-//    }
-//}
-	
 	// 최신 공지사항 3개 조회
 	public ArrayList<Notice> selectRecent() {
 	    return mapper.selectRecent();
@@ -463,5 +258,13 @@ public class AdminService {
 	//댓글이 속한 게시글 번호 조회
 	public int getCommNoByReplyNo(int replyNo) {
 		return mapper.getCommNoByReplyNo(replyNo);
+	}
+
+	public ArrayList<DashBoard> userCount() {
+		return mapper.userCount();
+	}
+
+	public ArrayList<DashBoard> dailyUserCount() {
+		return mapper.dailyUserCount();
 	}
 }
