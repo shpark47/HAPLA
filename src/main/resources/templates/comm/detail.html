@@ -536,7 +536,7 @@ document.getElementById('replySubmit').addEventListener('click', e => {
 		data: {
 			replyContent:document.getElementById('replyContent').value,
 			commNo:/*[[${c.commNo}]]*/1,
-			name:/*[[${c.name}]]*/'user01',
+			nickname:/*[[${c.nickname}]]*/'user01',
 			userNo:/*[[${session.loginUser != null ? session.loginUser.userNo : ''}]]*/1
 		},
 		success: data => {
@@ -547,7 +547,7 @@ document.getElementById('replySubmit').addEventListener('click', e => {
 				const tr = document.createElement('tr');
 				
 				const writerTd = document.createElement('td');
-				const writerVal = document.createTextNode(r.name);
+				const writerVal = document.createTextNode(r.nickname);
 				writerTd.append(writerVal);
 				
 				const contentTd = document.createElement('td');
