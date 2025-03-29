@@ -21,7 +21,7 @@ categoryButtons.forEach(button => {
         categoryButtons.forEach(btn => btn.classList.remove('active'));
         button.classList.add('active');
         inputText.placeholder = placeholderMap[button.innerText] || '여행지, 관광명소, 숙박 등';
-        const isFlightSearch = button.innerText === '항공권';
+        const isFlightSearch = button.innerText == '항공권';
         searchBar.style.display = isFlightSearch ? 'none' : 'block';
         flightSearchBar.style.display = isFlightSearch ? 'block' : 'none';
         selectedCategory = this.getAttribute("data-category");
@@ -141,7 +141,7 @@ function updateCalendarStyles(selectedDates, instance) {
     });
 
     // 날짜 범위가 2개 이상 선택되었을 때 스타일 적용
-    if (selectedDates.length === 2) {
+    if (selectedDates.length == 2) {
         const [startDate, endDate] = selectedDates;
         const startUnix = startDate.getTime();
         const endUnix = endDate.getTime();

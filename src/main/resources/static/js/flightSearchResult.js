@@ -106,7 +106,7 @@ function updateCalendarStyles(selectedDates, instance) {
 	});
 
 	// 날짜 범위 스타일 적용 (왕복일 경우만)
-	if (mode === "range" && selectedDates.length === 2) {
+	if (mode == "range" && selectedDates.length == 2) {
 		const [startDate, endDate] = selectedDates;
 		const startUnix = startDate.getTime();
 		const endUnix = endDate.getTime();
@@ -272,7 +272,7 @@ document.querySelector('.research-btn').addEventListener('click', () => {
 const inputBtns = document.querySelectorAll('.trip-group button');
 
 
-inputBtns.forEach(array => {  // 🔴 'array'는 각 요소(버튼)
+inputBtns.forEach(array => {  // 'array'는 각 요소(버튼)
 	array.addEventListener('click', () => {
 		inputBtns.forEach(btn => btn.classList.remove('active'));
 		array.classList.add('active');
