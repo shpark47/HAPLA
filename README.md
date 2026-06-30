@@ -2,33 +2,104 @@
 
 HAPLA는 여행 일정 계획, 여행지 검색, 항공권 정보 조회 및 여행 후기 공유를 위한 종합 여행 플랫폼입니다.
 
-## 👥 팀 소개
+## 팀 소개
+
 총 5명의 팀원으로 구성되어 있으며, 효율적인 개발을 위해 역할을 분담하여 프로젝트를 진행합니다.
 
-| 이름 | 프로필 |
-| :--- | :--- |
-| **박성훈** | https://github.com/shpark47 |
-| **조민주** | https://github.com/SUCRESUCCES |
-| **황성현** | https://github.com/tjdgusghkd |
-| **이  창** | https://github.com/wajangchang10 |
-| **강현준** | https://github.com/khjun98 |
+| 이름  | GitHub                           |
+| --- | -------------------------------- |
+| 박성훈 | https://github.com/shpark47      |
+| 조민주 | https://github.com/SUCRESUCCES   |
+| 황성현 | https://github.com/tjdgusghkd    |
+| 이창  | https://github.com/wajangchang10 |
+| 강현준 | https://github.com/khjun98       |
 
-## 🛠 주요 기능
-* **여행 일정 관리**: 사용자별 여행 일정을 생성하고 관리합니다.
-* **여행지 및 맛집 검색**: 상세 정보를 제공하며 여행지/숙박/음식점 데이터를 검색할 수 있습니다.
-* **항공권 검색**: 여행에 필요한 항공 정보를 조회합니다.
-* **커뮤니티**: 여행 후기 작성, 댓글 달기 및 좋아요 기능을 제공합니다.
-* **관리자 페이지**: 사용자 관리, 통계 확인, 공지사항 관리 및 신고 내역 처리를 지원합니다.
-* **소셜 로그인**: 구글(Google) 및 카카오(Kakao) 간편 로그인을 제공합니다.
+## 주요 기능
 
-## ⚙️ 기술 스택
-* **Backend**: Java, Spring Boot
-* **Database**: MyBatis, XML Mapper, Oracle
-* **Build Tool**: Gradle
-* **Frontend**: HTML, CSS, JavaScript (Summernote, Thymeleaf 템플릿 엔진 사용)
-* **Interceptors**: 접근 로그 관리 및 보안 설정
+### 여행 일정 관리
 
-## 📁 프로젝트 구조
+* 사용자별 여행 일정 생성 및 수정
+* 여행 기간별 일정 관리
+* 여행 계획 공유 기능
+
+### 여행지 및 맛집 검색
+
+* 여행지, 숙박시설, 음식점 검색
+* 상세 정보 및 위치 정보 제공
+* 카테고리별 검색 지원
+
+### 항공권 검색
+
+* 출발지 및 도착지 기반 항공편 조회
+* 항공편 정보 및 운항 일정 제공
+
+### 커뮤니티
+
+* 여행 후기 작성 및 수정
+* 댓글 및 좋아요 기능
+* 사용자 간 정보 공유
+
+### 관리자 페이지
+
+* 회원 관리
+* 신고 내역 처리
+* 공지사항 관리
+* 서비스 통계 확인
+
+### 소셜 로그인
+
+* Google 로그인
+* Kakao 로그인
+
+### 이미지 관리
+
+* Cloudflare R2 Bucket을 활용한 이미지 저장
+* 여행 후기 및 게시글 이미지 업로드
+* 서버와 분리된 객체 스토리지 환경 구축
+
+## 기술 스택
+
+### Backend
+
+* Java
+* Spring Boot
+* Spring MVC
+
+### Database
+
+* Oracle Database
+* MyBatis
+* XML Mapper
+
+### Frontend
+
+* HTML5
+* CSS3
+* JavaScript
+* Thymeleaf
+* Summernote
+
+### Storage
+
+* Cloudflare R2 Bucket
+
+### Build Tool
+
+* Gradle
+
+### Authentication
+
+* OAuth 2.0
+* Google Login
+* Kakao Login
+
+### Infrastructure & Security
+
+* Interceptor 기반 접근 로그 관리
+* 사용자 권한 및 인증 처리
+
+## 프로젝트 구조
+
 ```text
 HAPLA-main/
 ├── src/main/java/com/hapla/
@@ -41,6 +112,9 @@ HAPLA-main/
 │   ├── review/     # 후기 상세 페이지 및 로직
 │   ├── schedule/   # 여행 일정 관리
 │   └── users/      # 사용자 계정 관리
+│
 └── src/main/resources/
     ├── mapper/     # MyBatis SQL 매핑 XML 파일
+    ├── templates/  # Thymeleaf 템플릿
     └── static/     # CSS, JS, 이미지 및 폰트 파일
+```
